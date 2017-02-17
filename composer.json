@@ -1,0 +1,17 @@
+{
+    "name": "cat/ente",
+    "version": "0.1.0"
+    "description": "An entity component framework for PHP.",
+    "type": "library",
+    "license": "GPLv3",
+    "authors": [
+        {
+            "name": "Richard Klees",
+            "email": "richard.klees@concepts-and-training.de"
+        }
+    ],
+    "autoload" : {
+        "psr-4" : { "CaT\\Ente\\" : "src" }
+    }
+    "require": {}
+}
