@@ -24,7 +24,7 @@ interface Repository {
      *
      * @param   Entity      $entity
      * @param   string|null $component_type
-     * @return  Provider
+     * @return  Provider[]
      */
     public function providersForEntity(Entity $entity, $component_type = null);
 
