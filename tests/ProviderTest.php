@@ -39,7 +39,7 @@ abstract class ProviderTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @dataProvider componentTypes 
+     * @dataProvider component_types
      */
     public function test_provides_expected_component_types($component_type) {
         $provider = $this->provider();
@@ -50,7 +50,7 @@ abstract class ProviderTest extends PHPUnit_Framework_TestCase {
 
     // DATA PROVIDERS
 
-    public function componentTypes() {
+    public function component_types() {
         $provider = $this->provider();
         foreach ($provider->componentTypes() as $type) {
             yield [$type];
