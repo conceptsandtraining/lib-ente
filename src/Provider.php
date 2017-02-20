@@ -18,9 +18,6 @@ namespace CaT\Ente;
  *    previous version. This was changed to this version where a provider provides
  *    components for one entity. The use cases for the framework will be mostly
  *    entity centric, thus it makes more sense to have according providers.
- *  - This deviates from the standard pattern for entity component model, which
- *    doesn't have a provider. The provider was introduced to render a central
- *    storage mechanism for all components unnecessary.
  */
 interface Provider {
     /**
