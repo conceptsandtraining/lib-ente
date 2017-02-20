@@ -23,14 +23,6 @@ abstract class ProviderTest extends PHPUnit_Framework_TestCase {
     abstract protected function provider();
 
     /**
-     * To make this interesting, there should at least be one entity the provider
-     * does not provide for.
-     *
-     * @return  Entity[]
-     */
-    abstract protected function doesNotProvideForEntities();
-
-    /**
      * Some types of components the provider does not provide for.
      *
      * @return  string[]
@@ -39,57 +31,29 @@ abstract class ProviderTest extends PHPUnit_Framework_TestCase {
 
     // TEST
 
-    /**
-     * @dataProvider providesForEntities
-     */
     public function test_only_provides_announced_component_types($entity) {
         $provider = $this->provider();
         foreach ($this->doesNotProvideComponentType() as $component_type) {
-            $this->assertEmpty($provider->componentsOf($entity, $component_type));
+            $this->assertEmpty($provider->componentsOfType($component_type));
         }
     }
 
     /**
-     * @dataProvider providedComponentTypes
+     * @dataProvider componentTypes 
      */
-    public function test_only_provides_for_announced_entities($component_type) {
+    public function test_provides_expected_component_types($component_type) {
         $provider = $this->provider();
-        foreach ($this->doesNotProvideForEntities() as $entity) {
-            $this->assertEmpty($provider->componentsOf($entity, $component_type));
-        }
-    }
-
-    /**
-     * @dataProvider providedEntitiesAndComponentType
-     */
-    public function test_provides_expected_component_types($entity, $component_type) {
-        $provider = $this->provider();
-        foreach($provider->componentsOf($entity, $component_type) as $component) {
+        foreach($provider->componentsOfTypeType($component_type) as $component) {
             $this->assertInstanceOf($component_type, $component);
         }
     }
 
     // DATA PROVIDERS
 
-    public function providesForEntities() {
+    public function componentTypes() {
         $provider = $this->provider();
-        foreach ($provider->providesForEntities() as $entity) {
-            yield [$entity];
-        }
-    }
-
-    public function providedComponentTypes() {
-        $provider = $this->provider();
-        foreach ($provider->providedComponentTypes() as $type) {
+        foreach ($provider->componentTypes() as $type) {
             yield [$type];
-        }
-    }
-
-    public function providedEntitiesAndComponentTypes() {
-        foreach ($this->providesForEntities() as $entity) {
-            foreach ($this->providedComponentTypes() as $type) {
-                yield [$entity[0], $type[0]];
-            }
         }
     }
 }

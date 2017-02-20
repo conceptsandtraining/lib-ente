@@ -11,16 +11,16 @@
 namespace CaT\Ente;
 
 /**
- * A component provider can be queried for components for an entity.
+ * A component provider can be queried for components of an entity.
  *
  * ARCH:
- *  - There could be some other thingy, providing component providers for a
- *    specific entity instead one provider that can provide components for
- *    all entities. This would mean we would need `ProviderProvider` which
- *    seems odd. Having a provider providing components for all entities
- *    potentially also makes it possible to have some more high level queries,
- *    e.g. getting to know for which entities the provider actually provides
- *    components.
+ *  - The provider was able to provide components for many entities in a
+ *    previous version. This was changed to this version where a provider provides
+ *    components for one entity. The use cases for the framework will be mostly
+ *    entity centric, thus it makes more sense to have according providers.
+ *  - This deviates from the standard pattern for entity component model, which
+ *    doesn't have a provider. The provider was introduced to render a central
+ *    storage mechanism for all components unnecessary.
  */
 interface Provider {
     /**
@@ -35,23 +35,22 @@ interface Provider {
      * For every `$entity` not included in `providesForEntities` this must
      * return an empty array.
      *
-     * @param   Entity      $entity
      * @param   string      $component_type
      * @return  Component[]
      */
-    public function componentsOf(Entity $entity, $component_type);
+    public function componentsOfType($component_type);
 
     /**
      * Get the component types this provider provides.
      *
      * @return  string[]
      */
-    public function providedComponentTypes();
+    public function componentTypes();
 
     /**
-     * Get the entities this provider can provide components for.
+     * Get the entity this provider provides components for.
      *
-     * @return  Entity[]
+     * @return  Entity
      */
-    public function providesForEntities();
+    public function entity();
 }
