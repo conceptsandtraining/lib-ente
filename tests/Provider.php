@@ -11,16 +11,16 @@
 use CaT\Ente;
 
 /**
- * This testcases must be passed by a ComponentProvider.
+ * This testcases must be passed by a Provider.
  */
-abstract class ComponentProviderTest extends PHPUnit_Framework_TestCase {
+abstract class ProviderTest extends PHPUnit_Framework_TestCase {
     /**
      * To make this interesting, the provider should at least provide for one
      * entity.
      *
-     * @return  ComponentProvider
+     * @return  Provider
      */
-    abstract protected function componentProvider();
+    abstract protected function provider();
 
     /**
      * To make this interesting, there should at least be one entity the provider
@@ -43,7 +43,7 @@ abstract class ComponentProviderTest extends PHPUnit_Framework_TestCase {
      * @dataProvider providesForEntities
      */
     public function test_only_provides_announced_component_types($entity) {
-        $provider = $this->componentProvider();
+        $provider = $this->provider();
         foreach ($this->doesNotProvideComponentType() as $component_type) {
             $this->assertEmpty($provider->componentsOf($entity, $component_type));
         }
@@ -53,7 +53,7 @@ abstract class ComponentProviderTest extends PHPUnit_Framework_TestCase {
      * @dataProvider providedComponentTypes
      */
     public function test_only_provides_for_announced_entities($component_type) {
-        $provider = $this->componentProvider();
+        $provider = $this->provider();
         foreach ($this->doesNotProvideForEntities() as $entity) {
             $this->assertEmpty($provider->componentsOf($entity, $component_type));
         }
@@ -63,7 +63,7 @@ abstract class ComponentProviderTest extends PHPUnit_Framework_TestCase {
      * @dataProvider providedEntitiesAndComponentType
      */
     public function test_provides_expected_component_types($entity, $component_type) {
-        $provider = $this->componentProvider();
+        $provider = $this->provider();
         foreach($provider->componentsOf($entity, $component_type) as $component) {
             $this->assertInstanceOf($component_type, $component);
         }
@@ -72,14 +72,14 @@ abstract class ComponentProviderTest extends PHPUnit_Framework_TestCase {
     // DATA PROVIDERS
 
     public function providesForEntities() {
-        $provider = $this->componentProvider();
+        $provider = $this->provider();
         foreach ($provider->providesForEntities() as $entity) {
             yield [$entity];
         }
     }
 
     public function providedComponentTypes() {
-        $provider = $this->componentProvider();
+        $provider = $this->provider();
         foreach ($provider->providedComponentTypes() as $type) {
             yield [$type];
         }

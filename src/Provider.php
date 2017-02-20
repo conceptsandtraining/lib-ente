@@ -22,7 +22,7 @@ namespace CaT\Ente;
  *    e.g. getting to know for which entities the provider actually provides
  *    components.
  */
-interface ComponentProvider {
+interface Provider {
     /**
      * Get the components of a given type for the given entity.
      *
