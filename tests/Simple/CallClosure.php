@@ -8,14 +8,18 @@
  * the license along with the code.
  */
 
+use CaT\Ente\ProviderHelper;
 use CaT\Ente\Simple\Entity;
-use CaT\Ente\Simple\Component;
+use CaT\Ente\Simple\Run;
+use CaT\Ente\Simple\CallClosure;
 
-class Simple_ComponentTest extends PHPUnit_Framework_TestCase {
+class Simple_CallClosureTest extends PHPUnit_Framework_TestCase {
+    use ProviderHelper; 
+
     public function setUp() {
         $this->id = rand();
         $this->entity = new Entity($this->id);
-        $this->component = new Component($this->entity, function(Entity $e) {
+        $this->component = new CallClosure($this->entity, function(Entity $e) {
             return $e->id();
         });
     }
@@ -26,5 +30,9 @@ class Simple_ComponentTest extends PHPUnit_Framework_TestCase {
 
     public function test_run() {
         $this->assertEquals($this->id, $this->component->run());
+    }
+
+    public function test_componentTypes() {
+        $this->assertEquals([Run::class], $this->componentTypesOf($this->component));
     }
 }

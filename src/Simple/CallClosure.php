@@ -17,7 +17,7 @@ namespace CaT\Ente\Simple;
  *
  * Intended to be used for testing.
  */
-class Component implements \CaT\Ente\Component {
+class CallClosure implements \CaT\Ente\Simple\Run {
     /**
      * @var \CaT\Ente\Component
      */
