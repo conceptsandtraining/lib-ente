@@ -63,7 +63,7 @@ abstract class RepositoryTest extends PHPUnit_Framework_TestCase {
      * @dataProvider has_providers_for_component_types
      */
     public function test_providers_for_component_types($component_type) {
-        $providers = $this->repository->providersForComponentType($component_type);
+        $providers = $this->repository()->providersForComponentType($component_type);
         foreach ($providers as $provider) {
             $this->assertContains($component_type, $provider->componentTypes());
         } 
@@ -73,7 +73,7 @@ abstract class RepositoryTest extends PHPUnit_Framework_TestCase {
      * @dataProvider has_providers_for_entities_and_component_types
      */
     public function test_providers_for_component_types_filtered($entity, $component_type) {
-        $providers = $this->repository->providersForComponentType($component_type, [$entity]);
+        $providers = $this->repository()->providersForComponentType($component_type, [$entity]);
         foreach ($providers as $provider) {
             $this->assertEquals($entity->id(), $provider->entity()->id());
             $this->assertContains($component_type, $provider->componentTypes());
