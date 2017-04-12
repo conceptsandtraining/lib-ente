@@ -13,7 +13,7 @@ namespace CaT\Ente\Simple;
 /**
  * In memory implementation of AttachString.
  */
-class AttachStringMemory implements \CaT\Ente\Simple\AttachString {
+class AttachStringMemory implements AttachString {
     /**
      * @var \CaT\Ente\Component
      */

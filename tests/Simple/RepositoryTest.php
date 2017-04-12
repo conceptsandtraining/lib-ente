@@ -11,8 +11,8 @@
 use CaT\Ente\Simple\Entity;
 use CaT\Ente\Simple\Repository;
 use CaT\Ente\Simple\Provider;
-use CaT\Ente\Simple\Run;
-use CaT\Ente\Simple\CallClosure;
+use CaT\Ente\Simple\AttachString;
+use CaT\Ente\Simple\AttachStringMemory;
 
 require_once(__DIR__."/../RepositoryTest.php");
 
@@ -40,9 +40,7 @@ class Simple_RepositoryTest extends RepositoryTest {
 
         foreach ($entities as $e) {
             $p = new Provider($e);
-            $p->addComponent(new CallClosure($e, function($e) {
-                return $e->id();
-            }));
+            $p->addComponent(new AttachStringMemory($e, "id: {$e->id()}"));
             $repo->addProvider($p);
         }
 
@@ -62,7 +60,7 @@ class Simple_RepositoryTest extends RepositoryTest {
      * @return  string[]
      */
     protected function hasProvidersForComponentTypes() {
-        return [Run::class];
+        return [AttachString::class];
     }
 
     public function test_providers() {

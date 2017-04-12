@@ -10,8 +10,8 @@
 
 use CaT\Ente\Simple\Entity;
 use CaT\Ente\Simple\Provider;
-use CaT\Ente\Simple\Run;
-use CaT\Ente\Simple\CallClosure;
+use CaT\Ente\Simple\AttachString;
+use CaT\Ente\Simple\AttachStringMemory;
 
 require_once(__DIR__."/../ProviderTest.php");
 
@@ -22,9 +22,7 @@ class Simple_ProviderTest extends ProviderTest {
     protected function provider() {
         $entity = new Entity(0);
         $provider = new Provider($entity);
-        $component = new CallClosure($entity, function(Entity $e) {
-            return $e->id();
-        }); 
+        $component = new AttachStringMemory($entity, "id: {$entity->id()}");
         $provider->addComponent($component);
         return $provider;
     }
@@ -40,9 +38,7 @@ class Simple_ProviderTest extends ProviderTest {
         $provider = $this->provider();
 
         $entity = new Entity(1);
-        $component = new CallClosure($entity, function(Entity $e) {
-            return $e->id();
-        }); 
+        $component = new AttachStringMemory($entity, "id: {$entity->id()}");
 
         try {
             $provider->addComponent($component);
@@ -55,6 +51,6 @@ class Simple_ProviderTest extends ProviderTest {
 
     public function test_componentTypes() {
         $provider = $this->provider();
-        $this->assertEquals([Run::class], $provider->componentTypes());
+        $this->assertEquals([AttachString::class], $provider->componentTypes());
     }
 }
