@@ -16,6 +16,12 @@ use CaT\Ente\Simple\CallClosure;
 
 require_once(__DIR__."/../RepositoryTest.php");
 
+class _Repository extends Repository {
+    public function _providers() {
+        return $this->providers;
+    }
+}
+
 class Simple_RepositoryTest extends RepositoryTest {
     protected function entities() {
         return 
@@ -23,7 +29,6 @@ class Simple_RepositoryTest extends RepositoryTest {
              new Entity(1),
              new Entity(2),
              new Entity(3)];
-            
     }
 
     /**
@@ -31,7 +36,7 @@ class Simple_RepositoryTest extends RepositoryTest {
      */
     protected function repository() {
         $entities = $this->entities();
-        $repo = new Repository();
+        $repo = new _Repository();
 
         foreach ($entities as $e) {
             $p = new Provider($e);
@@ -58,5 +63,15 @@ class Simple_RepositoryTest extends RepositoryTest {
      */
     protected function hasProvidersForComponentTypes() {
         return [Run::class];
+    }
+
+    public function test_providers() {
+        $providers = $this->repository()->_providers();
+        $this->assertCount(4, $providers);
+        $this->assertEquals([serialize(0),serialize(1),serialize(2),serialize(3)], array_keys($providers));
+        $this->assertCount(1, $providers[serialize(0)]);
+        $this->assertCount(1, $providers[serialize(1)]);
+        $this->assertCount(1, $providers[serialize(2)]);
+        $this->assertCount(1, $providers[serialize(3)]);
     }
 }

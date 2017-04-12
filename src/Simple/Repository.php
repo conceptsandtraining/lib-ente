@@ -19,10 +19,16 @@ class Repository implements \CaT\Ente\Repository {
     /**
      * @var     array<string,Provider[]>
      */
-    private $providers;
+    protected $providers;
+
+    /**
+     * @var     array<string,Entity>
+     */
+    protected $entities;
 
     public function __construct() {
         $this->providers = [];
+        $this->entities = [];
     } 
 
     /**
@@ -57,13 +63,10 @@ class Repository implements \CaT\Ente\Repository {
             if ($entities !== null && !in_array($id, $entities)) {
                 continue;
             }
-            $ret[$id] = [];
+            $ret[$id] = ["entity" => $this->entities[$id], "providers" => []];
             foreach ($providers as $provider) {
                 if (in_array($component_type, $provider->componentTypes())) {
                     continue;
-                }
-                if (count($ret[$id]) === 0) {
-                    $ret[$id] = ["entity" => $provider->entity(), "providers" => []];
                 }
                 $ret[$id]["providers"][] = $provider;
             }
@@ -79,6 +82,9 @@ class Repository implements \CaT\Ente\Repository {
      */
     public function addProvider(Provider $provider) {
         $id = serialize($provider->entity()->id());
+        if (!isset($this->entities[$id])) {
+            $this->entities[$id] = $provider->entity();
+        }
         if (!isset($this->providers[$id])) {
             $this->providers[$id] = [];
         }
