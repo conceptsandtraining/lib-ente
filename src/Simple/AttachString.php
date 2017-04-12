@@ -11,7 +11,7 @@
 namespace CaT\Ente\Simple;
 
 /**
- * Attaches a stirng to an entity.
+ * Attaches a string to an entity.
  *
  * Intended to be used for testing.
  */
