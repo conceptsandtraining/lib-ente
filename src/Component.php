@@ -17,7 +17,7 @@ namespace CaT\Ente;
  * Components should not provide said behaviour by themselves but present data
  * to a System that processes the Components in an appropriate way.
  *
- * Concrete Components should be abstracted as another interface for this
+ * Concrete Components must be abstracted as another interface for this
  * machinery to work correctly.
  */
 interface Component {
