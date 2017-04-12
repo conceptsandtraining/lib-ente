@@ -12,6 +12,8 @@ use CaT\Ente\Simple\Entity;
 use CaT\Ente\Simple\Provider;
 use CaT\Ente\Simple\AttachString;
 use CaT\Ente\Simple\AttachStringMemory;
+use CaT\Ente\Simple\AttachInt;
+use CaT\Ente\Simple\AttachIntMemory;
 
 require_once(__DIR__."/../ProviderTest.php");
 
@@ -23,6 +25,8 @@ class Simple_ProviderTest extends ProviderTest {
         $entity = new Entity(0);
         $provider = new Provider($entity);
         $component = new AttachStringMemory($entity, "id: {$entity->id()}");
+        $provider->addComponent($component);
+        $component = new AttachIntMemory($entity, -1 * $entity->id());
         $provider->addComponent($component);
         return $provider;
     }
@@ -51,6 +55,6 @@ class Simple_ProviderTest extends ProviderTest {
 
     public function test_componentTypes() {
         $provider = $this->provider();
-        $this->assertEquals([AttachString::class], $provider->componentTypes());
+        $this->assertEquals([AttachString::class, AttachInt::class], $provider->componentTypes());
     }
 }
