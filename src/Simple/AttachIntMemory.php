@@ -10,12 +10,14 @@
 
 namespace CaT\Ente\Simple;
 
+use CaT\Ente\Entity as IEntity;
+
 /**
  * In memory implementation of AttachInt.
  */
 class AttachIntMemory implements AttachInt {
     /**
-     * @var \CaT\Ente\Component
+     * @var IEntity
      */
     private $entity;
 
@@ -24,7 +26,7 @@ class AttachIntMemory implements AttachInt {
      */
     private $attached_int;
 
-    public function __construct(Entity $entity, $attached_int) {
+    public function __construct(IEntity $entity, $attached_int) {
         assert('is_int($attached_int)');
         $this->entity = $entity;
         $this->attached_int = $attached_int;

@@ -10,12 +10,14 @@
 
 namespace CaT\Ente\Simple;
 
+use CaT\Ente\Entity as IEntity;
+
 /**
  * In memory implementation of AttachString.
  */
 class AttachStringMemory implements AttachString {
     /**
-     * @var \CaT\Ente\Component
+     * @var IEntity
      */
     private $entity;
 
@@ -24,7 +26,7 @@ class AttachStringMemory implements AttachString {
      */
     private $attached_string;
 
-    public function __construct(Entity $entity, $attached_string) {
+    public function __construct(IEntity $entity, $attached_string) {
         assert('is_string($attached_string)');
         $this->entity = $entity;
         $this->attached_string = $attached_string;
