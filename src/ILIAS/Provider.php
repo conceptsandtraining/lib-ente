@@ -13,13 +13,18 @@ namespace CaT\Ente\ILIAS;
 use CaT\Ente\Component;
 
 /**
- * Simple implementation for a provider, works in memory.
+ * Implementation of a provider for ILIAS.
  */
 abstract class Provider implements \CaT\Ente\Provider {
     /**
      * @var \ilObject
      */
     private $object;
+
+    /**
+     * @var \ilObject
+     */
+    private $owner;
 
     /**
      * @var Entity
@@ -31,8 +36,9 @@ abstract class Provider implements \CaT\Ente\Provider {
      */
     private $components;
 
-    final public function __construct(\ilObject $object) {
+    final public function __construct(\ilObject $object, \ilObject $owner) {
         $this->object = $object;
+        $this->owner = $owner;
         $this->entity = new Entity($object);
     }
 
@@ -69,6 +75,24 @@ abstract class Provider implements \CaT\Ente\Provider {
      */
     final public function entity() {
         return $this->entity;
+    }
+
+    /**
+     * Get the entity object of the component.
+     *
+     * @return  \ilObject
+     */
+    final public function object() {
+        return $this->object;
+    }
+
+    /**
+     * Get the owner object of the component.
+     *
+     * @return  \ilObject
+     */
+    final public function owner() {
+        return $this->owner;
     }
 
     /**

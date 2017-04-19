@@ -48,17 +48,26 @@ class ILIAS_ProviderTest extends ProviderTest {
      */
     protected function provider() {
         $object = $this
-            ->getMockBuilder(ilObject::class)
+            ->getMockBuilder(\ilObject::class)
             ->setMethods(["getId"])
             ->getMock();
 
         $this->object_id = 23;
-
         $object
             ->method("getId")
             ->willReturn($this->object_id);
 
-        $provider = new Test_Provider($object);
+        $owner = $this
+            ->getMockBuilder(\ilObject::class)
+            ->setMethods(["getId"])
+            ->getMock();
+
+        $this->owner_id = 42;
+        $owner
+            ->method("getId")
+            ->willReturn($this->owner_id);
+
+        $provider = new Test_Provider($object, $owner);
 
         return $provider;
     }
@@ -100,5 +109,17 @@ class ILIAS_ProviderTest extends ProviderTest {
         $provider->componentsOfType(AttachString::class);
 
         $this->assertEquals([AttachString::class], $provider->callsTo_buildComponentsOf);
+    }
+
+    public function test_object() {
+        $object = $this->provider()->object();
+        $this->assertInstanceOf(\ilObject::class, $object);
+        $this->assertEquals($this->object_id, $object->getId());
+    }
+
+    public function test_owner() {
+        $owner = $this->provider()->owner();
+        $this->assertInstanceOf(\ilObject::class, $owner);
+        $this->assertEquals($this->owner_id, $owner->getId());
     }
 }
