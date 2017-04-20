@@ -37,10 +37,18 @@ interface ProviderDB {
     public function delete(Provider $provider);
 
     /**
-     * Get all unbound providers for a given owner.
+     * Get all unbound providers of a given owner.
      *
      * @param   \ilObject   $owner
      * @return  UnboundProvider[]
      */
     public function unboundProvidersOf(\ilObject $owner);
+
+    /**
+     * Get all providers for the given object.
+     *
+     * @param   \ilObject   $object
+     * @return  Provider[]
+     */
+    public function providersFor(\ilObject $object);
 }
