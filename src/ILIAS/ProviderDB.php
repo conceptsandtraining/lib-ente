@@ -42,5 +42,5 @@ interface ProviderDB {
      * @param   \ilObject   $owner
      * @return  UnboundProvider[]
      */
-    public function providersOf(\ilObject $owner);
+    public function unboundProvidersOf(\ilObject $owner);
 }
