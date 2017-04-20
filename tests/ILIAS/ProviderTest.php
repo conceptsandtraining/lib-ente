@@ -21,26 +21,7 @@ if (!class_exists("ilObject")) {
 }
 
 require_once(__DIR__."/../ProviderTest.php");
-
-class Test_Provider extends Provider {
-    public $callsTo_buildComponentsOf = [];
-
-    public function componentTypes() {
-        return [AttachString::class, AttachInt::class];
-    }
-
-    public function buildComponentsOf($component_type, \ilObject $object) {
-        assert(is_string($object));
-        $this->callsTo_buildComponentsOf[] = $component_type;
-        if ($component_type == AttachString::class) {
-            return [new AttachStringMemory($this->entity(), "id: {$object->getId()}")];
-        }
-        if ($component_type == AttachInt::class) {
-            return [new AttachIntMemory($this->entity(), $object->getId())];
-        }
-        return [];
-    }
-}
+require_once(__DIR__."/UnboundProviderTest.php");
 
 class ILIAS_ProviderTest extends ProviderTest {
     /**
@@ -67,7 +48,9 @@ class ILIAS_ProviderTest extends ProviderTest {
             ->method("getId")
             ->willReturn($this->owner_id);
 
-        $provider = new Test_Provider($object, $owner);
+        $this->unbound_provider = new Test_UnboundProvider($owner);
+
+        $provider = new Provider($object, $this->unbound_provider);
 
         return $provider;
     }

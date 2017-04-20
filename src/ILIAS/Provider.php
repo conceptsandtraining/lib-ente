@@ -15,16 +15,11 @@ use CaT\Ente\Component;
 /**
  * Implementation of a provider for ILIAS.
  */
-abstract class Provider implements \CaT\Ente\Provider {
+class Provider implements \CaT\Ente\Provider {
     /**
      * @var \ilObject
      */
     private $object;
-
-    /**
-     * @var \ilObject
-     */
-    private $owner;
 
     /**
      * @var Entity
@@ -32,29 +27,28 @@ abstract class Provider implements \CaT\Ente\Provider {
     private $entity;
 
     /**
+     * @var UnboundProvider
+     */
+    private $unbound_provider;
+
+    /**
      * @var array<string,Component>
      */
     private $components;
 
-    final public function __construct(\ilObject $object, \ilObject $owner) {
+    final public function __construct(\ilObject $object, UnboundProvider $unbound_provider) {
         $this->object = $object;
-        $this->owner = $owner;
         $this->entity = new Entity($object);
+        $this->unbound_provider = $unbound_provider;
+        $this->components = [];
     }
-
-    /**
-     * Build the component(s) of the given type for the given object.
-     *
-     * @param   string    $component_type
-     * @param   \ilObject $object
-     * @return  Component[]
-     */
-    abstract function buildComponentsOf($component_type, \ilObject $object);
 
     /**
      * @inheritdocs
      */
-    abstract public function componentTypes();
+    final public function componentTypes() {
+        return $this->unbound_provider->componentTypes();
+    }
 
     /**
      * @inheritdocs
@@ -64,7 +58,7 @@ abstract class Provider implements \CaT\Ente\Provider {
             return $this->components[$component_type];
         }
 
-        $components = $this->buildComponentsOf($component_type, $this->object);
+        $components = $this->unbound_provider->buildComponentsOf($component_type, $this);
         $this->checkComponentArray($components, $component_type);
         $this->components[$component_type] = $components;
         return $components;
@@ -92,7 +86,7 @@ abstract class Provider implements \CaT\Ente\Provider {
      * @return  \ilObject
      */
     final public function owner() {
-        return $this->owner;
+        return $this->unbound_provider->owner();
     }
 
     /**
