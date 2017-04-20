@@ -15,7 +15,7 @@ use CaT\Ente\ILIAS;
  */
 interface ProviderDB {
     /**
-     * Create a new provider for the given owner.
+     * Create a new unbound provider for the given owner.
      *
      * The provider will be belong to objects above the $owner in the tree that also
      * have the type $obj_type.
@@ -24,23 +24,23 @@ interface ProviderDB {
      * @param   string      $obj_type
      * @param   string      $class_name
      * @param   string      $include_path
-     * @return  Provider
+     * @return  UnboundProvider
      */
     public function create(\ilObject $owner, $obj_type, $class_name, $include_path);
 
     /**
-     * Delete a given provider.
+     * Delete a given unbound provider.
      *
-     * @param   Provider    $provider
+     * @param   UnboundProvider    $provider
      * @return  null
      */
     public function delete(Provider $provider);
 
     /**
-     * Get all providers for a given owner.
+     * Get all unbound providers for a given owner.
      *
      * @param   \ilObject   $owner
-     * @return  Provider[]
+     * @return  UnboundProvider[]
      */
     public function providersOf(\ilObject $owner);
 }
