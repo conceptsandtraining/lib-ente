@@ -8,7 +8,7 @@
  * the license along with the code.
  */
 
-use CaT\Ente\ILIAS;
+namespace CaT\Ente\ILIAS;
 
 /**
  * A database that stores ILIAS providers.
