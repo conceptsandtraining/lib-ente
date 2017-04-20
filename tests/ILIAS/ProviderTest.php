@@ -48,7 +48,9 @@ class ILIAS_ProviderTest extends ProviderTest {
             ->method("getId")
             ->willReturn($this->owner_id);
 
-        $this->unbound_provider = new Test_UnboundProvider($owner);
+        $this->unbound_provider_id = 23;
+        $this->object_type = "object_type";
+        $this->unbound_provider = new Test_UnboundProvider($this->unbound_provider_id, $owner, $this->object_type);
 
         $provider = new Provider($object, $this->unbound_provider);
 

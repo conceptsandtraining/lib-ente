@@ -56,7 +56,10 @@ class ILIAS_UnboundProviderTest extends PHPUnit_Framework_TestCase {
             ->method("getId")
             ->willReturn($this->owner_id);
 
-        $provider = new Test_UnboundProvider($owner);
+        $this->unbound_provider_id = 23;
+        $this->object_type = "object_type";
+
+        $provider = new Test_UnboundProvider($this->unbound_provider_id, $owner, $this->object_type);
 
         return $provider;
     }
@@ -70,5 +73,15 @@ class ILIAS_UnboundProviderTest extends PHPUnit_Framework_TestCase {
         $owner = $this->unboundProvider()->owner();
         $this->assertInstanceOf(\ilObject::class, $owner);
         $this->assertEquals($this->owner_id, $owner->getId());
+    }
+
+    public function test_id() {
+        $unbound_provider = $this->unboundProvider();
+        $this->assertEquals($this->unbound_provider_id, $unbound_provider->id());
+    }
+
+    public function test_object_type() {
+        $unbound_provider = $this->unboundProvider();
+        $this->assertEquals($this->object_type, $unbound_provider->objectType());
     }
 }

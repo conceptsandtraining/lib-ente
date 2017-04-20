@@ -16,13 +16,26 @@ namespace CaT\Ente\ILIAS;
  */
 abstract class UnboundProvider {
     /**
+     * @var int
+     */
+    private $id;
+
+    /**
      * @var \ilObject
      */
     private $owner;
 
+    /**
+     * @var string
+     */
+    private $object_type;
 
-    final public function __construct(\ilObject $owner) {
+    final public function __construct($id, \ilObject $owner, $object_type) {
+        assert('is_int($id)');
+        $this->id = $id;
         $this->owner = $owner;
+        assert('is_string($object_type)');
+        $this->object_type = $object_type;
     }
 
 
@@ -41,11 +54,29 @@ abstract class UnboundProvider {
     abstract function buildComponentsOf($component_type, Provider $provider);
 
     /**
+     * Get the id of this.
+     *
+     * @return  int
+     */
+    final public function id() {
+        return $this->id;
+    }
+
+    /**
      * Get the owner object of the component.
      *
      * @return  \ilObject
      */
     final public function owner() {
         return $this->owner;
+    }
+
+    /**
+     * Get the object type this binds to.
+     *
+     * @return  string
+     */
+    final public function objectType() {
+        return $this->object_type;
     }
 }
