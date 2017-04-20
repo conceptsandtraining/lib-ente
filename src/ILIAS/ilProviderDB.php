@@ -56,7 +56,20 @@ class ilProviderDB implements ProviderDB {
      * @return  null
      */
     public function createTables() {
-        $this->ilDB->createTable(ilProviderDB::PROVIDER_TABLE, []);
-        $this->ilDB->createTable(ilProviderDB::COMPONENT_TABLE, []);
+        if (!$this->ilDB->tableExists(ilProviderDB::PROVIDER_TABLE)) {
+            $this->ilDB->createTable(ilProviderDB::PROVIDER_TABLE, 
+                [ "id" => ["type" => "integer", "length" => 4, "notnull" => true]
+                , "owner" => ["type" => "integer", "length" => 4, "notnull" => true]
+                , "object_type" => ["type" => "string", "length" => 4, "notnull" => true]
+                , "class_name" => ["type" => "string", "length" => 64, "notnull" => true]
+                , "include_path" => ["type" => "string", "length" => 1024, "notnull" => true]
+                ]);
+        }
+        if (!$this->ilDB->tableExists(ilProviderDB::COMPONENT_TABLE)) {
+            $this->ilDB->createTable(ilProviderDB::COMPONENT_TABLE,
+                [ "id" => ["type" => "integer", "length" => 4, "notnull" => true]
+                , "component_type" => ["type" => "string", "length" => 64, "notnull" => true]
+                ]);
+        }
     }
 }

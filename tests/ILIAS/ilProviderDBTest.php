@@ -26,8 +26,17 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
                           "tableExists","addIndex","query","insert","fetchAssoc","quote"])
             ->getMock();
 
-        $provider_table = [];
-        $component_table = [];
+        $provider_table =
+            [ "id" => ["type" => "integer", "length" => 4, "notnull" => true]
+            , "owner" => ["type" => "integer", "length" => 4, "notnull" => true]
+            , "object_type" => ["type" => "string", "length" => 4, "notnull" => true]
+            , "class_name" => ["type" => "string", "length" => 64, "notnull" => true]
+            , "include_path" => ["type" => "string", "length" => 1024, "notnull" => true]
+            ];
+        $component_table =
+            [ "id" => ["type" => "integer", "length" => 4, "notnull" => true]
+            , "component_type" => ["type" => "string", "length" => 64, "notnull" => true]
+            ];
 
         $il_db
             ->expects($this->exactly(2))
@@ -35,6 +44,12 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->withConsecutive(
                 [ilProviderDB::PROVIDER_TABLE, $provider_table],
                 [ilProviderDB::COMPONENT_TABLE, $component_table]);
+
+        $il_db
+            ->expects($this->exactly(2))
+            ->method("tableExists")
+            ->withConsecutive([ilProviderDB::PROVIDER_TABLE], [ilProviderDB::COMPONENT_TABLE])
+            ->will($this->onConsecutiveCalls(false, false));
    
         $db = new ilProviderDB($il_db);
         $db->createTables();
