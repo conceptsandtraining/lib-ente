@@ -8,6 +8,7 @@
  * the license along with the code.
  */
 
+use CaT\Ente\ILIAS\UnboundProvider;
 use CaT\Ente\ILIAS\ilProviderDB;
 use CaT\Ente\Simple\AttachString;
 use CaT\Ente\Simple\AttachInt;
@@ -25,7 +26,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         return $this
             ->getMockBuilder(\ilDBInterface::class)
             ->setMethods(["nextId","createTable","addPrimaryKey","createSequence",
-                          "tableExists","addIndex","query","insert","fetchAssoc","quote"])
+                          "tableExists","addIndex","query","insert","fetchAssoc","quote", "manipulate"])
             ->getMock();
     }
 
@@ -122,5 +123,38 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $unbound_provider = $db->create($owner, $object_type, $class_name, $include_path);
 
         $this->assertInstanceOf(Test_UnboundProvider::class, $unbound_provider);
+    }
+
+    public function test_delete() {
+        $il_db = $this->il_db_mock();
+
+        $owner = $this
+            ->getMockBuilder(\ilObject::class)
+            ->setMethods(["getId"])
+            ->getMock();
+
+        $unbound_provider_id = 23;
+
+        $unbound_provider = $this
+            ->getMockBuilder(UnboundProvider::class)
+            ->setConstructorArgs([$unbound_provider_id, $owner, "crs"])
+            ->setMethods(["componentTypes", "buildComponentsOf", "id"])
+            ->getMock();
+
+        $il_db
+            ->expects($this->atLeastOnce())
+            ->method("quote")
+            ->with($unbound_provider_id, "integer")
+            ->willReturn($unbound_provider_id);
+
+        $il_db
+            ->expects($this->exactly(2))
+            ->method("manipulate")
+            ->withConsecutive(
+                ["DELETE FROM ".ilProviderDB::PROVIDER_TABLE." WHERE id = $unbound_provider_id"],
+                ["DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = $unbound_provider_id"]);
+
+        $db = new ilProviderDB($il_db);
+        $db->delete($unbound_provider);
     }
 }

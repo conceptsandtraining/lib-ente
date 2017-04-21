@@ -84,4 +84,10 @@ interface ilDBInterface {
 	 * @return string
 	 */
 	public function quote($value, $type);
+
+	/**
+	 * @param $query string
+	 * @return int|void
+	 */
+	public function manipulate($query);
 }

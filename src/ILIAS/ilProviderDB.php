@@ -80,6 +80,10 @@ class ilProviderDB implements ProviderDB {
      * @inheritdocs
      */
     public function delete(UnboundProvider $provider) {
+        $id = $provider->id();
+
+        $this->ilDB->manipulate("DELETE FROM ".ilProviderDB::PROVIDER_TABLE." WHERE id = ".$this->ilDB->quote($id, "integer"));
+        $this->ilDB->manipulate("DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ".$this->ilDB->quote($id, "integer"));
     }
 
     /**
