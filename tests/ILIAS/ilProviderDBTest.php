@@ -211,6 +211,5 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         list($provider1, $provider2) = $providers;
         $this->assertEquals(1, $provider1->id());
         $this->assertEquals(2, $provider2->id());
-
     }
 }
