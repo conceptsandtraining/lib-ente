@@ -34,7 +34,7 @@ interface ProviderDB {
      * @param   UnboundProvider    $provider
      * @return  null
      */
-    public function delete(Provider $provider);
+    public function delete(UnboundProvider $provider);
 
     /**
      * Get all unbound providers of a given owner.

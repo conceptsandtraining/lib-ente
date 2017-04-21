@@ -79,7 +79,7 @@ class ilProviderDB implements ProviderDB {
     /**
      * @inheritdocs
      */
-    public function delete(Provider $provider) {
+    public function delete(UnboundProvider $provider) {
     }
 
     /**
