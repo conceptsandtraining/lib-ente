@@ -137,7 +137,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
 
         $unbound_provider = $this
             ->getMockBuilder(UnboundProvider::class)
-            ->setConstructorArgs([$unbound_provider_id, $owner, "crs"])
+            ->setConstructorArgs([$unbound_provider_id, $owner, "type"])
             ->setMethods(["componentTypes", "buildComponentsOf", "id"])
             ->getMock();
 
@@ -145,16 +145,72 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->expects($this->atLeastOnce())
             ->method("quote")
             ->with($unbound_provider_id, "integer")
-            ->willReturn($unbound_provider_id);
+            ->willReturn("~$unbound_provider_id~");
 
         $il_db
             ->expects($this->exactly(2))
             ->method("manipulate")
             ->withConsecutive(
-                ["DELETE FROM ".ilProviderDB::PROVIDER_TABLE." WHERE id = $unbound_provider_id"],
-                ["DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = $unbound_provider_id"]);
+                ["DELETE FROM ".ilProviderDB::PROVIDER_TABLE." WHERE id = ~$unbound_provider_id~"],
+                ["DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ~$unbound_provider_id~"]);
 
         $db = new ilProviderDB($il_db);
         $db->delete($unbound_provider);
+    }
+
+    public function test_unboundProvidersOf() {
+        $il_db = $this->il_db_mock();
+
+        $owner = $this
+            ->getMockBuilder(\ilObject::class)
+            ->setMethods(["getId"])
+            ->getMock();
+        $owner_id = 42;
+        $owner
+            ->expects($this->atLeastOnce())
+            ->method("getId")
+            ->willReturn(42);
+
+        $il_db
+            ->expects($this->atLeastOnce())
+            ->method("quote")
+            ->with($owner_id, "integer")
+            ->willReturn("~$owner_id~");
+
+        $result = "RESULT";
+        $il_db
+            ->expects($this->once())
+            ->method("query")
+            ->with("SELECT id, object_type, class_name, include_path FROM ".ilProviderDB::PROVIDER_TABLE." WHERE owner_id = ~$owner_id~")
+            ->willReturn($result);
+
+        $object_type = "type";
+        $class_name = "Test_UnboundProvider";
+        $include_path = __DIR__."/UnboundProviderTest.php";
+
+        $il_db
+            ->expects($this->exactly(3))
+            ->method("fetchAssoc")
+            ->with("RESULT")
+            ->will($this->onConsecutiveCalls(
+                ["id" => 1, "object_type" => $object_type, "class_name" => $class_name, "include_path" => $include_path],
+                ["id" => 2, "object_type" => $object_type, "class_name" => $class_name, "include_path" => $include_path],
+                null));
+
+        $db = new ilProviderDB($il_db);
+        $providers = $db->unboundProvidersOf($owner);
+
+        $this->assertCount(2, $providers);
+
+        foreach ($providers as $provider) {
+            $this->assertInstanceOf(Test_UnboundProvider::class, $provider);
+            $this->assertEquals($object_type, $provider->objectType());
+            $this->assertEquals($owner, $provider->owner());
+        }
+
+        list($provider1, $provider2) = $providers;
+        $this->assertEquals(1, $provider1->id());
+        $this->assertEquals(2, $provider2->id());
+
     }
 }

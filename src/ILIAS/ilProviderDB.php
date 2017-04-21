@@ -90,6 +90,19 @@ class ilProviderDB implements ProviderDB {
      * @inheritdocs
      */
     public function unboundProvidersOf(\ilObject $owner) {
+        $ret = [];
+
+        $query =
+            "SELECT id, object_type, class_name, include_path ".
+            "FROM ".ilProviderDB::PROVIDER_TABLE." ".
+            "WHERE owner_id = ".$this->ilDB->quote($owner->getId(), "integer");
+        $res = $this->ilDB->query($query);
+
+        while($row = $this->ilDB->fetchAssoc($res)) {
+            $ret[] = $this->buildUnboundProvider($row["id"], $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
+        }
+
+        return $ret;
     }
 
     /**
