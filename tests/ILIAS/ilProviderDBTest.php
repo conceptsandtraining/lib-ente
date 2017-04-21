@@ -21,6 +21,19 @@ if (!interface_exists("ilDBInterface")) {
     require_once(__DIR__."/ilDBInterface.php");
 }
 
+class Test_ilProviderDB extends ilProviderDB {
+    public $object_ref = [];
+    protected function buildObjectByRefId($ref_id) {
+        assert(isset($this->object_ref[$ref_id]));
+        return $this->object_ref[$ref_id];
+    }
+    public $object_obj = [];
+    protected function buildObjectByObjId($obj_id) {
+        assert(isset($this->object_obj[$obj_id]));
+        return $this->object_obj[$obj_id];
+    }
+}
+
 class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
     protected function il_db_mock() {
         return $this
@@ -181,7 +194,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $il_db
             ->expects($this->once())
             ->method("query")
-            ->with("SELECT id, object_type, class_name, include_path FROM ".ilProviderDB::PROVIDER_TABLE." WHERE owner_id = ~$owner_id~")
+            ->with("SELECT id, object_type, class_name, include_path FROM ".ilProviderDB::PROVIDER_TABLE." WHERE owner = ~$owner_id~")
             ->willReturn($result);
 
         $object_type = "type";
@@ -212,4 +225,49 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(1, $provider1->id());
         $this->assertEquals(2, $provider2->id());
     }
+
+    public function test_load() {
+        $il_db = $this->il_db_mock();
+
+        $provider_id = 23;
+        $owner_id = 42;
+
+        $il_db
+            ->expects($this->atLeastOnce())
+            ->method("quote")
+            ->with($provider_id, "integer")
+            ->willReturn("~$provider_id~");
+
+        $result = "RESULT";
+        $il_db
+            ->expects($this->once())
+            ->method("query")
+            ->with("SELECT owner, object_type, class_name, include_path FROM ".ilProviderDB::PROVIDER_TABLE." WHERE id = ~$provider_id~")
+            ->willReturn($result);
+
+        $object_type = "type";
+        $class_name = "Test_UnboundProvider";
+        $include_path = __DIR__."/UnboundProviderTest.php";
+
+        $il_db
+            ->expects($this->once())
+            ->method("fetchAssoc")
+            ->with("RESULT")
+            ->willReturn(
+                ["owner" => $owner_id, "object_type" => $object_type, "class_name" => $class_name, "include_path" => $include_path]
+                );
+
+        $db = new Test_ilProviderDB($il_db);
+        $owner = $this
+            ->getMockBuilder(\ilObject::class)
+            ->getMock();
+        $db->object_obj[$owner_id] = $owner;
+        $provider = $db->load($provider_id);
+
+        $this->assertInstanceOf(Test_UnboundProvider::class, $provider);
+        $this->assertEquals($object_type, $provider->objectType());
+        $this->assertEquals($owner, $provider->owner());
+        $this->assertEquals($provider_id, $provider->id());
+    }
+
 }

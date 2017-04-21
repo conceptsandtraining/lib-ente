@@ -79,6 +79,27 @@ class ilProviderDB implements ProviderDB {
     /**
      * @inheritdocs
      */
+    public function load($id) {
+        assert('is_int($id)');
+
+        $query =
+            "SELECT owner, object_type, class_name, include_path ".
+            "FROM ".ilProviderDB::PROVIDER_TABLE." ".
+            "WHERE id = ".$this->ilDB->quote($id, "integer");
+        $res = $this->ilDB->query($query);
+
+        if($row = $this->ilDB->fetchAssoc($res)) {
+            $owner = $this->buildObjectByObjId($row["owner"]);
+            return $this->buildUnboundProvider($id, $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
+        }
+        else {
+            throw new \InvalidArgumentException("Unbound provider with id '$id' does not exist.");
+        }
+    }
+
+    /**
+     * @inheritdocs
+     */
     public function delete(UnboundProvider $provider) {
         $id = $provider->id();
 
@@ -95,7 +116,7 @@ class ilProviderDB implements ProviderDB {
         $query =
             "SELECT id, object_type, class_name, include_path ".
             "FROM ".ilProviderDB::PROVIDER_TABLE." ".
-            "WHERE owner_id = ".$this->ilDB->quote($owner->getId(), "integer");
+            "WHERE owner = ".$this->ilDB->quote($owner->getId(), "integer");
         $res = $this->ilDB->query($query);
 
         while($row = $this->ilDB->fetchAssoc($res)) {
@@ -162,5 +183,25 @@ class ilProviderDB implements ProviderDB {
         }
 
         return new $class_name($id, $owner, $object_type);
+    }
+
+    /**
+     * Build an object by its reference id.
+     *
+     * @param   int     $ref_id
+     * @throws  \InvalidArgumentException if object could not be build
+     * @return  \ilObject
+     */
+    protected function buildObjectByRefId($ref_id) {
+    }
+
+    /**
+     * Build an object by its object id.
+     *
+     * @param   int     $ref_id
+     * @throws  \InvalidArgumentException if object could not be build
+     * @return  \ilObject
+     */
+    protected function buildObjectByObjId($ref_id) {
     }
 }

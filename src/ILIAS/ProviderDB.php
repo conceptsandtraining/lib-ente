@@ -29,6 +29,15 @@ interface ProviderDB {
     public function create(\ilObject $owner, $obj_type, $class_name, $include_path);
 
     /**
+     * Load the unbound provider with the given id.
+     *
+     * @param   int         $id
+     * @throws  \InvalidArgumentException if the provider with the supplied id does not exist.
+     * @return  UnboundProvider
+     */
+    public function load($id);
+
+    /**
      * Delete a given unbound provider.
      *
      * @param   UnboundProvider    $provider
