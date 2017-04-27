@@ -9,6 +9,7 @@
  */
 
 use CaT\Ente\ILIAS\UnboundProvider;
+use CaT\Ente\Provider;
 use CaT\Ente\ILIAS\ilProviderDB;
 use CaT\Ente\Simple\AttachString;
 use CaT\Ente\Simple\AttachInt;
@@ -19,6 +20,14 @@ if (!class_exists("ilObject")) {
 
 if (!interface_exists("ilDBInterface")) {
     require_once(__DIR__."/ilDBInterface.php");
+}
+
+if (!interface_exists("ilTree")) {
+    require_once(__DIR__."/ilTree.php");
+}
+
+if (!interface_exists("ilObjectDataCache")) {
+    require_once(__DIR__."/ilObjectDataCache.php");
 }
 
 class Test_ilProviderDB extends ilProviderDB {
@@ -39,7 +48,22 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         return $this
             ->getMockBuilder(\ilDBInterface::class)
             ->setMethods(["nextId","createTable","addPrimaryKey","createSequence",
-                          "tableExists","addIndex","query","insert","fetchAssoc","quote", "manipulate"])
+                          "tableExists","addIndex","query","insert","fetchAssoc",
+                          "quote", "manipulate", "in"])
+            ->getMock();
+    }
+
+    public function il_tree_mock() {
+        return $this
+            ->getMockBuilder(\ilTree::class)
+            ->setMethods(["getSubTreeIds"])
+            ->getMock();
+    }
+
+    public function il_object_data_cache_mock() {
+        return $this
+            ->getMockBuilder(\ilObjectDataCache::class)
+            ->setMethods(["preloadReferenceCache", "lookupObjId"])
             ->getMock();
     }
 
@@ -78,7 +102,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
                 [ilProviderDB::PROVIDER_TABLE, ["id"]],
                 [ilProviderDB::COMPONENT_TABLE, ["id", "component_type"]]);
    
-        $db = new ilProviderDB($il_db);
+        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock());
         $db->createTables();
     }
 
@@ -132,7 +156,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->with(ilProviderDB::PROVIDER_TABLE)
             ->willReturn($new_provider_id);
 
-        $db = new ilProviderDB($il_db);
+        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock());
         $unbound_provider = $db->create($owner, $object_type, $class_name, $include_path);
 
         $this->assertInstanceOf(Test_UnboundProvider::class, $unbound_provider);
@@ -167,7 +191,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
                 ["DELETE FROM ".ilProviderDB::PROVIDER_TABLE." WHERE id = ~$unbound_provider_id~"],
                 ["DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ~$unbound_provider_id~"]);
 
-        $db = new ilProviderDB($il_db);
+        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock());
         $db->delete($unbound_provider);
     }
 
@@ -210,7 +234,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
                 ["id" => 2, "object_type" => $object_type, "class_name" => $class_name, "include_path" => $include_path],
                 null));
 
-        $db = new ilProviderDB($il_db);
+        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock());
         $providers = $db->unboundProvidersOf($owner);
 
         $this->assertCount(2, $providers);
@@ -237,7 +261,6 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->method("quote")
             ->with($provider_id, "integer")
             ->willReturn("~$provider_id~");
-
         $result = "RESULT";
         $il_db
             ->expects($this->once())
@@ -257,7 +280,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
                 ["owner" => $owner_id, "object_type" => $object_type, "class_name" => $class_name, "include_path" => $include_path]
                 );
 
-        $db = new Test_ilProviderDB($il_db);
+        $db = new Test_ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock());
         $owner = $this
             ->getMockBuilder(\ilObject::class)
             ->getMock();
@@ -270,4 +293,104 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($provider_id, $provider->id());
     }
 
+    public function test_providersFor() {
+        $il_db = $this->il_db_mock();
+        $il_tree = $this->il_tree_mock();
+        $il_cache = $this->il_object_data_cache_mock();
+
+        $object_ref_id = 42;
+        $object_type = "crs";
+        $object = $this
+            ->getMockBuilder(\ilObject::class)
+            ->setMethods(["getRefId", "getType"])
+            ->getMock();
+
+        $object
+            ->expects($this->atLeastOnce())
+            ->method("getRefId")
+            ->willReturn($object_ref_id);
+
+        $object
+            ->expects($this->atLeastOnce())
+            ->method("getType")
+            ->willReturn($object_type);
+
+        $sub_tree_ids = ["3", "14"];
+        $il_tree
+            ->expects($this->once())
+            ->method("getSubTreeIds")
+            ->with($object_ref_id)
+            ->willReturn($sub_tree_ids);
+
+        $il_cache
+            ->expects($this->once())
+            ->method("preloadReferenceCache")
+            ->with($sub_tree_ids);
+
+        $il_cache
+            ->expects($this->exactly(2))
+            ->method("lookupObjId")
+            ->withConsecutive([$sub_tree_ids[0]],[$sub_tree_ids[1]])
+            ->will($this->onConsecutiveCalls($sub_tree_ids[0], $sub_tree_ids[1]));
+
+        $il_db
+            ->expects($this->once())
+            ->method("in")
+            ->with("owner", $sub_tree_ids, false, "integer")
+            ->willReturn("~IN~");
+
+        $il_db
+            ->expects($this->once())
+            ->method("quote")
+            ->with($object_type)
+            ->willReturn("~TYPE~");
+
+        $result = "RESULT";
+        $il_db
+            ->expects($this->once())
+            ->method("query")
+            ->with("SELECT id, owner, class_name, include_path FROM ".ilProviderDB::PROVIDER_TABLE." WHERE ~IN~ AND object_type = ~TYPE~")
+            ->willReturn($result);
+
+        $class_name = "Test_UnboundProvider";
+        $include_path = __DIR__."/UnboundProviderTest.php";
+
+        $il_db
+            ->expects($this->exactly(3))
+            ->method("fetchAssoc")
+            ->with("RESULT")
+            ->will($this->onConsecutiveCalls(
+                ["id" => 1, "owner" => $sub_tree_ids[0], "class_name" => $class_name, "include_path" => $include_path],
+                ["id" => 2, "owner" => $sub_tree_ids[1], "class_name" => $class_name, "include_path" => $include_path],
+                null));
+
+        $db = new Test_ilProviderDB($il_db, $il_tree, $il_cache);
+
+        $owner_1 = $this
+            ->getMockBuilder(\ilObject::class)
+            ->getMock();
+        $db->object_ref[$sub_tree_ids[0]] = $owner_1;
+
+        $owner_2 = $this
+            ->getMockBuilder(\ilObject::class)
+            ->getMock();
+        $db->object_ref[$sub_tree_ids[1]] = $owner_2;
+
+        $providers = $db->providersFor($object);
+        $this->assertCount(2, $providers);
+
+        foreach ($providers as $provider) {
+            $this->assertInstanceOf(Provider::class, $provider);
+            $this->assertEquals($object, $provider->object());
+            $this->assertEquals($object_type, $provider->unboundProvider()->objectType());
+        }
+
+        list($provider1, $provider2) = $providers;
+        $this->assertEquals(1, $provider1->unboundProvider()->id());
+        $this->assertEquals($owner_1, $provider1->owner());
+
+        $this->assertEquals(2, $provider2->unboundProvider()->id());
+        $this->assertEquals($owner_2, $provider2->owner());
+
+    }
 }

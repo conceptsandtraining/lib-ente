@@ -90,4 +90,13 @@ interface ilDBInterface {
 	 * @return int|void
 	 */
 	public function manipulate($query);
+
+	/**
+	 * @param $field  string
+	 * @param $values array
+	 * @param bool $negate
+	 * @param string $type
+	 * @return string
+	 */
+	public function in($field, $values, $negate = false, $type = "");
 }

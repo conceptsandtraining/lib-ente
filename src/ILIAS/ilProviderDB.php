@@ -25,8 +25,20 @@ class ilProviderDB implements ProviderDB {
      */
     private $ilDB;
 
-    public function __construct(\ilDBInterface $ilDB) {
+    /**
+     * @var \ilTree
+     */
+    private $ilTree;
+
+    /**
+     * @var \ilObjectDataCache
+     */
+    private $ilObjectDataCache;
+
+    public function __construct(\ilDBInterface $ilDB, \ilTree $tree, \ilObjectDataCache $cache) {
         $this->ilDB = $ilDB;
+        $this->ilTree = $tree;
+        $this->ilObjectDataCache = $cache;
     }
 
     /**
@@ -130,6 +142,43 @@ class ilProviderDB implements ProviderDB {
      * @inheritdocs
      */
     public function providersFor(\ilObject $object) {
+        $ref_id = $object->getRefId();
+        $sub_nodes_refs = $this->ilTree->getSubTreeIds($ref_id);
+        $this->ilObjectDataCache->preloadReferenceCache($sub_nodes_refs);
+        $sub_nodes_id_mapping = [];
+        $sub_nodes_ids = [];
+        foreach ($sub_nodes_refs as $ref_id) {
+            $id = $this->ilObjectDataCache->lookupObjId($ref_id);
+            $sub_nodes_id_mapping[$id] = $ref_id;
+            $sub_nodes_ids[] = $id;
+        }
+
+        $object_type = $object->getType();
+        $query =
+            "SELECT id, owner, class_name, include_path ".
+            "FROM ".ilProviderDB::PROVIDER_TABLE." ".
+            "WHERE ".$this->ilDB->in("owner", $sub_nodes_ids, false, "integer").
+            " AND object_type = ".$this->ilDB->quote($object_type, "string");
+
+        $ret = [];
+        $res = $this->ilDB->query($query);
+        while ($row = $this->ilDB->fetchAssoc($res)) {
+            $obj_id = $row["owner"];
+            $ref_id = $sub_nodes_id_mapping[$obj_id];
+            $owner = $this->buildObjectByRefId($ref_id);
+            $ret[] = new Provider
+                ( $object
+                , $this->buildUnboundProvider
+                    ( $row["id"]
+                    , $owner
+                    , $object_type
+                    , $row["class_name"]
+                    , $row["include_path"]
+                    )
+                );
+        }
+
+        return $ret;
     }
 
     /**
