@@ -29,4 +29,11 @@ class Entity implements \CaT\Ente\Entity {
     public function id() {
         return $this->object->getId();
     }
+
+    /**
+     * @return  \ilObject
+     */
+    public function object() {
+        return $this->object;
+    }
 }

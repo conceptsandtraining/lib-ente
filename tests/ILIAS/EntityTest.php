@@ -32,4 +32,14 @@ class ILIAS_EntityTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals($id, $e->id());
     }
+
+    public function test_object() {
+        $mock = $this
+            ->getMockBuilder(ilObject::class)
+            ->getMock();
+
+        $e = new Entity($mock);
+
+        $this->assertEquals($mock, $e->object());
+    }
 }
