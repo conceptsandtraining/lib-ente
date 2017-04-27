@@ -20,8 +20,8 @@ if (!class_exists("ilObject")) {
     require_once(__DIR__."/ilObject.php");
 }
 
-require_once(__DIR__."/../ProviderTest.php");
 require_once(__DIR__."/UnboundProviderTest.php");
+require_once(__DIR__."/../ProviderTest.php");
 
 class ILIAS_ProviderTest extends ProviderTest {
     /**
@@ -106,5 +106,10 @@ class ILIAS_ProviderTest extends ProviderTest {
         $owner = $this->provider()->owner();
         $this->assertInstanceOf(\ilObject::class, $owner);
         $this->assertEquals($this->owner_id, $owner->getId());
+    }
+
+    public function test_unboundProvider() {
+        $provider = $this->provider();
+        $this->assertEquals($this->unbound_provider, $provider->unboundProvider());
     }
 }

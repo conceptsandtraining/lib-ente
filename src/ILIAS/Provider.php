@@ -15,7 +15,7 @@ use CaT\Ente\Component;
 /**
  * Implementation of a provider for ILIAS.
  */
-class Provider implements \CaT\Ente\Provider {
+final class Provider implements \CaT\Ente\Provider {
     /**
      * @var \ilObject
      */
@@ -87,6 +87,15 @@ class Provider implements \CaT\Ente\Provider {
      */
     final public function owner() {
         return $this->unbound_provider->owner();
+    }
+
+    /**
+     * Get the unbound provider underlying this.
+     *
+     * @return  \UnboundProvider
+     */
+    final public function unboundProvider() {
+        return $this->unbound_provider;
     }
 
     /**
