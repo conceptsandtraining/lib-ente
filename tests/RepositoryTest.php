@@ -20,7 +20,7 @@ abstract class RepositoryTest extends PHPUnit_Framework_TestCase {
      *
      * @return Repository
      */
-abstract protected function repository();
+    abstract protected function repository();
 
     /**
      * The entities the repository has a provider for.
