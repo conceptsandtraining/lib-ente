@@ -15,10 +15,23 @@ namespace CaT\Ente\ILIAS;
  */
 class Repository implements \CaT\Ente\Repository {
     /**
+     * @var ProviderDB
+     */
+    private $provider_db;
+
+    public function __construct(ProviderDB $provider_db) {
+        $this->provider_db = $provider_db;
+    }
+
+    /**
      * @inheritdocs
      */
     public function providersForEntity(\CaT\Ente\Entity $entity, $component_type = null) {
-        return [];
+        // This can only return entities for ILIAS
+        if (!($entity instanceof Entity)) {
+            return [];
+        }
+        return $this->provider_db->providersFor($entity->object(), $component_type);
     }
 
     /**
