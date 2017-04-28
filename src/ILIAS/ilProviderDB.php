@@ -141,7 +141,8 @@ class ilProviderDB implements ProviderDB {
     /**
      * @inheritdocs
      */
-    public function providersFor(\ilObject $object) {
+    public function providersFor(\ilObject $object, $component_type = null) {
+        assert('is_null($component_type) || is_string($component_type)');
         $ref_id = $object->getRefId();
         $sub_nodes_refs = $this->ilTree->getSubTreeIds($ref_id);
         $this->ilObjectDataCache->preloadReferenceCache($sub_nodes_refs);
@@ -154,11 +155,23 @@ class ilProviderDB implements ProviderDB {
         }
 
         $object_type = $object->getType();
-        $query =
-            "SELECT id, owner, class_name, include_path ".
-            "FROM ".ilProviderDB::PROVIDER_TABLE." ".
-            "WHERE ".$this->ilDB->in("owner", $sub_nodes_ids, false, "integer").
-            " AND object_type = ".$this->ilDB->quote($object_type, "string");
+        if ($component_type === null) {
+            $query =
+                "SELECT id, owner, class_name, include_path ".
+                "FROM ".ilProviderDB::PROVIDER_TABLE." ".
+                "WHERE ".$this->ilDB->in("owner", $sub_nodes_ids, false, "integer").
+                " AND object_type = ".$this->ilDB->quote($object_type, "string");
+        }
+        else {
+            $query =
+                "SELECT prv.id, prv.owner, prv.class_name, prv.include_path ".
+                "FROM ".ilProviderDB::PROVIDER_TABLE." prv ".
+                "JOIN ".ilProviderDB::COMPONENT_TABLE." cmp ".
+                "ON prv.id = cmp.id ".
+                "WHERE ".$this->ilDB->in("owner", $sub_nodes_ids, false, "integer").
+                " AND object_type = ".$this->ilDB->quote($object_type, "string").
+                " AND component_type = ".$this->ilDB->quote($component_type, "string");
+        }
 
         $ret = [];
         $res = $this->ilDB->query($query);

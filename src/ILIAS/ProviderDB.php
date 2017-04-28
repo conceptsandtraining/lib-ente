@@ -57,7 +57,8 @@ interface ProviderDB {
      * Get all providers for the given object.
      *
      * @param   \ilObject   $object
+     * @param   string|null $component_type
      * @return  Provider[]
      */
-    public function providersFor(\ilObject $object);
+    public function providersFor(\ilObject $object, $component_type = null);
 }
