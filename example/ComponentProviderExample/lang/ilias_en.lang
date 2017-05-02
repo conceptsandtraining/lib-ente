@@ -1,5 +1,6 @@
 obj_xlep#:#Component Provider Example
 objs_xlep#:#Component Provider Examples
+xlep_add#:#Add Component Provider Example
 settings_form_title#:#Provided Strings
 save#:#Save
 values#:#Values
