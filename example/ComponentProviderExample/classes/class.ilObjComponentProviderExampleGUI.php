@@ -64,6 +64,7 @@ class ilObjComponentProviderExampleGUI  extends ilObjectPluginGUI {
         $settings = $db->getFor($this->object->getId());
         $settings = $settings->withProvidedStrings($_POST[self::VALUES_FIELD_NAME]);
         $db->update($settings);
+        $this->ilCtrl->redirect($this, "showContent");
     }
 
     /**
