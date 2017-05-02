@@ -55,7 +55,7 @@ class ilDB {
 	public function deleteFor($obj_id) {
         $statement =
             "DELETE FROM ".self::TABLE_NAME.
-            " WHERE obj_id = ".$this->ilDB->quote($obj_id);
+            " WHERE obj_id = ".$this->ilDB->quote($obj_id, "integer");
         $this->ilDB->manipulate($statement);
     }
 

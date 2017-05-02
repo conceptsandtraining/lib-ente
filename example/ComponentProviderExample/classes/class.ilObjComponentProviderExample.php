@@ -32,7 +32,8 @@ class ilObjComponentProviderExample extends ilObjectPlugin {
 	 * Delete additional settings
 	 */
 	public function doDelete() {
-
+        $db = $this->plugin->settingsDB();
+        $db->deleteFor($this->getId());
 	}
 
 	/**
