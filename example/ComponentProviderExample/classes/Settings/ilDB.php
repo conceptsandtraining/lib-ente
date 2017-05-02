@@ -38,12 +38,12 @@ class ilDB {
         assert('is_int($obj_id)');
         $query =
             "SELECT value FROM ".self::TABLE_NAME.
-            " WHERE obj_id = ".$this->ilDB->quote($obj_id);
+            " WHERE obj_id = ".$this->ilDB->quote($obj_id, "integer");
         $res = $this->ilDB->query($query);
 
         $values = [];
         while($row = $this->ilDB->fetchAssoc($res)) {
-            $values[] = $rows["value"];
+            $values[] = $row["value"];
         }
 
         return new ComponentProviderExample($obj_id, $values);
