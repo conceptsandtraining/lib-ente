@@ -1,0 +1,8 @@
+
+{
+	"autoload" : {
+		"psr-4" : {
+			"CaT\\Plugins\\ComponentProviderExample\\" : "./classes"
+		}
+	}
+}
