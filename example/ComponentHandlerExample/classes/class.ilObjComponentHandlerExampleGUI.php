@@ -25,6 +25,16 @@ class ilObjComponentHandlerExampleGUI  extends ilObjectPluginGUI {
      */
     protected $ilCtrl;
 
+    /**
+     * @var \ILIAS\UI\Factory
+     */
+    protected $ui_factory;
+
+    /**
+     * @var \ILIAS\UI\Renderer
+     */
+    protected $ui_renderer;
+
 	/**
 	 * Called after parent constructor. It's possible to define some plugin special values
 	 */
@@ -32,6 +42,8 @@ class ilObjComponentHandlerExampleGUI  extends ilObjectPluginGUI {
         global $DIC;
         $this->ilTemplate = $DIC->ui()->mainTemplate();
         $this->ilCtrl = $DIC->ctrl();
+        $this->ui_factory = $DIC->ui()->factory();
+        $this->ui_renderer= $DIC->ui()->renderer(); 
 	}
 
 	/**
@@ -60,7 +72,12 @@ class ilObjComponentHandlerExampleGUI  extends ilObjectPluginGUI {
      * @return string
      */
     public function showContent() {
-        return "Hello World!";
+        $items = [];
+        foreach ($this->object->getProvidedStrings() as $title => $strings) {
+            $items[$title] = implode(", ", $strings);
+        }
+        $listing = $this->ui_factory->listing()->descriptive($items);
+        return $this->ui_renderer->render($listing);
     }
 
 	/**

@@ -12,11 +12,6 @@ class ilComponentHandlerExamplePlugin extends ilRepositoryObjectPlugin {
     protected $ilDB;
 
     /**
-     * @var \CaT\Plugins\ComponentHandlerExamplePlugin\Settings\DB|null
-     */
-    protected $settings_db = null;
-
-    /**
      * Object initialisation. Overwritten from ilPlugin.
      */
     protected function init() {
@@ -36,4 +31,25 @@ class ilComponentHandlerExamplePlugin extends ilRepositoryObjectPlugin {
 	 */
 	protected function uninstallCustom() {
 	}
+
+    /**
+     * Get a repository for components.
+     *
+     * @return \CaT\Ente\Repository
+     */
+    public function getRepository() {
+        $repo = new \CaT\Ente\Simple\Repository();
+        $entity = new \CaT\Ente\Simple\Entity(0); 
+        $provider1 = new \CaT\Ente\Simple\Provider($entity);
+        $provider1->addComponent
+            (new \CaT\Ente\Simple\AttachStringMemory($entity, "a string"));
+        $provider1->addComponent
+            (new \CaT\Ente\Simple\AttachStringMemory($entity, "another string"));
+        $provider2 = new \CaT\Ente\Simple\Provider($entity);
+        $provider2->addComponent
+            (new \CaT\Ente\Simple\AttachStringMemory($entity, "yet another string"));
+        $repo->addProvider($provider1);
+        $repo->addProvider($provider2);
+        return $repo;
+    }
 }

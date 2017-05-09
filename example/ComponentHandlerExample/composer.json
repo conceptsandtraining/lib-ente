@@ -1,5 +1,11 @@
-
 {
+    "require" : {
+        "cat/ente" : "@dev"
+    },
+    "repositories" : [{
+        "type" : "path",
+        "url" : "../../lib"
+    }],
 	"autoload" : {
 		"psr-4" : {
 			"CaT\\Plugins\\ComponentHandlerExample\\" : "./classes"
