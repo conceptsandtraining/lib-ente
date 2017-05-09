@@ -57,4 +57,15 @@ class Simple_ProviderTest extends ProviderTest {
         $provider = $this->provider();
         $this->assertEquals([AttachString::class, AttachInt::class], $provider->componentTypes());
     }
+
+    public function test_add_two_components_of_same_type() {
+        $entity = new Entity(0);
+        $provider = new Provider($entity);
+        $component = new AttachStringMemory($entity, "1");
+        $provider->addComponent($component);
+        $component = new AttachStringMemory($entity, "2");
+        $provider->addComponent($component);
+ 
+        $this->assertCount(2, $provider->componentsOfType(AttachString::class));
+    }
 }
