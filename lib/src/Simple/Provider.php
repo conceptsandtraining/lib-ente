@@ -71,7 +71,10 @@ class Provider implements \CaT\Ente\Provider {
         }
 
         foreach ($this->componentTypesOf($component) as $type) {
-            $this->components[$type] = $component;
+            if (!isset($this->components[$type])) {
+                $this->components[$type] = [];
+            }
+            $this->components[$type][] = $component;
         }
         return $this;
     }
