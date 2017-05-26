@@ -41,6 +41,11 @@ class Test_ilProviderDB extends ilProviderDB {
         assert(isset($this->object_obj[$obj_id]));
         return $this->object_obj[$obj_id];
     }
+    public $reference_ids = [];
+    protected function getAllReferenceIdsFor($obj_id) {
+        assert(isset($this->reference_ids[$obj_id]));
+        return $this->reference_ids[$obj_id];
+    }
 }
 
 class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
@@ -56,7 +61,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
     public function il_tree_mock() {
         return $this
             ->getMockBuilder(\ilTree::class)
-            ->setMethods(["getSubTreeIds"])
+            ->setMethods(["getSubTreeIds", "getNodePath"])
             ->getMock();
     }
 
@@ -470,5 +475,120 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
 
         $providers = $db->providersFor($object, "COMPONENT_TYPE");
         $this->assertCount(0, $providers);
+    }
+
+    public function test_providersOf() {
+        $il_db = $this->il_db_mock();
+        $il_tree = $this->il_tree_mock();
+        $il_cache = $this->il_object_data_cache_mock();
+
+        $component_type = "COMPONENT_TYPE";
+
+        $il_db
+            ->expects($this->once())
+            ->method("quote")
+            ->with($component_type)
+            ->willReturn("~COMPONENT_TYPE~");
+
+        $result = "RESULT";
+        $il_db
+            ->expects($this->once())
+            ->method("query")
+            ->with(
+                "SELECT id, owner, object_type, class_name, include_path".
+                " FROM ".ilProviderDB::PROVIDER_TABLE." prv".
+                " JOIN ".ilProviderDB::COMPONENT_TABLE." cmp".
+                " ON prv.id = cmp.id".
+                " WHERE cmp.component_type = ~COMPONENT_TYPE~")
+            ->willReturn($result);
+
+        $class_name = "Test_UnboundProvider";
+        $include_path = __DIR__."/UnboundProviderTest.php";
+        $owner_ids = [12, 13];
+        $target_type = "object_type1";
+        $object_types = [$target_type, "object_type2"];
+        $il_db
+            ->expects($this->exactly(3))
+            ->method("fetchAssoc")
+            ->with("RESULT")
+            ->will($this->onConsecutiveCalls(
+                ["id" => 1, "owner" => $owner_ids[0], "object_type" => $object_types[0], "class_name" => $class_name, "include_path" => $include_path],
+                ["id" => 2, "owner" => $owner_ids[1], "object_type" => $object_types[1], "class_name" => $class_name, "include_path" => $include_path],
+                null));
+
+        $db = new Test_ilProviderDB($il_db, $il_tree, $il_cache);
+
+        $refs_for_owner1 = [666, 667];
+        $db->reference_ids[$owner_ids[0]] = $refs_for_owner1;
+        $refs_for_owner2 = [668];
+        $db->reference_ids[$owner_ids[1]] = $refs_for_owner2;
+
+        $owner_1 = $this
+            ->getMockBuilder(\ilObject::class)
+            ->getMock();
+        $db->object_ref[$refs_for_owner1[0]] = $owner_1;
+        $db->object_ref[$refs_for_owner1[1]] = $owner_1;
+        $owner_2 = $this
+            ->getMockBuilder(\ilObject::class)
+            ->getMock();
+        $db->object_ref[$refs_for_owner2[0]] = $owner_2;
+
+        $entity_ids = [1541, 1686];
+        $path =
+            [   [ "depth" => 1
+                , "parent" => 0
+                , "child" => 1
+                , "obj_id" => 10
+                , "type" => "ILIAS"
+                ]
+            ,   [ "depth" => 2
+                , "parent" => 1
+                , "child" => $entity_ids[0]
+                , "obj_id" => 15410
+                , "type" => $target_type
+                ]
+            ,   [ "depth" => 3
+                , "parent" => 1541
+                , "child" => $entity_ids[1]
+                , "obj_id" => 16860
+                , "type" => $target_type
+                ]
+            ,   [ "depth" => 4
+                , "parent" => 1686
+                , "child" => 1797
+                , "obj_id" => 17970
+                , "type" => "some_other_type"
+                ]
+            ];
+        $il_tree
+            ->expects($this->exactly(3))
+            ->method("getNodePath")
+            ->withConsecutive([$refs_for_owner1[0]], [$refs_for_owner1[1]], [$refs_for_owner2[0]])
+            ->will($this->onConsecutiveCalls(null, $path, null));
+
+        $entity_1 = $this
+            ->getMockBuilder(\ilObject::class)
+            ->getMock();
+        $db->object_ref[$entity_ids[0]] = $entity_1;
+        $entity_2 = $this
+            ->getMockBuilder(\ilObject::class)
+            ->getMock();
+        $db->object_ref[$entity_ids[1]] = $entity_2;
+
+        $providers = $db->providersOf($component_type);
+        $this->assertCount(2, $providers);
+
+        foreach ($providers as $provider) {
+            $this->assertInstanceOf(Provider::class, $provider);
+        }
+
+        list($provider1, $provider2) = $providers;
+        $this->assertEquals(1, $provider1->unboundProvider()->id());
+        $this->assertEquals($owner_1, $provider1->owner());
+        $this->assertEquals($entity_1, $provider1->object());
+
+        $this->assertEquals(1, $provider2->unboundProvider()->id());
+        $this->assertEquals($owner_1, $provider2->owner());
+        $this->assertEquals($entity_2, $provider2->object());
     }
 }

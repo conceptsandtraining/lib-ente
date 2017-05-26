@@ -195,6 +195,44 @@ class ilProviderDB implements ProviderDB {
     }
 
     /**
+     * @inheritdocs
+     */
+    public function providersOf($component_type) {
+        $query = "SELECT id, owner, object_type, class_name, include_path "
+                ."FROM ".ilProviderDB::PROVIDER_TABLE." prv "
+                ."JOIN ".ilProviderDB::COMPONENT_TABLE." cmp ON prv.id = cmp.id "
+                ."WHERE cmp.component_type = ".$this->ilDB->quote($component_type, "string");
+        $res = $this->ilDB->query($query);
+
+        $ret = [];
+        while ($row = $this->ilDB->fetchAssoc($res)) {
+            $ref_ids = $this->getAllReferenceIdsFor($row["owner"]);
+            foreach ($ref_ids as $ref_id) {
+                $owner = $this->buildObjectByRefId($ref_id);
+                $unbound_provider =
+                    $this->buildUnboundProvider
+                        ( $row["id"]
+                        , $owner
+                        , $row["object_type"]
+                        , $row["class_name"]
+                        , $row["include_path"]
+                        );
+                $path = $this->ilTree->getNodePath($ref_id);
+                if ($path !== null) {
+                    foreach ($path as $node) {
+                        if ($node["type"] === $row["object_type"]) {
+                            $object = $this->buildObjectByRefId($node["child"]);
+                            $ret[] = new Provider($object, $unbound_provider);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
      * Create the tables for the providers in the ILIAS db.
      *
      * @return  null
@@ -265,5 +303,14 @@ class ilProviderDB implements ProviderDB {
      * @return  \ilObject
      */
     protected function buildObjectByObjId($ref_id) {
+    }
+
+    /**
+     * Get all reference ids for an object id.
+     *
+     * @param   int     $obj_id
+     * @return  int[]
+     */
+    protected function getAllReferenceIdsFor($obj_id) {
     }
 }
