@@ -93,6 +93,18 @@ class ILIAS_RepositoryTest extends RepositoryTest {
                 $this->assertFalse("This does not exist.");
             }));
 
+		$this->provider_db
+			->method("providersOf")
+			->will($this->returnCallback(function($ct) {
+				if ($ct == AttachInt::class) {
+					return [$this->provider_1];
+				}
+				if ($ct == AttachString::class) {
+					return [$this->provider_2];
+				}
+                $this->assertFalse("This does not exist.");
+			}));
+
         return new Repository($this->provider_db);
     }
 
