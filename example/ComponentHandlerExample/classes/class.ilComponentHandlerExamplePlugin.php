@@ -11,12 +11,6 @@ class ilComponentHandlerExamplePlugin extends ilRepositoryObjectPlugin {
      */
     protected $ilDB;
 
-    /**
-     * Object initialisation. Overwritten from ilPlugin.
-     */
-    protected function init() {
-    }
-
 	/**
 	 * Get the name of the Plugin
 	 *
@@ -26,11 +20,16 @@ class ilComponentHandlerExamplePlugin extends ilRepositoryObjectPlugin {
 		return "ComponentHandlerExample";
 	}
 
-	/**
-	 * Defines custom uninstall action like delete table or something else
-	 */
-	protected function uninstallCustom() {
-	}
+   /**
+    * Defines custom uninstall action like delete table or something else
+    */
+    protected function uninstallCustom() {
+    }
+
+    /**
+     * @var \CaT\Ente\ILIAS\Repository|null
+     */
+    protected $repository = null;
 
     /**
      * Get a repository for components.
@@ -38,18 +37,32 @@ class ilComponentHandlerExamplePlugin extends ilRepositoryObjectPlugin {
      * @return \CaT\Ente\Repository
      */
     public function getRepository() {
-        $repo = new \CaT\Ente\Simple\Repository();
-        $entity = new \CaT\Ente\Simple\Entity(0); 
-        $provider1 = new \CaT\Ente\Simple\Provider($entity);
-        $provider1->addComponent
-            (new \CaT\Ente\Simple\AttachStringMemory($entity, "a string"));
-        $provider1->addComponent
-            (new \CaT\Ente\Simple\AttachStringMemory($entity, "another string"));
-        $provider2 = new \CaT\Ente\Simple\Provider($entity);
-        $provider2->addComponent
-            (new \CaT\Ente\Simple\AttachStringMemory($entity, "yet another string"));
-        $repo->addProvider($provider1);
-        $repo->addProvider($provider2);
-        return $repo;
+        global $DIC;
+        if ($this->repository === null) {
+            $this->repository = new \CaT\Ente\ILIAS\Repository($this->getProviderDB());
+        }
+        return $this->repository;
+    }
+
+    /**
+     * @var	ProviderDB|null
+    */
+    protected $provider_db = null;
+
+    /**
+     * Get ente-provider-db.
+     *
+     * @return \CaT\Ente\ILIAS\ProviderDB
+     */
+    protected function getProviderDB() {
+        global $DIC;
+        if ($this->provider_db === null) {
+            $this->provider_db = new \CaT\Ente\ILIAS\ilProviderDB
+                ( $DIC->database()
+                , $DIC->repositoryTree()
+                , $DIC["ilObjDataCache"]
+                );
+        }
+        return $this->provider_db;
     }
 }
