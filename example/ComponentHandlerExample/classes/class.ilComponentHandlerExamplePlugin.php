@@ -61,6 +61,7 @@ class ilComponentHandlerExamplePlugin extends ilRepositoryObjectPlugin {
                 ( $DIC->database()
                 , $DIC->repositoryTree()
                 , $DIC["ilObjDataCache"]
+                , $DIC
                 );
         }
         return $this->provider_db;

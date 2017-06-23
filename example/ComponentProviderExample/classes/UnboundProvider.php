@@ -42,7 +42,7 @@ class UnboundProvider extends Base {
      * @return Settings\DB
      */
     public function getSettingsDB() {
-        global $DIC;
-        return new Settings\ilDB($DIC->database());
+        $DIC = $this->DIC();
+        return new Settings\ilDB($DIC["ilDB"]);
     }
 }
