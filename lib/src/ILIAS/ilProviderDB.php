@@ -295,6 +295,7 @@ class ilProviderDB implements ProviderDB {
      * @return  \ilObject
      */
     protected function buildObjectByRefId($ref_id) {
+        ilObjectFactory::getInstanceByRefId($ref_id);
     }
 
     /**
@@ -305,6 +306,7 @@ class ilProviderDB implements ProviderDB {
      * @return  \ilObject
      */
     protected function buildObjectByObjId($ref_id) {
+        ilObjectFactory::getInstanceByObjId($ref_id);
     }
 
     /**
@@ -314,5 +316,6 @@ class ilProviderDB implements ProviderDB {
      * @return  int[]
      */
     protected function getAllReferenceIdsFor($obj_id) {
+        ilObject::_getAllReferences($obj_id);
     }
 }
