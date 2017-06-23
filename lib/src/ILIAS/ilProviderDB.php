@@ -246,15 +246,15 @@ class ilProviderDB implements ProviderDB {
                 , "class_name" => ["type" => "string", "length" => ilProviderDB::CLASS_NAME_LENGTH, "notnull" => true]
                 , "include_path" => ["type" => "string", "length" => ilProviderDB::PATH_LENGTH, "notnull" => true]
                 ]);
-            $this->ilDB->addPrimaryKey(ilProviderDB::PROVIDER_TABLE, ["id"]);
         }
+        $this->ilDB->addPrimaryKey(ilProviderDB::PROVIDER_TABLE, ["id"]);
         if (!$this->ilDB->tableExists(ilProviderDB::COMPONENT_TABLE)) {
             $this->ilDB->createTable(ilProviderDB::COMPONENT_TABLE,
                 [ "id" => ["type" => "integer", "length" => 4, "notnull" => true]
                 , "component_type" => ["type" => "string", "length" => ilProviderDB::CLASS_NAME_LENGTH, "notnull" => true]
                 ]);
-            $this->ilDB->addPrimaryKey(ilProviderDB::COMPONENT_TABLE, ["id", "component_type"]);
         }
+        $this->ilDB->addPrimaryKey(ilProviderDB::COMPONENT_TABLE, ["id", "component_type"]);
     }
 
     /**
