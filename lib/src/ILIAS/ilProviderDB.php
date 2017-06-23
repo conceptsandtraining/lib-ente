@@ -62,7 +62,8 @@ class ilProviderDB implements ProviderDB {
                         .ilProviderDB::PATH_LENGTH." chars.");
         }
 
-        $id= $this->ilDB->nextId(ilProviderDB::PROVIDER_TABLE);
+        // TODO: check if class exist first
+        $id = $this->ilDB->nextId(ilProviderDB::PROVIDER_TABLE);
         $this->ilDB->insert(ilProviderDB::PROVIDER_TABLE,
             [ "id" => ["integer", $id]
             , "owner" => ["integer", $owner->getId()]
