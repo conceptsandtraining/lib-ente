@@ -50,7 +50,7 @@ abstract class UnboundProvider {
      * @param   Provider  $provider
      * @return  Component[]
      */
-    abstract function buildComponentsOf($component_type, Provider $provider);
+    abstract public function buildComponentsOf($component_type, Provider $provider);
 
     /**
      * Get the id of this.
