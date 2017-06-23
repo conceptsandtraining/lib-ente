@@ -78,13 +78,13 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $provider_table =
             [ "id" => ["type" => "integer", "length" => 4, "notnull" => true]
             , "owner" => ["type" => "integer", "length" => 4, "notnull" => true]
-            , "object_type" => ["type" => "string", "length" => 4, "notnull" => true]
-            , "class_name" => ["type" => "string", "length" => ilProviderDB::CLASS_NAME_LENGTH, "notnull" => true]
-            , "include_path" => ["type" => "string", "length" => ilProviderDB::PATH_LENGTH, "notnull" => true]
+            , "object_type" => ["type" => "text", "length" => 4, "notnull" => true]
+            , "class_name" => ["type" => "text", "length" => ilProviderDB::CLASS_NAME_LENGTH, "notnull" => true]
+            , "include_path" => ["type" => "text", "length" => ilProviderDB::PATH_LENGTH, "notnull" => true]
             ];
         $component_table =
             [ "id" => ["type" => "integer", "length" => 4, "notnull" => true]
-            , "component_type" => ["type" => "string", "length" => ilProviderDB::CLASS_NAME_LENGTH, "notnull" => true]
+            , "component_type" => ["type" => "text", "length" => ilProviderDB::CLASS_NAME_LENGTH, "notnull" => true]
             ];
 
         $il_db
