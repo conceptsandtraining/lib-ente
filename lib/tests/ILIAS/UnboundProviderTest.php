@@ -39,13 +39,17 @@ class Test_UnboundProvider extends UnboundProvider {
         }
         return [];
     }
+
+    public function _DIC() {
+        return $this->DIC();
+    }
 }
 
 class ILIAS_UnboundProviderTest extends PHPUnit_Framework_TestCase {
     /**
      * @inheritdocs
      */
-    protected function unboundProvider() {
+    protected function unboundProvider($dic = []) {
         $owner = $this
             ->getMockBuilder(\ilObject::class)
             ->setMethods(["getId"])
@@ -59,7 +63,7 @@ class ILIAS_UnboundProviderTest extends PHPUnit_Framework_TestCase {
         $this->unbound_provider_id = 23;
         $this->object_type = "object_type";
 
-        $provider = new Test_UnboundProvider($this->unbound_provider_id, $owner, $this->object_type);
+        $provider = new Test_UnboundProvider($this->unbound_provider_id, $owner, $this->object_type, $dic);
 
         return $provider;
     }
@@ -83,5 +87,11 @@ class ILIAS_UnboundProviderTest extends PHPUnit_Framework_TestCase {
     public function test_object_type() {
         $unbound_provider = $this->unboundProvider();
         $this->assertEquals($this->object_type, $unbound_provider->objectType());
+    }
+
+    public function test_dic() {
+        $dic = ["foo" => "bar"];
+        $unbound_provider = $this->unboundProvider($dic);
+        $this->assertEquals($dic, $unbound_provider->_DIC());
     }
 }

@@ -30,12 +30,19 @@ abstract class UnboundProvider {
      */
     private $object_type;
 
-    final public function __construct($id, \ilObject $owner, $object_type) {
+    /**
+     * @var ArrayAccess|array
+     */
+    private $dic;
+
+    final public function __construct($id, \ilObject $owner, $object_type, $dic) {
         assert('is_int($id)');
         $this->id = $id;
         $this->owner = $owner;
         assert('is_string($object_type)');
         $this->object_type = $object_type;
+        assert('is_array($dic) || $dic instanceof \ArrayAccess');
+        $this->dic = $dic;
     }
 
     /**
@@ -77,5 +84,14 @@ abstract class UnboundProvider {
      */
     final public function objectType() {
         return $this->object_type;
+    }
+
+    /**
+     * Get the dependency injection container injected to the constructor.
+     *
+     * @return ArrayAccess|array
+     */
+    final public function DIC() {
+        return $this->dic;
     }
 }

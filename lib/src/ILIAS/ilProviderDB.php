@@ -35,10 +35,18 @@ class ilProviderDB implements ProviderDB {
      */
     private $ilObjectDataCache;
 
-    public function __construct(\ilDBInterface $ilDB, \ilTree $tree, \ilObjectDataCache $cache) {
+    /**
+     * @var ArrayAccess|array
+     */
+    private $dic;
+
+    public function __construct(\ilDBInterface $ilDB, \ilTree $tree, \ilObjectDataCache $cache, $dic) {
         $this->ilDB = $ilDB;
         $this->ilTree = $tree;
         $this->ilObjectDataCache = $cache;
+
+        assert('is_array($dic) || $dic instanceof \ArrayAccess');
+        $this->dic = $dic;
     }
 
     /**
@@ -284,7 +292,7 @@ class ilProviderDB implements ProviderDB {
                         "Class '$class_name' does not extend UnboundProvider.");
         }
 
-        return new $class_name($id, $owner, $object_type);
+        return new $class_name($id, $owner, $object_type, $this->dic);
     }
 
     /**
