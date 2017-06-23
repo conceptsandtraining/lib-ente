@@ -249,6 +249,7 @@ class ilProviderDB implements ProviderDB {
                 ]);
         }
         $this->ilDB->addPrimaryKey(ilProviderDB::PROVIDER_TABLE, ["id"]);
+        $this->ilDB->createSequence(ilProviderDB::PROVIDER_TABLE);
         if (!$this->ilDB->tableExists(ilProviderDB::COMPONENT_TABLE)) {
             $this->ilDB->createTable(ilProviderDB::COMPONENT_TABLE,
                 [ "id" => ["type" => "integer", "length" => 4, "notnull" => true]

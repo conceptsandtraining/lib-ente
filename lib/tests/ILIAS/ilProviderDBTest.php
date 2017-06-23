@@ -106,6 +106,11 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->withConsecutive(
                 [ilProviderDB::PROVIDER_TABLE, ["id"]],
                 [ilProviderDB::COMPONENT_TABLE, ["id", "component_type"]]);
+
+        $il_db
+            ->expects($this->once())
+            ->method("createSequence")
+            ->with(ilProviderDB::PROVIDER_TABLE);
    
         $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock());
         $db->createTables();
