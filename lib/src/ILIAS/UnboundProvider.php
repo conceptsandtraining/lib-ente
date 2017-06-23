@@ -38,7 +38,6 @@ abstract class UnboundProvider {
         $this->object_type = $object_type;
     }
 
-
     /**
      * @inheritdocs
      */
