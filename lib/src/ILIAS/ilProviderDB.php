@@ -14,8 +14,8 @@ namespace CaT\Ente\ILIAS;
  * A database that stores ILIAS providers.
  */
 class ilProviderDB implements ProviderDB {
-    const PROVIDER_TABLE = "ente_providers";
-    const COMPONENT_TABLE = "ente_provider_components";
+    const PROVIDER_TABLE = "ente_prvs";
+    const COMPONENT_TABLE = "ente_prv_cmps";
 
     const CLASS_NAME_LENGTH = 128;
     const PATH_LENGTH = 1024;
@@ -62,7 +62,8 @@ class ilProviderDB implements ProviderDB {
                         .ilProviderDB::PATH_LENGTH." chars.");
         }
 
-        $id= $this->ilDB->nextId(ilProviderDB::PROVIDER_TABLE);
+        // TODO: check if class exist first
+        $id = $this->ilDB->nextId(ilProviderDB::PROVIDER_TABLE);
         $this->ilDB->insert(ilProviderDB::PROVIDER_TABLE,
             [ "id" => ["integer", $id]
             , "owner" => ["integer", $owner->getId()]
@@ -242,19 +243,20 @@ class ilProviderDB implements ProviderDB {
             $this->ilDB->createTable(ilProviderDB::PROVIDER_TABLE, 
                 [ "id" => ["type" => "integer", "length" => 4, "notnull" => true]
                 , "owner" => ["type" => "integer", "length" => 4, "notnull" => true]
-                , "object_type" => ["type" => "string", "length" => 4, "notnull" => true]
-                , "class_name" => ["type" => "string", "length" => ilProviderDB::CLASS_NAME_LENGTH, "notnull" => true]
-                , "include_path" => ["type" => "string", "length" => ilProviderDB::PATH_LENGTH, "notnull" => true]
+                , "object_type" => ["type" => "text", "length" => 4, "notnull" => true]
+                , "class_name" => ["type" => "text", "length" => ilProviderDB::CLASS_NAME_LENGTH, "notnull" => true]
+                , "include_path" => ["type" => "text", "length" => ilProviderDB::PATH_LENGTH, "notnull" => true]
                 ]);
-            $this->ilDB->addPrimaryKey(ilProviderDB::PROVIDER_TABLE, ["id"]);
         }
+        $this->ilDB->addPrimaryKey(ilProviderDB::PROVIDER_TABLE, ["id"]);
+        $this->ilDB->createSequence(ilProviderDB::PROVIDER_TABLE);
         if (!$this->ilDB->tableExists(ilProviderDB::COMPONENT_TABLE)) {
             $this->ilDB->createTable(ilProviderDB::COMPONENT_TABLE,
                 [ "id" => ["type" => "integer", "length" => 4, "notnull" => true]
-                , "component_type" => ["type" => "string", "length" => ilProviderDB::CLASS_NAME_LENGTH, "notnull" => true]
+                , "component_type" => ["type" => "text", "length" => ilProviderDB::CLASS_NAME_LENGTH, "notnull" => true]
                 ]);
-            $this->ilDB->addPrimaryKey(ilProviderDB::COMPONENT_TABLE, ["id", "component_type"]);
         }
+        $this->ilDB->addPrimaryKey(ilProviderDB::COMPONENT_TABLE, ["id", "component_type"]);
     }
 
     /**
@@ -293,6 +295,7 @@ class ilProviderDB implements ProviderDB {
      * @return  \ilObject
      */
     protected function buildObjectByRefId($ref_id) {
+        return \ilObjectFactory::getInstanceByRefId($ref_id);
     }
 
     /**
@@ -303,6 +306,7 @@ class ilProviderDB implements ProviderDB {
      * @return  \ilObject
      */
     protected function buildObjectByObjId($ref_id) {
+        return \ilObjectFactory::getInstanceByObjId($ref_id);
     }
 
     /**
@@ -312,5 +316,6 @@ class ilProviderDB implements ProviderDB {
      * @return  int[]
      */
     protected function getAllReferenceIdsFor($obj_id) {
+        return \ilObject::_getAllReferences($obj_id);
     }
 }
