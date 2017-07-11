@@ -95,14 +95,14 @@ class ILIAS_RepositoryTest extends RepositoryTest {
 
 		$this->provider_db
 			->method("providersOf")
-			->will($this->returnCallback(function($ct) {
-				if ($ct == AttachInt::class) {
+			->will($this->returnCallback(function($ct, $entities = null) {
+				if ($ct == AttachInt::class && ($entities === null || in_array($this->entity(1), $entities))) {
 					return [$this->provider_1];
 				}
-				if ($ct == AttachString::class) {
+				if ($ct == AttachString::class && ($entities === null || in_array($this->entity(2), $entities))) {
 					return [$this->provider_2];
 				}
-                $this->assertFalse("This does not exist.");
+                return [];
 			}));
 
         return new Repository($this->provider_db);
