@@ -65,8 +65,9 @@ interface ProviderDB {
     /**
      * Get all providers of components of the given type.
      *
-     * @param   string      $component_type
+     * @param   string              $component_type
+	 * @param	\ilObject[]|null    $objects
      * @return  Provider[]
      */
-    public function providersOf($component_type);
+    public function providersOf($component_type, array $objects = null);
 }

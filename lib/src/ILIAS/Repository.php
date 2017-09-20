@@ -38,6 +38,22 @@ class Repository implements \CaT\Ente\Repository {
      * @inheritdocs
      */
     public function providersForComponentType($component_type, $entities = null) {
-        return [];
+		$returns = [];
+        if ($entities) {
+            foreach($entities as $entity) {
+                $returns[$entity->id()] = ["entity" => $entity, "providers" => []];
+            }
+            $entities = array_map(function($o) { return $o->object(); }, $entities);
+        }
+        $providers = $this->provider_db->providersOf($component_type, $entities);
+		foreach ($providers as $provider) {
+			$entity = $provider->entity();
+			$id = $entity->id();
+			if (!isset($returns[$id])) {
+				$returns[$id] = ["entity" => $entity, "providers" => []];
+			}
+			$returns[$id]["providers"][] = $provider;
+		}
+		return array_values($returns);
     }
 }

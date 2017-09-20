@@ -204,9 +204,11 @@ class ilProviderDB implements ProviderDB {
     }
 
     /**
+     * TODO: This could be made faster for the filtered case by using getSubtree.
+	 *
      * @inheritdocs
      */
-    public function providersOf($component_type) {
+    public function providersOf($component_type, array $objects = null) {
         $query = "SELECT id, owner, object_type, class_name, include_path "
                 ."FROM ".ilProviderDB::PROVIDER_TABLE." prv "
                 ."JOIN ".ilProviderDB::COMPONENT_TABLE." cmp ON prv.id = cmp.id "
@@ -214,6 +216,12 @@ class ilProviderDB implements ProviderDB {
         $res = $this->ilDB->query($query);
 
         $ret = [];
+        if ($objects !== null) {
+            $filter_ref_ids = array_map(function($o) { return $o->getRefId(); }, $objects);
+        }
+        else {
+            $filter_ref_ids = null;
+        }
         while ($row = $this->ilDB->fetchAssoc($res)) {
             $ref_ids = $this->getAllReferenceIdsFor($row["owner"]);
             foreach ($ref_ids as $ref_id) {
@@ -230,8 +238,10 @@ class ilProviderDB implements ProviderDB {
                 if ($path !== null) {
                     foreach ($path as $node) {
                         if ($node["type"] === $row["object_type"]) {
-                            $object = $this->buildObjectByRefId($node["child"]);
-                            $ret[] = new Provider($object, $unbound_provider);
+                            if ($filter_ref_ids === null || in_array($node["child"], $filter_ref_ids)) {
+                                $object = $this->buildObjectByRefId($node["child"]);
+                                $ret[] = new Provider($object, $unbound_provider);
+                            }
                         }
                     }
                 }
