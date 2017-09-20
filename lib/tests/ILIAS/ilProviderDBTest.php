@@ -640,7 +640,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
                 ["id" => 2, "owner" => $owner_ids[1], "object_type" => $object_types[1], "class_name" => $class_name, "include_path" => $include_path],
                 null));
 
-        $db = new Test_ilProviderDB($il_db, $il_tree, $il_cache);
+        $db = new Test_ilProviderDB($il_db, $il_tree, $il_cache, []);
 
         $refs_for_owner1 = [666, 667];
         $db->reference_ids[$owner_ids[0]] = $refs_for_owner1;
