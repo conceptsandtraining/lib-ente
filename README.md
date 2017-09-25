@@ -95,6 +95,16 @@ of the lib:
   to be able to extend the course in different directions, thus a notion of
   sources for components of an entity is required. A `Provider` thus can provide
   different types of components for a fixed entity. 
-*  
+* All this stuff needs to be tied together, that is what the `Repository` does.
+  It is the source to query for `Providers` and `Components`.
+
+A simple implementation (without ILIAS) can be found in `lib/Simple`. It defines
+two Components `AttachInt` and `AttachString` that both have one `*Memory`
+implementation.
+
+An ILIAS based implementation can be found in `lib/ILIAS`, the `example`-folder
+contains two plugins using that implementation.
+
+
 
 ## Example
