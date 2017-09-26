@@ -1,8 +1,9 @@
 # ente.php
 
-An entity component framework for PHP.
+*An entity component framework for PHP.*
 
 **Contact:** [Richard Klees](https://github.com/klees)
+
 
 ## Model
 
@@ -74,6 +75,7 @@ There are definetly also disadvantages in using the entity component model. For
 the sake of the argument they are not written down here. Finding them is left as
 an exercise to the reader.
 
+
 ## Implementation
 
 This implementation is meant to work in the context of ILIAS, where Plugins should
@@ -102,9 +104,74 @@ A simple implementation (without ILIAS) can be found in `lib/Simple`. It defines
 two Components `AttachInt` and `AttachString` that both have one `*Memory`
 implementation.
 
-An ILIAS based implementation can be found in `lib/ILIAS`, the `example`-folder
-contains two plugins using that implementation.
+An ILIAS based implementation can be found in `lib/ILIAS`. It contains two more
+noteworthy objects, that act as a plumbing between the simple model presented
+above and the factual ILIAS world.
 
+* The `UnboundProvider` accounts for the fact, that ILIAS repository objects can
+  actually have different locations in the tree. An object providing components
+  could thus provide for different branches of the tree. To still allow for some
+  common machinery to store and load providers, repository objects need a way to
+  talk about their possibilities to provide components without actually knowing
+  which entity they are bound to.
+* The `ProviderDB` is that common machinery to store and load providers. Objects
+  providing components must create `UnboundProviders` via that object. The ILIAS
+  implementation of the model then uses the tree to turn the `UnboundProviders`
+  to real providers for the objects in the tree.
+
+The usage of both facilities is showcased in two examples.
 
 
 ## Example
+
+The `example` folder contains two plugins, one that provides a component, one that
+uses handles the provided component. Note that both plugins do not know each other.
+Their common denominator is this library and the `AttachString` component they both
+use. Both plugins try to showcase this framework only and are no good showcases for
+general plugin development!
+
+The `AttachString` component is a very dump component that allows to attach a string
+to an entity. We most probably won't use such a simple component in a real world
+problem.
+
+To check out, what the plugins are doing, copy both of them to the directory for
+RepositoryPlugins in an ilias installation, `composer install` them and activate
+them within ILIAS. You should be provided with two new types of repo objects: 
+`Component Handler Example` and `Component Provider Example`. Create a course and
+an object for each plugin within the course.
+
+First open the Provider-object. You should get a simple form where you can add
+multiple strings the object will provide via the `AttachString` component. Do that
+now (and don't forget to save the form). Then open the Handler-object. You should
+see a simple listing of all strings you added to the provider. You can also
+add some more providers to the course. The handler will collect the strings
+from all providers. You could of course also add some more handlers, but they
+won't differ from your first one.
+
+First have a look how the provider object is implemented. One thing, the plugin
+needs to implement is an instance of `UnboundProvider`. This can be found in
+`example/ComponentProviderExample/classes/UnboundProvider.php`. This class needs
+to tell, which components it intents to provide via `componentTypes` and needs to
+present a way, how instance of these components can be created via `buildComponentsOf`.
+
+The `UnboundProvider` has an `owner`-ilObject, which is used to get the provided
+strings from the ILIAS-database. The component interface `AttachString` is used
+for the declaration in `componentTypes`, but `buildComponentOf` uses the in-memory
+implementation `AttachStringMemory` to create the actual components. 
+
+The provider object needs to define when an `UnboundProvider` is actually created
+and the object starts to provide components for some other object. This is done
+on creation of the object in `example/ComponentProviderExample/classes/class.ilObjComponentProviderExample.php`. The trait `ilProviderObjectHelper` helps to easily implement that
+creation. The object needs to provide a DIC via `getDIC` and then may `createUnboundProvider`
+whenever it needs to. To do that, it needs to tell for which objects on its path
+it wants to provide components for (`crs` in the example), what the name of the
+`UnboundProvider` is and where the according implementation can be found. The object
+also needs to take care, that the UnboundProviders it created get destroyed afterwards,
+which is done via `deleteUnboundProviders` on object deletion.
+
+The handler object is even simple. In `example/ComponentHandlerExample/classes/class.ilObjComponentHandlerExample.php`
+one can view the according implementation for the handler. It uses the `ilHandlerObjectHelper`
+trait and also needs to provide a DIC via `getDIC`. It also needs to provide the
+`ref_id` of an object it intends to handle components for. We just use the parent
+in the example. It then can use `getComponentsOfType` to get all components provided
+for its object and do further processing on them.
