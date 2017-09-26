@@ -21,7 +21,7 @@ trait ilProviderObjectHelper {
 	/**
 	 * Delete all unbound providers of this object.
 	 *
-	 * @return null
+	 * @return void
 	 */
 	protected function deleteUnboundProviders() {
 		if (!($this instanceof \ilObject)) {
