@@ -34,4 +34,20 @@ trait ilProviderObjectHelper {
 			$provider_db->delete($unbound_provider);
 		}
 	}
+
+	/**
+	 * Create an unbound provider for this object.
+	 *
+	 * @param	string	$object_type	for which the object provides
+	 * @param	string	$class_name		of the unbound provider
+	 * @param	string	$path			of the include file for the unbound provider class
+	 * @return 	void
+	 */
+	protected function createUnboundProvider($object_type, $class_name, $path) {
+		if (!($this instanceof \ilObject)) {
+			throw new \LogicException("ilProviderObjectHelper can only be used with ilObjects.");
+		} 
+
+		$this->getProviderDB()->create($this, $object_type, $class_name, $path);
+	}
 }

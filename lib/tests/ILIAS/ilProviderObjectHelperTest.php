@@ -32,6 +32,9 @@ abstract class ilProviderObjectHelperMock extends ilObject {
 	public function _deleteUnboundProviders() {
 		$this->deleteUnboundProviders();
 	}
+	public function _createUnboundProvider($object_type, $class_name, $path) {
+		$this->createUnboundProvider($object_type, $class_name, $path);
+	}
 }
 
 class ilObjectHelperTest extends PHPUnit_Framework_TestCase {
@@ -44,7 +47,6 @@ class ilObjectHelperTest extends PHPUnit_Framework_TestCase {
 			->getMockBuilder(ilProviderObjectHelperMock::class)
 			->setMethods(["getProviderDB", "getDIC"])
 			->getMock();
-		
 
 		$mock
 			->expects($this->atLeast(1))
@@ -63,5 +65,31 @@ class ilObjectHelperTest extends PHPUnit_Framework_TestCase {
 			->withConsecutive([$up1], [$up2]);
 
 		$mock->_deleteUnboundProviders();	
+	}
+
+	public function test_createUnboundProvider() {
+		$provider_db = $this->createMock(Ente\ILIAS\ilProviderDB::class);
+
+		
+		$mock = $this
+			->getMockBuilder(ilProviderObjectHelperMock::class)
+			->setMethods(["getProviderDB", "getDIC"])
+			->getMock();
+
+		$mock
+			->expects($this->once())
+			->method("getProviderDB")
+			->willReturn($provider_db);
+
+		$object_type = "TYPE";
+		$class_name = "CLASS";
+		$path = "PATH";
+
+		$provider_db
+			->expects($this->once())
+			->method("create")
+			->with($mock, $object_type, $class_name, $path);
+			
+		$mock->_createUnboundProvider($object_type, $class_name, $path);
 	}
 }
