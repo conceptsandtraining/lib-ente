@@ -1,10 +1,18 @@
 <?php
 include_once("Services/Repository/classes/class.ilObjectPlugin.php");
 
+use CaT\Ente\ILIAS;
+
 /**
  * Object of the plugin
  */
 class ilObjComponentHandlerExample extends ilObjectPlugin {
+	use ILIAS\ilHandlerObjectHelper;
+
+	protected function getDIC() {
+		return $GLOBALS["DIC"];
+	}
+
 	/**
 	 * Init the type of the plugin. Same value as choosen in plugin.php
 	 */
@@ -19,9 +27,7 @@ class ilObjComponentHandlerExample extends ilObjectPlugin {
      * @return  array<string,string[]>
      */
     public function getProvidedStrings() {
-        $repository = $this->plugin->getRepository();
-        $entity = $this->getMyEntity();
-		$components = $repository->componentsForEntity($entity, \CaT\Ente\Simple\AttachString::class);
+		$components = $this->getComponentsOfType(\CaT\Ente\Simple\AttachString::class);
 
         $provided_strings = [];
 		foreach ($components as $component) {
@@ -32,16 +38,12 @@ class ilObjComponentHandlerExample extends ilObjectPlugin {
     }
 
     /**
-     * Get the entity this plugin object belongs to.
-     *
-     * @return  \CaT\Ente\Entity
+	 * Get the ref_id of the object this object handles components for.
+	 *
+	 * @return int
      */
-    protected function getMyEntity() {
+    protected function getEntityRefId() {
         global $DIC;
-        return new \CaT\Ente\ILIAS\Entity
-            ( \ilObjectFactory::getInstanceByRefId
-                ( $DIC->repositoryTree()->getParentId($this->getRefId())
-                )
-            );
+        return $DIC->repositoryTree()->getParentId($this->getRefId());
     }
 }
