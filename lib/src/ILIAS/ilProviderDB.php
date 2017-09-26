@@ -250,23 +250,23 @@ class ilProviderDB implements ProviderDB {
      */
     public function createTables() {
         if (!$this->ilDB->tableExists(ilProviderDB::PROVIDER_TABLE)) {
-            $this->ilDB->createTable(ilProviderDB::PROVIDER_TABLE, 
+            $this->ilDB->createTable(ilProviderDB::PROVIDER_TABLE,
                 [ "id" => ["type" => "integer", "length" => 4, "notnull" => true]
                 , "owner" => ["type" => "integer", "length" => 4, "notnull" => true]
                 , "object_type" => ["type" => "text", "length" => 4, "notnull" => true]
                 , "class_name" => ["type" => "text", "length" => ilProviderDB::CLASS_NAME_LENGTH, "notnull" => true]
                 , "include_path" => ["type" => "text", "length" => ilProviderDB::PATH_LENGTH, "notnull" => true]
                 ]);
+            $this->ilDB->addPrimaryKey(ilProviderDB::PROVIDER_TABLE, ["id"]);
+            $this->ilDB->createSequence(ilProviderDB::PROVIDER_TABLE);
         }
-        $this->ilDB->addPrimaryKey(ilProviderDB::PROVIDER_TABLE, ["id"]);
-        $this->ilDB->createSequence(ilProviderDB::PROVIDER_TABLE);
         if (!$this->ilDB->tableExists(ilProviderDB::COMPONENT_TABLE)) {
             $this->ilDB->createTable(ilProviderDB::COMPONENT_TABLE,
                 [ "id" => ["type" => "integer", "length" => 4, "notnull" => true]
                 , "component_type" => ["type" => "text", "length" => ilProviderDB::CLASS_NAME_LENGTH, "notnull" => true]
                 ]);
+            $this->ilDB->addPrimaryKey(ilProviderDB::COMPONENT_TABLE, ["id", "component_type"]);
         }
-        $this->ilDB->addPrimaryKey(ilProviderDB::COMPONENT_TABLE, ["id", "component_type"]);
     }
 
     /**
