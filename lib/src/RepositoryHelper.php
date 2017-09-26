@@ -44,6 +44,10 @@ trait RepositoryHelper {
 				}
 			}
 		}
-		return call_user_func_array("array_merge", $components);
+		if(count($components) > 0) {
+			return call_user_func_array("array_merge", $components);
+		} else {
+			return $components;
+		}
 	}
 }
