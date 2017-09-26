@@ -245,8 +245,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
                 null));
 
 
-        $dic = ["foo" => "bar"];
-        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), $dic);
+        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock());
         $providers = $db->unboundProvidersOf($owner);
 
         $this->assertCount(2, $providers);
@@ -259,9 +258,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
 
         list($provider1, $provider2) = $providers;
         $this->assertEquals(1, $provider1->id());
-        $this->assertEquals($dic, $provider1->_DIC());
         $this->assertEquals(2, $provider2->id());
-        $this->assertEquals($dic, $provider2->_DIC());
     }
 
     public function test_load() {
