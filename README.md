@@ -166,7 +166,7 @@ creation. The object needs to provide a DIC via `getDIC` and then may `createUnb
 whenever it needs to. To do that, it needs to tell for which objects on its path
 it wants to provide components for (`crs` in the example), what the name of the
 `UnboundProvider` is and where the according implementation can be found. The object
-also needs to take care that the UnboundProviders it created and gets destroyed afterwards,
+also needs to take care that the UnboundProviders it created gets destroyed afterwards,
 which is done via `deleteUnboundProviders` on object deletion.
 
 The handler object is even simple. In `example/ComponentHandlerExample/classes/class.ilObjComponentHandlerExample.php`
