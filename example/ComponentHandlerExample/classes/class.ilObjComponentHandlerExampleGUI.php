@@ -12,18 +12,10 @@ require_once("./Services/Form/classes/class.ilTextInputGUI.php");
  * @ilCtrl_Calls ilObjComponentHandlerExampleGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI
  */
 class ilObjComponentHandlerExampleGUI  extends ilObjectPluginGUI {
-    const VALUES_FIELD_NAME = "values";
-    const SAVE_CMD = "saveForm";
-
     /**
      * @var \ilTemplate
      */
     protected $ilTemplate;
-
-    /**
-     * @var \ilCtrl
-     */
-    protected $ilCtrl;
 
     /**
      * @var \ILIAS\UI\Factory
@@ -41,7 +33,6 @@ class ilObjComponentHandlerExampleGUI  extends ilObjectPluginGUI {
 	protected function afterConstructor() {
         global $DIC;
         $this->ilTemplate = $DIC->ui()->mainTemplate();
-        $this->ilCtrl = $DIC->ctrl();
         $this->ui_factory = $DIC->ui()->factory();
         $this->ui_renderer= $DIC->ui()->renderer(); 
 	}
