@@ -37,7 +37,7 @@ abstract class ilProviderObjectHelperMock extends ilObject {
 	}
 }
 
-class ilObjectHelperTest extends PHPUnit_Framework_TestCase {
+class ilProviderObjectHelperTest extends PHPUnit_Framework_TestCase {
 	public function test_deleteUnboundProviders() {
 		$provider_db = $this->createMock(Ente\ILIAS\ilProviderDB::class);
 		$up1 = $this->createMock(Ente\ILIAS\UnboundProvider::class);

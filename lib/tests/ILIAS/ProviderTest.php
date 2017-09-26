@@ -93,7 +93,7 @@ class ILIAS_ProviderTest extends ProviderTest {
         $provider->componentsOfType(AttachString::class);
         $provider->componentsOfType(AttachString::class);
 
-        $this->assertEquals([AttachString::class], $provider->callsTo_buildComponentsOf);
+        $this->assertEquals([AttachString::class], $this->unbound_provider->callsTo_buildComponentsOf);
     }
 
     public function test_object() {

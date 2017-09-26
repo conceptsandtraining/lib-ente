@@ -21,14 +21,14 @@ class UnboundProvider extends Base {
      * Build the component(s) of the given type for the given object.
      *
      * @param   string    $component_type
-     * @param   Provider  $provider
+     * @param   Entity    $provider
      * @return  Component[]
      */
-    public function buildComponentsOf($component_type, Provider $provider) {
+    public function buildComponentsOf($component_type, Entity $entity) {
         if ($component_type === AttachString::class) {
             $returns = [];
 			foreach ($this->owner()->getProvidedStrings() as $s) {
-				$returns[] = new AttachStringMemory($provider->entity(), $s);
+				$returns[] = new AttachStringMemory($entity, $s);
 			}
             return $returns;
         }

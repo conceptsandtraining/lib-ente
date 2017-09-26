@@ -58,7 +58,7 @@ final class Provider implements \CaT\Ente\Provider {
             return $this->components[$component_type];
         }
 
-        $components = $this->unbound_provider->buildComponentsOf($component_type, $this);
+        $components = $this->unbound_provider->buildComponentsOf($component_type, $this->entity());
         $this->checkComponentArray($components, $component_type);
         $this->components[$component_type] = $components;
         return $components;

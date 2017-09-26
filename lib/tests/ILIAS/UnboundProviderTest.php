@@ -26,11 +26,11 @@ class Test_UnboundProvider extends UnboundProvider {
         return [AttachString::class, AttachInt::class];
     }
 
-    public function buildComponentsOf($component_type, Provider $provider) {
+    public function buildComponentsOf($component_type, Entity $entity) {
         assert(is_string($component_type));
-        $provider->callsTo_buildComponentsOf[] = $component_type;
-        $object = $provider->object();
-        $entity = $provider->entity();
+        $this->callsTo_buildComponentsOf[] = $component_type;
+        $object = $entity->object();
+        $entity = $entity;
         if ($component_type == AttachString::class) {
             return [new AttachStringMemory($entity, "id: {$object->getId()}")];
         }
