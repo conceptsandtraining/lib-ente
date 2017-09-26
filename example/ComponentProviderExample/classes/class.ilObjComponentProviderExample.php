@@ -2,53 +2,24 @@
 include_once("Services/Repository/classes/class.ilObjectPlugin.php");
 
 use CaT\Plugins\ComponentProviderExample\UnboundProvider;
+use CaT\Ente\ILIAS\ilProviderObjectHelper;
 
 /**
  * Object of the plugin
  */
 class ilObjComponentProviderExample extends ilObjectPlugin {
+	use ilProviderObjectHelper;
+
+	protected function getDIC() {
+		return $GLOBALS["DIC"];
+	}
+
 	/**
 	 * Init the type of the plugin. Same value as choosen in plugin.php
 	 */
 	public function initType() {
 		$this->setType("xlep");
 	}
-
-    /**
-     * @var	ProviderDB|null
-    */
-    protected $provider_db = null;
-
-    /**
-     * Get ente-provider-db.
-     *
-     * @return \CaT\Ente\ILIAS\ProviderDB
-     */
-    protected function getProviderDB() {
-        global $DIC;
-        if ($this->provider_db === null) {
-            $this->provider_db = new \CaT\Ente\ILIAS\ilProviderDB
-                ( $DIC->database()
-                , $DIC->repositoryTree()
-                , $DIC["ilObjDataCache"]
-				, $DIC
-                );
-        }
-        return $this->provider_db;
-    }
-
-    /**
-     * Delete all unbound providers of this object.
-     *
-     * @return null
-     */
-    protected function deleteUnboundProviders() {
-        $db = $this->getProviderDB();
-        $ups = $db->unboundProvidersOf($this);
-        foreach ($ups as $up) {
-            $db->delete($up);
-        }
-    }
 
 	/**
 	 * Creates ente-provider.
