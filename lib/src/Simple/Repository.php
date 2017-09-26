@@ -15,7 +15,9 @@ use CaT\Ente;
 /**
  * Simple implementation for a repository, works in memory.
  */
-class Repository implements \CaT\Ente\Repository {
+class Repository implements Ente\Repository {
+	use Ente\RepositoryHelper;
+
     /**
      * @var     array<string,Provider[]>
      */

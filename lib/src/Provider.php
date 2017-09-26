@@ -21,7 +21,7 @@ namespace CaT\Ente;
  */
 interface Provider {
     /**
-     * Get the components of a given type for the given entity.
+     * Get the components of a given type.
      *
      * `$component_type` must be a class or interface name. The returned
      * components must implement that class or interface.

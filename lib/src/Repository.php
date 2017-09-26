@@ -39,4 +39,13 @@ interface Repository {
      *                                  "providers" => Provider[]
      */
     public function providersForComponentType($component_type, $entities = null); 
+
+	/**
+	 * Get components for the entity, possibly filtered by component type.
+	 *
+	 * @param	Entity		$entity
+	 * @param	string|null	$component_type
+	 * @return	Component[]
+	 */
+	public function componentsForEntity(Entity $entity, $component_type = null);
 }

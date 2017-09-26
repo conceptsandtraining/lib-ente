@@ -10,10 +10,14 @@
 
 namespace CaT\Ente\ILIAS;
 
+use CaT\Ente;
+
 /**
  * An repository over ILIAS objects.
  */
-class Repository implements \CaT\Ente\Repository {
+class Repository implements Ente\Repository {
+	use Ente\RepositoryHelper;
+
     /**
      * @var ProviderDB
      */
