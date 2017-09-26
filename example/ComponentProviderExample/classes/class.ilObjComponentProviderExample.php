@@ -25,7 +25,7 @@ class ilObjComponentProviderExample extends ilObjectPlugin {
 	 * Creates ente-provider.
 	 */
 	public function doCreate() {
-        $this->getProviderDB()->create($this, "crs", UnboundProvider::class, __DIR__."/UnboundProvider.php");
+		$this->createUnboundProvider("crs", UnboundProvider::class, __DIR__."/UnboundProvider.php");
 	}
 
 	/**
