@@ -4,7 +4,7 @@
     },
     "repositories" : [{
         "type" : "path",
-        "url" : "../../lib"
+        "url": "https://github.com/conceptsandtraining/lib-ente.git"
     }],
 	"autoload" : {
 		"psr-4" : {
