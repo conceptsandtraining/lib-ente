@@ -37,4 +37,18 @@ class ilObjComponentProviderExample extends ilObjectPlugin {
         $db->deleteFor($this->getId());
         $this->deleteUnboundProviders();
 	}
+
+	/**
+	 * Get the strings provided by this object.
+	 *
+	 * @return	string[]
+	 */
+	public function getProvidedStrings() {
+		$settings = $this->plugin->settingsDB()->getFor($this->getId());
+		$returns = [];
+		foreach($settings->providedStrings() as $s) {
+			$returns[] = $s;
+		}
+		return $returns;
+	}
 }
