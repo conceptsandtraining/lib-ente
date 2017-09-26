@@ -61,7 +61,7 @@ class ilObjComponentProviderExampleGUI  extends ilObjectPluginGUI {
      */
     protected function saveForm() {
         $db = $this->plugin->settingsDB();
-        $settings = $db->getFor($this->object->getId());
+        $settings = $db->getFor((int)$this->object->getId());
         $settings = $settings->withProvidedStrings($_POST[self::VALUES_FIELD_NAME]);
         $db->update($settings);
         $this->ilCtrl->redirect($this, "showContent");
@@ -74,7 +74,7 @@ class ilObjComponentProviderExampleGUI  extends ilObjectPluginGUI {
      */
     public function showContent() {
         $db = $this->plugin->settingsDB();
-        $settings = $db->getFor($this->object->getId());
+        $settings = $db->getFor((int)$this->object->getId());
 
         $form = new \ilPropertyFormGUI();
         $form->setTitle($this->plugin->txt("settings_form_title"));
