@@ -7,7 +7,7 @@ require_once(__DIR__."/../vendor/autoload.php");
 use \CaT\Ente\ILIAS\UnboundProvider as Base;
 use \CaT\Ente\Simple\AttachString;
 use \CaT\Ente\Simple\AttachStringMemory;
-use \CaT\Ente\ILIAS\Provider;
+use \CaT\Ente\ILIAS\Entity;
 
 class UnboundProvider extends Base {
     /**
