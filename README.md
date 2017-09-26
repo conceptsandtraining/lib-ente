@@ -18,7 +18,7 @@ object that has an identity and exhibits some continuity over time and space.
 Within the system, there are a lot of subsystems that act upon these entities.
 
 > **Example:**
-> In a real time strategy game entities would be units of the armies in the game
+> In a real time strategy game, entities would be units of the armies in the game
 > as well as objects in the landscape and maybe other things. Systems acting
 > upon these objects would be e.g. a physics system, a path finding system, a
 > sound system, ...
@@ -61,7 +61,7 @@ This pattern for solving the described problem has some virtues over the naive
 inheritance based approach:
 
 * Instead of one huge class that contains code for all kind of subsystems the
-  entity is split up into distinct classes that each serves only some subset
+  entity is split up into distinct classes that each serve only some subset
   of all systems.
 * There is an obvious way to share functionality between entities: just use
   the same components or implementation for the component.
@@ -83,7 +83,7 @@ be able to define components for `ilObjects`. This library therefore knows four
 kinds of objects, where the according interfaces could be found in the base directory
 of the lib:
 
-* `Entity` provides the basic means to identify an object. That is, an entityi
+* `Entity` provides the basic means to identify an object. That is, an entity
   needs to be able to provide some comparable id, where objects with the same id
   are indeed the very same object. This is the thingy known from the pattern.
 * A `Component` is the thingy from the pattern that provides information and
@@ -130,11 +130,11 @@ Their common denominator is this library and the `AttachString` component they b
 use. Both plugins try to showcase this framework only and are no good showcases for
 general plugin development!
 
-The `AttachString` component is a very dump component that allows to attach a string
+The `AttachString` component is a very dumb component that allows to attach a string
 to an entity. We most probably won't use such a simple component in a real world
 problem.
 
-To check out, what the plugins are doing, copy both of them to the directory for
+To check out what the plugins are doing, copy both of them to the directory for
 RepositoryPlugins in an ilias installation, `composer install` them and activate
 them within ILIAS. You should be provided with two new types of repo objects: 
 `Component Handler Example` and `Component Provider Example`. Create a course and
@@ -148,11 +148,11 @@ add some more providers to the course. The handler will collect the strings
 from all providers. You could of course also add some more handlers, but they
 won't differ from your first one.
 
-First have a look how the provider object is implemented. One thing, the plugin
+Now have a look at how the provider object is implemented. One thing the plugin
 needs to implement is an instance of `UnboundProvider`. This can be found in
 `example/ComponentProviderExample/classes/UnboundProvider.php`. This class needs
-to tell, which components it intents to provide via `componentTypes` and needs to
-present a way, how instance of these components can be created via `buildComponentsOf`.
+to tell which components it intents to provide via `componentTypes` and needs to
+present a way how instance of these components can be created via `buildComponentsOf`.
 
 The `UnboundProvider` has an `owner`-ilObject, which is used to get the provided
 strings from the ILIAS-database. The component interface `AttachString` is used
@@ -166,11 +166,11 @@ creation. The object needs to provide a DIC via `getDIC` and then may `createUnb
 whenever it needs to. To do that, it needs to tell for which objects on its path
 it wants to provide components for (`crs` in the example), what the name of the
 `UnboundProvider` is and where the according implementation can be found. The object
-also needs to take care, that the UnboundProviders it created get destroyed afterwards,
+also needs to take care that the UnboundProviders it created and gets destroyed afterwards,
 which is done via `deleteUnboundProviders` on object deletion.
 
 The handler object is even simple. In `example/ComponentHandlerExample/classes/class.ilObjComponentHandlerExample.php`
-one can view the according implementation for the handler. It uses the `ilHandlerObjectHelper`
+you can see the according implementation for the handler. It uses the `ilHandlerObjectHelper`
 trait and also needs to provide a DIC via `getDIC`. It also needs to provide the
 `ref_id` of an object it intends to handle components for. We just use the parent
 in the example. It then can use `getComponentsOfType` to get all components provided
