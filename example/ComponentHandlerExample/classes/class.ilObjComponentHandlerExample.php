@@ -21,25 +21,13 @@ class ilObjComponentHandlerExample extends ilObjectPlugin {
     public function getProvidedStrings() {
         $repository = $this->plugin->getRepository();
         $entity = $this->getMyEntity();
-        $providers = $repository->providersForEntity($entity, \CaT\Ente\Simple\AttachString::class);
+		$components = $repository->componentsForEntity($entity, \CaT\Ente\Simple\AttachString::class);
 
         $provided_strings = [];
-        $count = 0;
-        foreach ($providers as $provider) {
-            $count++;
-            if ($provider instanceof \CaT\Ente\ILIAS\Provider) {
-                $title = $provider->owner()->getTitle();
-            } 
-            else {
-                $title = get_class($provider)."_$count";
-            }
-            $provided_strings[$title] = [];
-
-            $components = $provider->componentsOfType(\CaT\Ente\Simple\AttachString::class);
-            foreach ($components as $component) {
-                $provided_strings[$title][] = $component->attachedString();
-            }
+		foreach ($components as $component) {
+            $provided_strings[] = $component->attachedString();
         }
+
         return $provided_strings;
     }
 

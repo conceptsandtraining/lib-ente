@@ -72,11 +72,8 @@ class ilObjComponentHandlerExampleGUI  extends ilObjectPluginGUI {
      * @return string
      */
     public function showContent() {
-        $items = [];
-        foreach ($this->object->getProvidedStrings() as $title => $strings) {
-            $items[$title] = implode(", ", $strings);
-        }
-        $listing = $this->ui_factory->listing()->descriptive($items);
+        $items = $this->object->getProvidedStrings();
+        $listing = $this->ui_factory->listing()->ordered($items);
         return $this->ui_renderer->render($listing);
     }
 
