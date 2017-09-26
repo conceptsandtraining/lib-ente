@@ -44,7 +44,7 @@ class ilObjComponentProviderExample extends ilObjectPlugin {
 	 * @return	string[]
 	 */
 	public function getProvidedStrings() {
-		$settings = $this->plugin->settingsDB()->getFor($this->getId());
+		$settings = $this->plugin->settingsDB()->getFor((int)$this->getId());
 		$returns = [];
 		foreach($settings->providedStrings() as $s) {
 			$returns[] = $s;
