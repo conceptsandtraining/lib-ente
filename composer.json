@@ -1,6 +1,6 @@
 {
     "name": "cat/ente",
-    "version": "0.1.0",
+    "version": "1.0.2",
     "description": "An entity component framework for PHP.",
     "type": "library",
     "license": "GPLv3",
