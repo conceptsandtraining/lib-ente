@@ -100,11 +100,11 @@ of the lib:
 * All this stuff needs to be tied together, that is what the `Repository` does.
   It is the source to query for `Providers` and `Components`.
 
-A simple implementation (without ILIAS) can be found in `lib/Simple`. It defines
+A simple implementation (without ILIAS) can be found in `src/Simple`. It defines
 two Components `AttachInt` and `AttachString` that both have one `*Memory`
 implementation.
 
-An ILIAS based implementation can be found in `lib/ILIAS`. It contains two more
+An ILIAS based implementation can be found in `src/ILIAS`. It contains two more
 noteworthy objects, that act as a plumbing between the simple model presented
 above and the factual ILIAS world.
 
