@@ -3,8 +3,8 @@
         "cat/ente" : "@dev"
     },
     "repositories" : [{
-        "type" : "path",
-        "url": "https://github.com/conceptsandtraining/lib-ente.git"
+        "type" : "vcs",
+        "url": "git@github.com:/conceptsandtraining/lib-ente.git"
     }],
 	"autoload" : {
 		"psr-4" : {
