@@ -290,7 +290,7 @@ class ilProviderDB implements ProviderDB {
         assert('class_exists($class_name)');
 
         if (!is_subclass_of($class_name, UnboundProvider::class)) {
-            throw new UnexpectedValueException(
+            throw new \UnexpectedValueException(
                         "Class '$class_name' does not extend UnboundProvider.");
         }
 
