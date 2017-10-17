@@ -146,13 +146,14 @@ class ilProviderDB implements ProviderDB {
         assert('is_null($component_type) || is_string($component_type)');
         $ref_id = $object->getRefId();
         $sub_nodes_refs = $this->ilTree->getSubTreeIds($ref_id);
-        $this->ilObjectDataCache->preloadReferenceCache($sub_nodes_refs);
-        $sub_nodes_id_mapping = [];
-        $sub_nodes_ids = [];
-        foreach ($sub_nodes_refs as $ref_id) {
+		$all_nodes_refs = array_merge([$ref_id], $sub_nodes_refs);
+        $this->ilObjectDataCache->preloadReferenceCache($all_nodes_refs);
+        $nodes_id_mapping = [];
+        $nodes_ids = [];
+        foreach ($all_nodes_refs as $ref_id) {
             $id = $this->ilObjectDataCache->lookupObjId($ref_id);
-            $sub_nodes_id_mapping[$id] = $ref_id;
-            $sub_nodes_ids[] = $id;
+            $nodes_id_mapping[$id] = $ref_id;
+            $nodes_ids[] = $id;
         }
 
         $object_type = $object->getType();
@@ -160,7 +161,7 @@ class ilProviderDB implements ProviderDB {
             $query =
                 "SELECT id, owner, class_name, include_path ".
                 "FROM ".ilProviderDB::PROVIDER_TABLE." ".
-                "WHERE ".$this->ilDB->in("owner", $sub_nodes_ids, false, "integer").
+                "WHERE ".$this->ilDB->in("owner", $nodes_ids, false, "integer").
                 " AND object_type = ".$this->ilDB->quote($object_type, "string");
         }
         else {
@@ -169,7 +170,7 @@ class ilProviderDB implements ProviderDB {
                 "FROM ".ilProviderDB::PROVIDER_TABLE." prv ".
                 "JOIN ".ilProviderDB::COMPONENT_TABLE." cmp ".
                 "ON prv.id = cmp.id ".
-                "WHERE ".$this->ilDB->in("owner", $sub_nodes_ids, false, "integer").
+                "WHERE ".$this->ilDB->in("owner", $nodes_ids, false, "integer").
                 " AND object_type = ".$this->ilDB->quote($object_type, "string").
                 " AND component_type = ".$this->ilDB->quote($component_type, "string");
         }
@@ -178,7 +179,7 @@ class ilProviderDB implements ProviderDB {
         $res = $this->ilDB->query($query);
         while ($row = $this->ilDB->fetchAssoc($res)) {
             $obj_id = $row["owner"];
-            $ref_id = $sub_nodes_id_mapping[$obj_id];
+            $ref_id = $nodes_id_mapping[$obj_id];
             $owner = $this->buildObjectByRefId($ref_id);
             $ret[] = new Provider
                 ( $object

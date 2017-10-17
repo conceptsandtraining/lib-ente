@@ -333,21 +333,22 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->with($object_ref_id)
             ->willReturn($sub_tree_ids);
 
+		$tree_ids = array_merge([$object_ref_id], $sub_tree_ids);
         $il_cache
             ->expects($this->once())
             ->method("preloadReferenceCache")
-            ->with($sub_tree_ids);
+            ->with($tree_ids);
 
         $il_cache
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method("lookupObjId")
-            ->withConsecutive([$sub_tree_ids[0]],[$sub_tree_ids[1]])
-            ->will($this->onConsecutiveCalls($sub_tree_ids[0], $sub_tree_ids[1]));
+            ->withConsecutive([$tree_ids[0]],[$tree_ids[1]], [$tree_ids[2]])
+            ->will($this->onConsecutiveCalls($tree_ids[0], $tree_ids[1], $tree_ids[2]));
 
         $il_db
             ->expects($this->once())
             ->method("in")
-            ->with("owner", $sub_tree_ids, false, "integer")
+            ->with("owner", $tree_ids, false, "integer")
             ->willReturn("~IN~");
 
         $il_db
@@ -434,21 +435,22 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->with($object_ref_id)
             ->willReturn($sub_tree_ids);
 
+		$tree_ids = array_merge([$object_ref_id], $sub_tree_ids);
         $il_cache
             ->expects($this->once())
             ->method("preloadReferenceCache")
-            ->with($sub_tree_ids);
+            ->with($tree_ids);
 
         $il_cache
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method("lookupObjId")
-            ->withConsecutive([$sub_tree_ids[0]],[$sub_tree_ids[1]])
-            ->will($this->onConsecutiveCalls($sub_tree_ids[0], $sub_tree_ids[1]));
+            ->withConsecutive([$tree_ids[0]],[$tree_ids[1]], [$tree_ids[2]])
+            ->will($this->onConsecutiveCalls($tree_ids[0], $tree_ids[1], $tree_ids[2]));
 
         $il_db
             ->expects($this->once())
             ->method("in")
-            ->with("owner", $sub_tree_ids, false, "integer")
+            ->with("owner", $tree_ids, false, "integer")
             ->willReturn("~IN~");
 
         $component_type = "COMPONENT_TYPE";
