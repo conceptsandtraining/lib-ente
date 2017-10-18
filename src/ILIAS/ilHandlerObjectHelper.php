@@ -38,6 +38,8 @@ trait ilHandlerObjectHelper {
 	/**
 	 * Get components for the entity.
 	 *
+	 * TODO: this may as well be protected
+	 *
 	 * @return	Component[]
 	 */
 	public function getComponents() {
@@ -47,6 +49,8 @@ trait ilHandlerObjectHelper {
 
 	/**
 	 * Get components for the entity.
+	 *
+	 * TODO: this may as well be protected
 	 *
 	 * @param	string		$component_type
 	 * @return	Component[]
