@@ -205,6 +205,59 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $db->delete($unbound_provider);
     }
 
+    public function test_update() {
+        $il_db = $this->il_db_mock();
+
+        $owner = $this
+            ->getMockBuilder(\ilObject::class)
+            ->setMethods(["getId"])
+            ->getMock();
+
+        $unbound_provider_id = 23;
+
+        $unbound_provider = $this
+            ->getMockBuilder(UnboundProvider::class)
+            ->setConstructorArgs([$unbound_provider_id, $owner, "type", []])
+            ->setMethods(["componentTypes", "buildComponentsOf", "id"])
+            ->getMock();
+
+        $unbound_provider
+            ->expects($this->once())
+            ->method("componentTypes")
+            ->willReturn([AttachString::class, AttachInt::class]);
+
+        $il_db
+            ->expects($this->atLeastOnce())
+            ->method("quote")
+            ->with($unbound_provider_id, "integer")
+            ->willReturn("~$unbound_provider_id~");
+
+        $il_db
+            ->expects($this->once())
+            ->method("manipulate")
+            ->with("DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ~$unbound_provider_id~");
+
+        $insert_component_1 =
+            [ "id" => ["integer", $unbound_provider_id]
+            , "component_type" => ["string", AttachString::class]
+            ];
+
+        $insert_component_2 =
+            [ "id" => ["integer", $unbound_provider_id]
+            , "component_type" => ["string", AttachInt::class]
+            ];
+
+        $il_db
+            ->expects($this->exactly(2))
+            ->method("insert")
+            ->withConsecutive(
+                [ilProviderDB::COMPONENT_TABLE, $insert_component_1],
+                [ilProviderDB::COMPONENT_TABLE, $insert_component_2]);
+
+        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), []);
+        $db->update($unbound_provider);
+    }
+
     public function test_unboundProvidersOf() {
         $il_db = $this->il_db_mock();
 

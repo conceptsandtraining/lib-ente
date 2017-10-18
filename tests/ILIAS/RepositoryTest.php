@@ -48,7 +48,7 @@ class ILIAS_RepositoryTest extends RepositoryTest {
     protected function repository() {
         $this->provider_db = $this
             ->getMockBuilder(ProviderDB::class)
-            ->setMethods(["create", "load", "delete", "unboundProvidersOf", "providersFor", "providersOf"]) 
+            ->setMethods(["create", "load", "delete", "update", "unboundProvidersOf", "providersFor", "providersOf"]) 
             ->getMock();
 
         $this->provider_1 = $this

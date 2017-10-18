@@ -46,6 +46,16 @@ interface ProviderDB {
     public function delete(UnboundProvider $provider);
 
     /**
+     * Update the given unbound provider.
+     *
+     * The only thing that may be updated are the components that are provided.
+     *
+     * @param   UnboundProvider    $provider
+     * @return  null
+     */
+    public function update(UnboundProvider $provider);
+
+    /**
      * Get all unbound providers of a given owner.
      *
      * @param   \ilObject   $owner

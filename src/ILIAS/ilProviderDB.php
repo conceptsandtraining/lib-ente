@@ -123,6 +123,26 @@ class ilProviderDB implements ProviderDB {
     /**
      * @inheritdocs
      */
+    public function update(UnboundProvider $provider) {
+        $id = $provider->id();
+        $this->ilDB->manipulate("DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ".$this->ilDB->quote($id, "integer"));
+
+        foreach ($provider->componentTypes() as $component_type) {
+            if (strlen($component_type) > ilProviderDB::CLASS_NAME_LENGTH) {
+                throw new \LogicException(
+                            "Expected component type '$class_name' to have at most "
+                            .ilProviderDB::CLASS_NAME_LENGTH." chars.");
+            }
+            $this->ilDB->insert(ilProviderDB::COMPONENT_TABLE,
+                [ "id" => ["integer", $id]
+                , "component_type" => ["string", $component_type]
+                ]);
+        }
+    }
+
+    /**
+     * @inheritdocs
+     */
     public function unboundProvidersOf(\ilObject $owner) {
         $ret = [];
 
