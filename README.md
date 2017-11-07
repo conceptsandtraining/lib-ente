@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/conceptsandtraining/ilias-tool-ilse.svg?token=S5A6thmo2LVbsWtZHFUA&branch=master)](https://travis-ci.com/conceptsandtraining/lib-ente)
 # ente.php
 
 *An entity component framework for PHP.*
