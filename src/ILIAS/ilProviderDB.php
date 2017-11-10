@@ -153,7 +153,7 @@ class ilProviderDB implements ProviderDB {
         $res = $this->ilDB->query($query);
 
         while($row = $this->ilDB->fetchAssoc($res)) {
-            $ret[] = $this->buildUnboundProvider($row["id"], $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
+            $ret[] = $this->buildUnboundProvider((int)$row["id"], $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
         }
 
         return $ret;
@@ -241,7 +241,7 @@ class ilProviderDB implements ProviderDB {
                 $owner = $this->buildObjectByRefId($ref_id);
                 $unbound_provider =
                     $this->buildUnboundProvider
-                        ( $row["id"]
+                        ( (int)$row["id"]
                         , $owner
                         , $row["object_type"]
                         , $row["class_name"]
