@@ -46,20 +46,20 @@ class ILIAS_SeperatedUnboundProviderTest extends PHPUnit_Framework_TestCase {
      * @inheritdocs
      */
     protected function unboundProvider() {
-        $owner = $this
+        $this->owner = $this
             ->getMockBuilder(\ilObject::class)
             ->setMethods(["getId"])
             ->getMock();
 
         $this->owner_id = 42;
-        $owner
+        $this->owner
             ->method("getId")
             ->willReturn($this->owner_id);
 
         $this->unbound_provider_id = 23;
         $this->object_type = "object_type";
 
-        $provider = new Test_UnboundProvider($this->unbound_provider_id, $owner, $this->object_type);
+        $provider = new Test_UnboundProvider($this->unbound_provider_id, $this->owner, $this->object_type);
 
         return $provider;
     }
@@ -77,9 +77,31 @@ class ILIAS_SeperatedUnboundProviderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($this->owner_id, $owner->getId());
     }
 
-    public function test_id() {
+    public function test_idFor() {
         $unbound_provider = $this->unboundProvider();
-        $this->assertEquals($this->unbound_provider_id, $unbound_provider->id());
+        $this->assertEquals($this->unbound_provider_id, $unbound_provider->idFor($this->owner));
+    }
+
+   public function test_idFor_throws() {
+        $unbound_provider = $this->unboundProvider();
+        $other = $this
+            ->getMockBuilder(\ilObject::class)
+            ->setMethods(["getId"])
+            ->getMock();
+
+        $other_id = 23;
+        $other
+            ->method("getId")
+            ->willReturn($other_id);
+
+        try {
+            $unbound_provider->idFor($other);
+            $raised = false;
+        }
+        catch (\InvalidArgumentException $e) {
+            $raised = true;
+        }
+        $this->assertTrue($raised);
     }
 
     public function test_object_type() {

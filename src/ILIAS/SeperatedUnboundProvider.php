@@ -52,27 +52,25 @@ abstract class SeperatedUnboundProvider implements UnboundProvider {
     abstract public function buildComponentsOf($component_type, Entity $entity);
 
     /**
-     * Get the id of this.
-     *
-     * @return  int
+     * @inheritdocs
      */
-    final public function id() {
+    final public function idFor(\ilObject $owner) {
+        if ($owner->getId() !== $this->owner->getId()) {
+            throw new \InvalidArgumentException(
+                "Object with id ".$owner->getId()." is not the owner with id ".$this->owner->getId());
+        }
         return $this->id;
     }
 
     /**
-     * Get the owner object of the component.
-     *
-     * @return  \ilObject
+     * @inheritdocs
      */
     final public function owners() {
         return [$this->owner];
     }
 
     /**
-     * Get the object type this binds to.
-     *
-     * @return  string
+     * @inheritdocs
      */
     final public function objectType() {
         return $this->object_type;

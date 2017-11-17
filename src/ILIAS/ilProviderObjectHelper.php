@@ -31,7 +31,7 @@ trait ilProviderObjectHelper {
 		$provider_db = $this->getProviderDB();
 		$unbound_providers = $provider_db->unboundProvidersOf($this);
 		foreach ($unbound_providers as $unbound_provider) {
-			$provider_db->delete($unbound_provider);
+			$provider_db->delete($unbound_provider, $this);
 		}
 	}
 

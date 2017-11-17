@@ -113,8 +113,8 @@ class ilProviderDB implements ProviderDB {
     /**
      * @inheritdocs
      */
-    public function delete(UnboundProvider $provider) {
-        $id = $provider->id();
+    public function delete(UnboundProvider $provider, \ilObject $owner) {
+        $id = $provider->idFor($owner);
 
         $this->ilDB->manipulate("DELETE FROM ".ilProviderDB::PROVIDER_TABLE." WHERE id = ".$this->ilDB->quote($id, "integer"));
         $this->ilDB->manipulate("DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ".$this->ilDB->quote($id, "integer"));
@@ -124,19 +124,22 @@ class ilProviderDB implements ProviderDB {
      * @inheritdocs
      */
     public function update(UnboundProvider $provider) {
-        $id = $provider->id();
-        $this->ilDB->manipulate("DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ".$this->ilDB->quote($id, "integer"));
+        $component_types = $provider->componentTypes();
+        foreach ($provider->owners() as $owner) {
+            $id = $provider->idFor($owner);
+            $this->ilDB->manipulate("DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ".$this->ilDB->quote($id, "integer"));
 
-        foreach ($provider->componentTypes() as $component_type) {
-            if (strlen($component_type) > ilProviderDB::CLASS_NAME_LENGTH) {
-                throw new \LogicException(
-                            "Expected component type '$class_name' to have at most "
-                            .ilProviderDB::CLASS_NAME_LENGTH." chars.");
+            foreach ($component_types as $component_type) {
+                if (strlen($component_type) > ilProviderDB::CLASS_NAME_LENGTH) {
+                    throw new \LogicException(
+                                "Expected component type '$class_name' to have at most "
+                                .ilProviderDB::CLASS_NAME_LENGTH." chars.");
+                }
+                $this->ilDB->insert(ilProviderDB::COMPONENT_TABLE,
+                    [ "id" => ["integer", $id]
+                    , "component_type" => ["string", $component_type]
+                    ]);
             }
-            $this->ilDB->insert(ilProviderDB::COMPONENT_TABLE,
-                [ "id" => ["integer", $id]
-                , "component_type" => ["string", $component_type]
-                ]);
         }
     }
 

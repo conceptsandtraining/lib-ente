@@ -30,11 +30,13 @@ interface UnboundProvider {
     public function buildComponentsOf($component_type, Entity $entity);
 
     /**
-     * Get the id of this.
+     * Get the id of this provider for the given owner.
      *
+     * @param   \ilObject   $owner
+     * @throws  \InvalidArgumentException if $owner is not an owner of this provider
      * @return  int
      */
-    public function id();
+    public function idFor(\ilObject $owner);
 
     /**
      * Get the owner object of the component.

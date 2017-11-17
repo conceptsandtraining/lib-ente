@@ -9,6 +9,7 @@
  */
 
 use CaT\Ente\ILIAS\SeperatedUnboundProvider;
+use CaT\Ente\ILIAS\UnboundProvider;
 use CaT\Ente\Provider;
 use CaT\Ente\ILIAS\ilProviderDB;
 use CaT\Ente\Simple\AttachString;
@@ -191,13 +192,15 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->setMethods(["getId"])
             ->getMock();
 
-        $unbound_provider_id = 23;
 
-        $unbound_provider = $this
-            ->getMockBuilder(SeperatedUnboundProvider::class)
-            ->setConstructorArgs([$unbound_provider_id, $owner, "type", []])
-            ->setMethods(["componentTypes", "buildComponentsOf", "id"])
-            ->getMock();
+        $unbound_provider = $this->createMock(UnboundProvider::class);
+
+        $unbound_provider_id = 23;
+        $unbound_provider
+            ->expects($this->once())
+            ->method("idFor")
+            ->with($owner)
+            ->willReturn($unbound_provider_id);
 
         $il_db
             ->expects($this->atLeastOnce())
@@ -213,24 +216,34 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
                 ["DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ~$unbound_provider_id~"]);
 
         $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), []);
-        $db->delete($unbound_provider);
+        $db->delete($unbound_provider, $owner);
     }
 
     public function test_update() {
         $il_db = $this->il_db_mock();
 
-        $owner = $this
+        $owner1 = $this
             ->getMockBuilder(\ilObject::class)
             ->setMethods(["getId"])
             ->getMock();
 
-        $unbound_provider_id = 23;
-
-        $unbound_provider = $this
-            ->getMockBuilder(SeperatedUnboundProvider::class)
-            ->setConstructorArgs([$unbound_provider_id, $owner, "type", []])
-            ->setMethods(["componentTypes", "buildComponentsOf", "id"])
+        $owner2 = $this
+            ->getMockBuilder(\ilObject::class)
+            ->setMethods(["getId"])
             ->getMock();
+
+        $unbound_provider = $this->createMock(UnboundProvider::class);
+
+        $unbound_provider
+            ->expects($this->once())
+            ->method("owners")
+            ->willReturn([$owner1, $owner2]);
+
+        $unbound_provider
+            ->expects($this->exactly(2))
+            ->method("idFor")
+            ->withConsecutive([$owner1],[$owner2])
+            ->will($this->onConsecutiveCalls(1,2));
 
         $unbound_provider
             ->expects($this->once())
@@ -240,30 +253,44 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $il_db
             ->expects($this->atLeastOnce())
             ->method("quote")
-            ->with($unbound_provider_id, "integer")
-            ->willReturn("~$unbound_provider_id~");
+            ->withConsecutive([1, "integer"],[2, "integer"])
+            ->will($this->returnCallback(function($int) { return "~$int~"; }));
 
         $il_db
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method("manipulate")
-            ->with("DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ~$unbound_provider_id~");
+            ->withConsecutive(
+                ["DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ~1~"],
+                ["DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ~2~"]);
 
         $insert_component_1 =
-            [ "id" => ["integer", $unbound_provider_id]
+            [ "id" => ["integer", 1]
             , "component_type" => ["string", AttachString::class]
             ];
 
         $insert_component_2 =
-            [ "id" => ["integer", $unbound_provider_id]
+            [ "id" => ["integer", 1]
+            , "component_type" => ["string", AttachInt::class]
+            ];
+
+        $insert_component_3 =
+            [ "id" => ["integer", 2]
+            , "component_type" => ["string", AttachString::class]
+            ];
+
+        $insert_component_4 =
+            [ "id" => ["integer", 2]
             , "component_type" => ["string", AttachInt::class]
             ];
 
         $il_db
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(4))
             ->method("insert")
             ->withConsecutive(
                 [ilProviderDB::COMPONENT_TABLE, $insert_component_1],
-                [ilProviderDB::COMPONENT_TABLE, $insert_component_2]);
+                [ilProviderDB::COMPONENT_TABLE, $insert_component_2],
+                [ilProviderDB::COMPONENT_TABLE, $insert_component_3],
+                [ilProviderDB::COMPONENT_TABLE, $insert_component_4]);
 
         $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), []);
         $db->update($unbound_provider);
@@ -321,8 +348,8 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         }
 
         list($provider1, $provider2) = $providers;
-        $this->assertEquals(1, $provider1->id());
-        $this->assertEquals(2, $provider2->id());
+        $this->assertEquals(1, $provider1->idFor($owner));
+        $this->assertEquals(2, $provider2->idFor($owner));
     }
 
     public function test_load() {
@@ -365,7 +392,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf(Test_UnboundProvider::class, $provider);
         $this->assertEquals($object_type, $provider->objectType());
         $this->assertEquals([$owner], $provider->owners());
-        $this->assertEquals($provider_id, $provider->id());
+        $this->assertEquals($provider_id, $provider->idFor($owner));
     }
 
     public function test_providersFor() {
@@ -462,10 +489,10 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         }
 
         list($provider1, $provider2) = $providers;
-        $this->assertEquals(1, $provider1->unboundProvider()->id());
+        $this->assertEquals(1, $provider1->unboundProvider()->idFor($owner_1));
         $this->assertEquals([$owner_1], $provider1->owners());
 
-        $this->assertEquals(2, $provider2->unboundProvider()->id());
+        $this->assertEquals(2, $provider2->unboundProvider()->idFor($owner_2));
         $this->assertEquals([$owner_2], $provider2->owners());
 
     }
