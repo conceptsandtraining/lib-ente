@@ -48,6 +48,6 @@ trait ilProviderObjectHelper {
 			throw new \LogicException("ilProviderObjectHelper can only be used with ilObjects.");
 		} 
 
-		$this->getProviderDB()->create($this, $object_type, $class_name, $path);
+		$this->getProviderDB()->createSeperatedUnboundProvider($this, $object_type, $class_name, $path);
 	}
 }

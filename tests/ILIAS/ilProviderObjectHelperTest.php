@@ -87,7 +87,7 @@ class ilProviderObjectHelperTest extends PHPUnit_Framework_TestCase {
 
 		$provider_db
 			->expects($this->once())
-			->method("create")
+			->method("createSeperatedUnboundProvider")
 			->with($mock, $object_type, $class_name, $path);
 			
 		$mock->_createUnboundProvider($object_type, $class_name, $path);

@@ -167,7 +167,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->willReturn($new_provider_id);
 
         $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), []);
-        $unbound_provider = $db->create($owner, $object_type, $class_name, $include_path);
+        $unbound_provider = $db->createSeperatedUnboundProvider($owner, $object_type, $class_name, $include_path);
 
         $this->assertInstanceOf(Test_UnboundProvider::class, $unbound_provider);
     }

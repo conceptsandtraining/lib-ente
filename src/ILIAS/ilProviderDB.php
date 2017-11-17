@@ -44,7 +44,7 @@ class ilProviderDB implements ProviderDB {
     /**
      * @inheritdocs
      */
-    public function create(\ilObject $owner, $object_type, $class_name, $include_path) {
+    public function createSeperatedUnboundProvider(\ilObject $owner, $object_type, $class_name, $include_path) {
         assert('is_string($object_type)');
         assert('is_string($class_name)');
         assert('is_string($include_path)');
