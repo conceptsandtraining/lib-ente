@@ -14,34 +14,11 @@ namespace CaT\Ente\ILIAS;
  * An unbound provider is a provider that currently is not bound to an
  * entity and can thus not produce components.
  */
-abstract class UnboundProvider {
-    /**
-     * @var int
-     */
-    private $id;
-
-    /**
-     * @var \ilObject
-     */
-    private $owner;
-
-    /**
-     * @var string
-     */
-    private $object_type;
-
-    final public function __construct($id, \ilObject $owner, $object_type) {
-        assert('is_int($id)');
-        $this->id = $id;
-        $this->owner = $owner;
-        assert('is_string($object_type)');
-        $this->object_type = $object_type;
-    }
-
+interface UnboundProvider {
     /**
      * @inheritdocs
      */
-    abstract public function componentTypes();
+    public function componentTypes();
 
     /**
      * Build the component(s) of the given type for the given object.
@@ -50,32 +27,26 @@ abstract class UnboundProvider {
      * @param   Entity    $provider
      * @return  Component[]
      */
-    abstract public function buildComponentsOf($component_type, Entity $entity);
+    public function buildComponentsOf($component_type, Entity $entity);
 
     /**
      * Get the id of this.
      *
      * @return  int
      */
-    final public function id() {
-        return $this->id;
-    }
+    public function id();
 
     /**
      * Get the owner object of the component.
      *
      * @return  \ilObject
      */
-    final public function owner() {
-        return $this->owner;
-    }
+    public function owner();
 
     /**
      * Get the object type this binds to.
      *
      * @return  string
      */
-    final public function objectType() {
-        return $this->object_type;
-    }
+    public function objectType();
 }

@@ -10,7 +10,7 @@
 
 use CaT\Ente\ILIAS\Entity;
 use CaT\Ente\ILIAS\Provider;
-use CaT\Ente\ILIAS\UnboundProvider;
+use CaT\Ente\ILIAS\SeperatedUnboundProvider;
 use CaT\Ente\Simple;
 use CaT\Ente\Simple\AttachString;
 use CaT\Ente\Simple\AttachStringMemory;
@@ -21,7 +21,7 @@ if (!class_exists("ilObject")) {
     require_once(__DIR__."/ilObject.php");
 }
 
-class Test_UnboundProvider extends UnboundProvider {
+class Test_UnboundProvider extends SeperatedUnboundProvider {
     public function componentTypes() {
         return [AttachString::class, AttachInt::class];
     }

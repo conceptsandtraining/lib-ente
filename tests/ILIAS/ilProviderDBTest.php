@@ -8,7 +8,7 @@
  * the license along with the code.
  */
 
-use CaT\Ente\ILIAS\UnboundProvider;
+use CaT\Ente\ILIAS\SeperatedUnboundProvider;
 use CaT\Ente\Provider;
 use CaT\Ente\ILIAS\ilProviderDB;
 use CaT\Ente\Simple\AttachString;
@@ -183,7 +183,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $unbound_provider_id = 23;
 
         $unbound_provider = $this
-            ->getMockBuilder(UnboundProvider::class)
+            ->getMockBuilder(SeperatedUnboundProvider::class)
             ->setConstructorArgs([$unbound_provider_id, $owner, "type", []])
             ->setMethods(["componentTypes", "buildComponentsOf", "id"])
             ->getMock();
@@ -216,7 +216,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $unbound_provider_id = 23;
 
         $unbound_provider = $this
-            ->getMockBuilder(UnboundProvider::class)
+            ->getMockBuilder(SeperatedUnboundProvider::class)
             ->setConstructorArgs([$unbound_provider_id, $owner, "type", []])
             ->setMethods(["componentTypes", "buildComponentsOf", "id"])
             ->getMock();

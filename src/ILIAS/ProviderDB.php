@@ -19,12 +19,14 @@ interface ProviderDB {
      *
      * The provider will be belong to objects above the $owner in the tree that also
      * have the type $obj_type.
+	 *
+	 * TODO: correct name of this method
      *
      * @param   \ilObject   $owner
      * @param   string      $obj_type
      * @param   string      $class_name
      * @param   string      $include_path
-     * @return  UnboundProvider
+     * @return  SeperateUnboundProvider
      */
     public function create(\ilObject $owner, $obj_type, $class_name, $include_path);
 
