@@ -48,6 +48,14 @@ interface ilDBInterface {
 	public function tableExists($table_name);
 
 	/**
+	 * @param $table_name  string
+	 * @param $column_name string
+	 *
+	 * @return bool
+	 */
+	public function tableColumnExists($table_name, $column_name);
+
+	/**
 	 * @param $table_name
 	 * @param $fields
 	 * @param string $index_name
@@ -55,6 +63,13 @@ interface ilDBInterface {
 	 * @return bool
 	 */
 	public function addIndex($table_name, $fields, $index_name = '', $fulltext = false);
+
+	/**
+	 * @param $table_name  string
+	 * @param $column_name string
+	 * @param $attributes  array
+	 */
+	public function addTableColumn($table_name, $column_name, $attributes);
 
 	/**
 	 * @param $query string

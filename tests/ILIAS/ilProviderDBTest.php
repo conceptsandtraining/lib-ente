@@ -50,12 +50,7 @@ class Test_ilProviderDB extends ilProviderDB {
 
 class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
     protected function il_db_mock() {
-        return $this
-            ->getMockBuilder(\ilDBInterface::class)
-            ->setMethods(["nextId","createTable","addPrimaryKey","createSequence",
-                          "tableExists","addIndex","query","insert","fetchAssoc",
-                          "quote", "manipulate", "in"])
-            ->getMock();
+        return $this->createMock(\ilDBInterface::class);
     }
 
     public function il_tree_mock() {
@@ -111,6 +106,22 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->expects($this->once())
             ->method("createSequence")
             ->with(ilProviderDB::PROVIDER_TABLE);
+
+        $il_db
+            ->expects($this->once())
+            ->method("tableColumnExists")
+            ->with(ilProviderDB::PROVIDER_TABLE, "shared")
+            ->willReturn(false);
+
+        $il_db
+            ->expects($this->once())
+            ->method("addTableColumn")
+            ->with(ilProviderDB::PROVIDER_TABLE, "shared", ["type" => "integer", "length" => 1, "notnull" => true, "default" => 0]);
+
+        $il_db
+            ->expects($this->once())
+            ->method("addIndex")
+            ->with(ilProviderDB::PROVIDER_TABLE, "shared");
    
         $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), []);
         $db->createTables();
@@ -414,7 +425,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $il_db
             ->expects($this->once())
             ->method("query")
-            ->with("SELECT id, owner, class_name, include_path FROM ".ilProviderDB::PROVIDER_TABLE." WHERE ~IN~ AND object_type = ~TYPE~")
+            ->with("SELECT id, owner, class_name, include_path FROM ".ilProviderDB::PROVIDER_TABLE." WHERE shared = 0 AND ~IN~ AND object_type = ~TYPE~")
             ->willReturn($result);
 
         $class_name = "Test_UnboundProvider";
@@ -521,7 +532,8 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
                     "FROM ".ilProviderDB::PROVIDER_TABLE." prv ".
                     "JOIN ".ilProviderDB::COMPONENT_TABLE." cmp ".
                     "ON prv.id = cmp.id ".
-                    "WHERE ~IN~ ".
+                    "WHERE shared = 0 ".
+                    "AND ~IN~ ".
                     "AND object_type = ~TYPE~ ".
                     "AND component_type = ~COMPONENT_TYPE~")
             ->willReturn($result);

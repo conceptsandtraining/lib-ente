@@ -228,7 +228,8 @@ class ilProviderDB implements ProviderDB {
             return
                 "SELECT id, owner, class_name, include_path ".
                 "FROM ".ilProviderDB::PROVIDER_TABLE." ".
-                "WHERE ".$this->ilDB->in("owner", $node_ids, false, "integer").
+                "WHERE shared = 0".
+                " AND ".$this->ilDB->in("owner", $node_ids, false, "integer").
                 " AND object_type = ".$this->ilDB->quote($object_type, "string");
         }
         else {
@@ -237,7 +238,8 @@ class ilProviderDB implements ProviderDB {
                 "FROM ".ilProviderDB::PROVIDER_TABLE." prv ".
                 "JOIN ".ilProviderDB::COMPONENT_TABLE." cmp ".
                 "ON prv.id = cmp.id ".
-                "WHERE ".$this->ilDB->in("owner", $node_ids, false, "integer").
+                "WHERE shared = 0".
+                " AND ".$this->ilDB->in("owner", $node_ids, false, "integer").
                 " AND object_type = ".$this->ilDB->quote($object_type, "string").
                 " AND component_type = ".$this->ilDB->quote($component_type, "string");
         }
@@ -266,6 +268,10 @@ class ilProviderDB implements ProviderDB {
                 , "component_type" => ["type" => "text", "length" => ilProviderDB::CLASS_NAME_LENGTH, "notnull" => true]
                 ]);
             $this->ilDB->addPrimaryKey(ilProviderDB::COMPONENT_TABLE, ["id", "component_type"]);
+        }
+        if (!$this->ilDB->tableColumnExists(ilProviderDB::PROVIDER_TABLE, "shared")) {
+            $this->ilDB->addTableColumn(ilProviderDB::PROVIDER_TABLE, "shared", ["type" => "integer", "length" => 1, "notnull" => true, "default" => 0]);
+            $this->ilDB->addIndex(ilProviderDB::PROVIDER_TABLE, "shared");
         }
     }
 
