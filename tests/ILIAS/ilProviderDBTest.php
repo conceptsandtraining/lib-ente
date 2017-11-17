@@ -132,7 +132,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $new_provider_id = 23;
         $object_type = "crs";
         $class_name = Test_UnboundProvider::class;
-        $include_path = __DIR__."/UnboundProviderTest.php";
+        $include_path = __DIR__."/SeperatedUnboundProviderTest.php";
 
         $insert_provider =
             [ "id" => ["integer", $new_provider_id]
@@ -286,7 +286,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
 
         $object_type = "type";
         $class_name = "Test_UnboundProvider";
-        $include_path = __DIR__."/UnboundProviderTest.php";
+        $include_path = __DIR__."/SeperatedUnboundProviderTest.php";
 
         $il_db
             ->expects($this->exactly(3))
@@ -334,7 +334,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
 
         $object_type = "type";
         $class_name = "Test_UnboundProvider";
-        $include_path = __DIR__."/UnboundProviderTest.php";
+        $include_path = __DIR__."/SeperatedUnboundProviderTest.php";
 
         $il_db
             ->expects($this->once())
@@ -418,7 +418,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->willReturn($result);
 
         $class_name = "Test_UnboundProvider";
-        $include_path = __DIR__."/UnboundProviderTest.php";
+        $include_path = __DIR__."/SeperatedUnboundProviderTest.php";
 
         $il_db
             ->expects($this->exactly(3))

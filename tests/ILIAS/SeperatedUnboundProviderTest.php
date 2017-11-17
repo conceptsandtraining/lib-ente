@@ -41,7 +41,7 @@ class Test_UnboundProvider extends SeperatedUnboundProvider {
     }
 }
 
-class ILIAS_UnboundProviderTest extends PHPUnit_Framework_TestCase {
+class ILIAS_SeperatedUnboundProviderTest extends PHPUnit_Framework_TestCase {
     /**
      * @inheritdocs
      */
