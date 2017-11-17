@@ -306,7 +306,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         foreach ($providers as $provider) {
             $this->assertInstanceOf(Test_UnboundProvider::class, $provider);
             $this->assertEquals($object_type, $provider->objectType());
-            $this->assertEquals($owner, $provider->owner());
+            $this->assertEquals([$owner], $provider->owners());
         }
 
         list($provider1, $provider2) = $providers;
@@ -353,7 +353,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
 
         $this->assertInstanceOf(Test_UnboundProvider::class, $provider);
         $this->assertEquals($object_type, $provider->objectType());
-        $this->assertEquals($owner, $provider->owner());
+        $this->assertEquals([$owner], $provider->owners());
         $this->assertEquals($provider_id, $provider->id());
     }
 
@@ -452,10 +452,10 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
 
         list($provider1, $provider2) = $providers;
         $this->assertEquals(1, $provider1->unboundProvider()->id());
-        $this->assertEquals($owner_1, $provider1->owner());
+        $this->assertEquals([$owner_1], $provider1->owners());
 
         $this->assertEquals(2, $provider2->unboundProvider()->id());
-        $this->assertEquals($owner_2, $provider2->owner());
+        $this->assertEquals([$owner_2], $provider2->owners());
 
     }
 

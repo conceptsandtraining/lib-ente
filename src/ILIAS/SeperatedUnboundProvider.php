@@ -65,8 +65,8 @@ abstract class SeperatedUnboundProvider implements UnboundProvider {
      *
      * @return  \ilObject
      */
-    final public function owner() {
-        return $this->owner;
+    final public function owners() {
+        return [$this->owner];
     }
 
     /**

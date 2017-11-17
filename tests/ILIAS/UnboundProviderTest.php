@@ -70,7 +70,9 @@ class ILIAS_UnboundProviderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_owner() {
-        $owner = $this->unboundProvider()->owner();
+        $owners = $this->unboundProvider()->owners();
+        $this->assertCount(1, $owners);
+        $owner = array_shift($owners);
         $this->assertInstanceOf(\ilObject::class, $owner);
         $this->assertEquals($this->owner_id, $owner->getId());
     }

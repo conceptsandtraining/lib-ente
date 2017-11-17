@@ -168,14 +168,14 @@ class ILIAS_ProviderTest extends ProviderTest {
 		$this->assertEquals($this->object, $object);
     }
 
-    public function test_owner() {
+    public function test_owners() {
         $provider = $this->provider();
 		$this->unbound_provider
 			->expects($this->once())
-			->method("owner")
-			->willReturn($this->owner);
-        $owner = $provider->owner();
-        $this->assertSame($this->owner, $owner);
+			->method("owners")
+			->willReturn([$this->owner]);
+        $owners = $provider->owners();
+        $this->assertEquals([$this->owner], $owners);
     }
 
     public function test_unboundProvider() {

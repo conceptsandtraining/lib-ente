@@ -39,9 +39,9 @@ interface UnboundProvider {
     /**
      * Get the owner object of the component.
      *
-     * @return  \ilObject
+     * @return  \ilObject[]
      */
-    public function owner();
+    public function owners();
 
     /**
      * Get the object type this binds to.
