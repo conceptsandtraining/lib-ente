@@ -72,7 +72,7 @@ class ilProviderDB implements ProviderDB {
             , "include_path" => ["string", $include_path]
             ]);
 
-        $unbound_provider = $this->buildUnboundProvider($id, $owner, $class_name, $class_name, $include_path);
+        $unbound_provider = $this->buildSeperatedUnboundProvider($id, $owner, $class_name, $class_name, $include_path);
 
         foreach ($unbound_provider->componentTypes() as $component_type) {
             if (strlen($component_type) > ilProviderDB::CLASS_NAME_LENGTH) {
@@ -103,7 +103,7 @@ class ilProviderDB implements ProviderDB {
 
         if($row = $this->ilDB->fetchAssoc($res)) {
             $owner = $this->buildObjectByObjId($row["owner"]);
-            return $this->buildUnboundProvider($id, $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
+            return $this->buildSeperatedUnboundProvider($id, $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
         }
         else {
             throw new \InvalidArgumentException("Unbound provider with id '$id' does not exist.");
@@ -153,7 +153,7 @@ class ilProviderDB implements ProviderDB {
         $res = $this->ilDB->query($query);
 
         while($row = $this->ilDB->fetchAssoc($res)) {
-            $ret[] = $this->buildUnboundProvider((int)$row["id"], $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
+            $ret[] = $this->buildSeperatedUnboundProvider((int)$row["id"], $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
         }
 
         return $ret;
@@ -177,7 +177,7 @@ class ilProviderDB implements ProviderDB {
             $owner = $this->buildObjectByRefId($ref_id);
             $ret[] = new Provider
                 ( $object
-                , $this->buildUnboundProvider
+                , $this->buildSeperatedUnboundProvider
                     ( (int)$row["id"]
                     , $owner
                     , $object_type
@@ -284,7 +284,7 @@ class ilProviderDB implements ProviderDB {
      * @param   string      $include_path
      * @return  UnboundProvider
      */
-    protected function buildUnboundProvider($id, \ilObject $owner, $object_type, $class_name, $include_path) {
+    protected function buildSeperatedUnboundProvider($id, \ilObject $owner, $object_type, $class_name, $include_path) {
         assert('is_int($id)');
         assert('is_string($object_type)');
         assert('is_string($class_name)');
