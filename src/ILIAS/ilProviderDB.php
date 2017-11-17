@@ -164,17 +164,8 @@ class ilProviderDB implements ProviderDB {
      */
     public function providersFor(\ilObject $object, $component_type = null) {
         assert('is_null($component_type) || is_string($component_type)');
-        $ref_id = $object->getRefId();
-        $sub_nodes_refs = $this->ilTree->getSubTreeIds($ref_id);
-		$all_nodes_refs = array_merge([$ref_id], $sub_nodes_refs);
-        $this->ilObjectDataCache->preloadReferenceCache($all_nodes_refs);
-        $nodes_id_mapping = [];
-        $nodes_ids = [];
-        foreach ($all_nodes_refs as $ref_id) {
-            $id = $this->ilObjectDataCache->lookupObjId($ref_id);
-            $nodes_id_mapping[$id] = $ref_id;
-            $nodes_ids[] = $id;
-        }
+
+        list($nodes_ids, $nodes_id_mapping) = $this->getSubtreeObjectIdsAndRefIdMapping((int)$object->getRefId());
 
         $object_type = $object->getType();
         if ($component_type === null) {
@@ -214,6 +205,28 @@ class ilProviderDB implements ProviderDB {
         }
 
         return $ret;
+    }
+
+    /**
+     * Get the object ids of the subtree starting at and including $ref_id with
+     * a mapping from $obj_id to $ref_id.
+     *
+     * @param   int $ref_id
+     * @return  array   [int[], array<int,int>]
+     */
+    protected function getSubtreeObjectIdsAndRefIdMapping($ref_id) {
+        $sub_nodes_refs = $this->ilTree->getSubTreeIds($ref_id);
+		$all_nodes_refs = array_merge([$ref_id], $sub_nodes_refs);
+        $this->ilObjectDataCache->preloadReferenceCache($all_nodes_refs);
+
+        $nodes_id_mapping = [];
+        $nodes_ids = [];
+        foreach ($all_nodes_refs as $ref_id) {
+            $id = $this->ilObjectDataCache->lookupObjId($ref_id);
+            $nodes_id_mapping[$id] = $ref_id;
+            $nodes_ids[] = $id;
+        }
+        return [$nodes_ids, $nodes_id_mapping];
     }
 
     /**
