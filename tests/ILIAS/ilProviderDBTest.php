@@ -556,7 +556,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->expects($this->once())
             ->method("query")
             ->with(
-                "SELECT id, owner, object_type, class_name, include_path".
+                "SELECT prv.id, prv.owner, prv.object_type, prv.class_name, prv.include_path".
                 " FROM ".ilProviderDB::PROVIDER_TABLE." prv".
                 " JOIN ".ilProviderDB::COMPONENT_TABLE." cmp".
                 " ON prv.id = cmp.id".
@@ -671,7 +671,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->expects($this->once())
             ->method("query")
             ->with(
-                "SELECT id, owner, object_type, class_name, include_path".
+                "SELECT prv.id, prv.owner, prv.object_type, prv.class_name, prv.include_path".
                 " FROM ".ilProviderDB::PROVIDER_TABLE." prv".
                 " JOIN ".ilProviderDB::COMPONENT_TABLE." cmp".
                 " ON prv.id = cmp.id".
