@@ -222,7 +222,7 @@ class ilProviderDB implements ProviderDB {
      * @inheritdocs
      */
     public function providersOf($component_type, array $objects = null) {
-        $query = "SELECT id, owner, object_type, class_name, include_path "
+        $query = "SELECT prv.id, prv.owner, prv.object_type, prv.class_name, prv.include_path "
                 ."FROM ".ilProviderDB::PROVIDER_TABLE." prv "
                 ."JOIN ".ilProviderDB::COMPONENT_TABLE." cmp ON prv.id = cmp.id "
                 ."WHERE cmp.component_type = ".$this->ilDB->quote($component_type, "string");
