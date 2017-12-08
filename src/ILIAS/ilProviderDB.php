@@ -217,54 +217,6 @@ class ilProviderDB implements ProviderDB {
     }
 
     /**
-     * TODO: This could be made faster for the filtered case by using getSubtree.
-	 *
-     * @inheritdocs
-     */
-    public function providersOf($component_type, array $objects = null) {
-        $query = "SELECT prv.id, prv.owner, prv.object_type, prv.class_name, prv.include_path "
-                ."FROM ".ilProviderDB::PROVIDER_TABLE." prv "
-                ."JOIN ".ilProviderDB::COMPONENT_TABLE." cmp ON prv.id = cmp.id "
-                ."WHERE cmp.component_type = ".$this->ilDB->quote($component_type, "string");
-        $res = $this->ilDB->query($query);
-
-        $ret = [];
-        if ($objects !== null) {
-            $filter_ref_ids = array_map(function($o) { return $o->getRefId(); }, $objects);
-        }
-        else {
-            $filter_ref_ids = null;
-        }
-        while ($row = $this->ilDB->fetchAssoc($res)) {
-            $ref_ids = $this->getAllReferenceIdsFor($row["owner"]);
-            foreach ($ref_ids as $ref_id) {
-                $owner = $this->buildObjectByRefId($ref_id);
-                $unbound_provider =
-                    $this->buildUnboundProvider
-                        ( (int)$row["id"]
-                        , $owner
-                        , $row["object_type"]
-                        , $row["class_name"]
-                        , $row["include_path"]
-                        );
-                $path = $this->ilTree->getNodePath($ref_id);
-                if ($path !== null) {
-                    foreach ($path as $node) {
-                        if ($node["type"] === $row["object_type"]) {
-                            if ($filter_ref_ids === null || in_array($node["child"], $filter_ref_ids)) {
-                                $object = $this->buildObjectByRefId($node["child"]);
-                                $ret[] = new Provider($object, $unbound_provider);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return $ret;
-    }
-
-    /**
      * Create the tables for the providers in the ILIAS db.
      *
      * @return  null
