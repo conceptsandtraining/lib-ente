@@ -44,7 +44,7 @@ class ilProviderDB implements ProviderDB {
     /**
      * @inheritdocs
      */
-    public function createSeperatedUnboundProvider(\ilObject $owner, $object_type, $class_name, $include_path) {
+    public function createSeparatedUnboundProvider(\ilObject $owner, $object_type, $class_name, $include_path) {
         assert('is_string($object_type)');
         assert('is_string($class_name)');
         assert('is_string($include_path)');
@@ -72,7 +72,7 @@ class ilProviderDB implements ProviderDB {
             , "include_path" => ["string", $include_path]
             ]);
 
-        $unbound_provider = $this->buildSeperatedUnboundProvider($id, $owner, $class_name, $class_name, $include_path);
+        $unbound_provider = $this->buildSeparatedUnboundProvider($id, $owner, $class_name, $class_name, $include_path);
 
         foreach ($unbound_provider->componentTypes() as $component_type) {
             if (strlen($component_type) > ilProviderDB::CLASS_NAME_LENGTH) {
@@ -103,7 +103,7 @@ class ilProviderDB implements ProviderDB {
 
         if($row = $this->ilDB->fetchAssoc($res)) {
             $owner = $this->buildObjectByObjId($row["owner"]);
-            return $this->buildSeperatedUnboundProvider($id, $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
+            return $this->buildSeparatedUnboundProvider($id, $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
         }
         else {
             throw new \InvalidArgumentException("Unbound provider with id '$id' does not exist.");
@@ -156,7 +156,7 @@ class ilProviderDB implements ProviderDB {
         $res = $this->ilDB->query($query);
 
         while($row = $this->ilDB->fetchAssoc($res)) {
-            $ret[] = $this->buildSeperatedUnboundProvider((int)$row["id"], $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
+            $ret[] = $this->buildSeparatedUnboundProvider((int)$row["id"], $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
         }
 
         return $ret;
@@ -173,7 +173,7 @@ class ilProviderDB implements ProviderDB {
 
         $ret = [];
 
-        $query = $this->buildSeperatedUnboundProviderQueryForObjects($nodes_ids, $object_type, $component_type);
+        $query = $this->buildSeparatedUnboundProviderQueryForObjects($nodes_ids, $object_type, $component_type);
         $res = $this->ilDB->query($query);
         while ($row = $this->ilDB->fetchAssoc($res)) {
             $obj_id = $row["owner"];
@@ -181,7 +181,7 @@ class ilProviderDB implements ProviderDB {
             $owner = $this->buildObjectByRefId($ref_id);
             $ret[] = new Provider
                 ( $object
-                , $this->buildSeperatedUnboundProvider
+                , $this->buildSeparatedUnboundProvider
                     ( (int)$row["id"]
                     , $owner
                     , $object_type
@@ -239,7 +239,7 @@ class ilProviderDB implements ProviderDB {
     }
 
     /**
-     * Get a query for all SeperatedUnboundProviders that are owned by the given nodes
+     * Get a query for all SeparatedUnboundProviders that are owned by the given nodes
      * providing for a given object type.
      *
      * @param   int[]       $node_ids
@@ -247,7 +247,7 @@ class ilProviderDB implements ProviderDB {
      * @param   string|null $component_type
      * @return  string
      */
-    protected function buildSeperatedUnboundProviderQueryForObjects(array $node_ids, $object_type, $component_type) {
+    protected function buildSeparatedUnboundProviderQueryForObjects(array $node_ids, $object_type, $component_type) {
         assert('is_string($object_type)');
         assert('is_null($component_type) || is_string($component_type)');
         if ($component_type === null) {
@@ -337,7 +337,7 @@ class ilProviderDB implements ProviderDB {
     }
 
     /**
-     * Create a seperated unbound provider.
+     * Create a separated unbound provider.
      *
      * @param   int         $id
      * @param   \ilObject   $owner
@@ -346,7 +346,7 @@ class ilProviderDB implements ProviderDB {
      * @param   string      $include_path
      * @return  UnboundProvider
      */
-    protected function buildSeperatedUnboundProvider($id, \ilObject $owner, $object_type, $class_name, $include_path) {
+    protected function buildSeparatedUnboundProvider($id, \ilObject $owner, $object_type, $class_name, $include_path) {
         assert('is_int($id)');
         assert('is_string($object_type)');
         assert('is_string($class_name)');
@@ -357,7 +357,7 @@ class ilProviderDB implements ProviderDB {
 
         assert('class_exists($class_name)');
 
-        if (!is_subclass_of($class_name, SeperatedUnboundProvider::class)) {
+        if (!is_subclass_of($class_name, SeparatedUnboundProvider::class)) {
             throw new \UnexpectedValueException(
                         "Class '$class_name' does not extend UnboundProvider.");
         }

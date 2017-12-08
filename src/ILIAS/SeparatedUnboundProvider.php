@@ -11,9 +11,9 @@
 namespace CaT\Ente\ILIAS;
 
 /**
- * An seperated unbound provider is a unbound provider that has a single owner.
+ * An separated unbound provider is a unbound provider that has a single owner.
  */
-abstract class SeperatedUnboundProvider implements UnboundProvider {
+abstract class SeparatedUnboundProvider implements UnboundProvider {
     /**
      * @var int
      */

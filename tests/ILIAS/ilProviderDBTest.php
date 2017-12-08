@@ -8,7 +8,7 @@
  * the license along with the code.
  */
 
-use CaT\Ente\ILIAS\SeperatedUnboundProvider;
+use CaT\Ente\ILIAS\SeparatedUnboundProvider;
 use CaT\Ente\ILIAS\UnboundProvider;
 use CaT\Ente\Provider;
 use CaT\Ente\ILIAS\ilProviderDB;
@@ -144,7 +144,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $new_provider_id = 23;
         $object_type = "crs";
         $class_name = Test_UnboundProvider::class;
-        $include_path = __DIR__."/SeperatedUnboundProviderTest.php";
+        $include_path = __DIR__."/SeparatedUnboundProviderTest.php";
 
         $insert_provider =
             [ "id" => ["integer", $new_provider_id]
@@ -179,7 +179,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->willReturn($new_provider_id);
 
         $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), []);
-        $unbound_provider = $db->createSeperatedUnboundProvider($owner, $object_type, $class_name, $include_path);
+        $unbound_provider = $db->createSeparatedUnboundProvider($owner, $object_type, $class_name, $include_path);
 
         $this->assertInstanceOf(Test_UnboundProvider::class, $unbound_provider);
     }
@@ -324,7 +324,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
 
         $object_type = "type";
         $class_name = "Test_UnboundProvider";
-        $include_path = __DIR__."/SeperatedUnboundProviderTest.php";
+        $include_path = __DIR__."/SeparatedUnboundProviderTest.php";
 
         $il_db
             ->expects($this->exactly(3))
@@ -372,7 +372,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
 
         $object_type = "type";
         $class_name = "Test_UnboundProvider";
-        $include_path = __DIR__."/SeperatedUnboundProviderTest.php";
+        $include_path = __DIR__."/SeparatedUnboundProviderTest.php";
 
         $il_db
             ->expects($this->once())
@@ -461,7 +461,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->will($this->onConsecutiveCalls($result1, $result2));
 
         $class_name = "Test_UnboundProvider";
-        $include_path = __DIR__."/SeperatedUnboundProviderTest.php";
+        $include_path = __DIR__."/SeparatedUnboundProviderTest.php";
 
         $il_db
             ->expects($this->exactly(4))

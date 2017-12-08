@@ -24,9 +24,9 @@ interface ProviderDB {
      * @param   string      $obj_type
      * @param   string      $class_name
      * @param   string      $include_path
-     * @return  SeperatedUnboundProvider
+     * @return  SeparatedUnboundProvider
      */
-    public function createSeperatedUnboundProvider(\ilObject $owner, $obj_type, $class_name, $include_path);
+    public function createSeparatedUnboundProvider(\ilObject $owner, $obj_type, $class_name, $include_path);
 
     /**
      * Load the unbound provider with the given id.

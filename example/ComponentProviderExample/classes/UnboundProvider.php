@@ -4,7 +4,7 @@ namespace CaT\Plugins\ComponentProviderExample;
 
 require_once(__DIR__."/../vendor/autoload.php");
 
-use \CaT\Ente\ILIAS\SeperatedUnboundProvider as Base;
+use \CaT\Ente\ILIAS\SeparatedUnboundProvider as Base;
 use \CaT\Ente\Simple\AttachString;
 use \CaT\Ente\Simple\AttachStringMemory;
 use \CaT\Ente\ILIAS\Entity;
