@@ -19,14 +19,14 @@ interface ProviderDB {
      *
      * The provider will be belong to objects above the $owner in the tree that also
      * have the type $obj_type.
-     *
+	 *
      * @param   \ilObject   $owner
      * @param   string      $obj_type
      * @param   string      $class_name
      * @param   string      $include_path
-     * @return  UnboundProvider
+     * @return  SeparatedUnboundProvider
      */
-    public function create(\ilObject $owner, $obj_type, $class_name, $include_path);
+    public function createSeparatedUnboundProvider(\ilObject $owner, $obj_type, $class_name, $include_path);
 
     /**
      * Load the unbound provider with the given id.
@@ -41,9 +41,10 @@ interface ProviderDB {
      * Delete a given unbound provider.
      *
      * @param   UnboundProvider    $provider
+     * @param   UnboundProvider    $provider
      * @return  null
      */
-    public function delete(UnboundProvider $provider);
+    public function delete(UnboundProvider $provider, \ilObject $owner);
 
     /**
      * Update the given unbound provider.
@@ -71,13 +72,4 @@ interface ProviderDB {
      * @return  Provider[]
      */
     public function providersFor(\ilObject $object, $component_type = null);
-
-    /**
-     * Get all providers of components of the given type.
-     *
-     * @param   string              $component_type
-	 * @param	\ilObject[]|null    $objects
-     * @return  Provider[]
-     */
-    public function providersOf($component_type, array $objects = null);
 }

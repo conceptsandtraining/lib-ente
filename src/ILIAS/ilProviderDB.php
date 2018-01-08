@@ -44,7 +44,7 @@ class ilProviderDB implements ProviderDB {
     /**
      * @inheritdocs
      */
-    public function create(\ilObject $owner, $object_type, $class_name, $include_path) {
+    public function createSeparatedUnboundProvider(\ilObject $owner, $object_type, $class_name, $include_path) {
         assert('is_string($object_type)');
         assert('is_string($class_name)');
         assert('is_string($include_path)');
@@ -72,7 +72,7 @@ class ilProviderDB implements ProviderDB {
             , "include_path" => ["string", $include_path]
             ]);
 
-        $unbound_provider = $this->buildUnboundProvider($id, $owner, $class_name, $class_name, $include_path);
+        $unbound_provider = $this->buildSeparatedUnboundProvider($id, $owner, $class_name, $class_name, $include_path);
 
         foreach ($unbound_provider->componentTypes() as $component_type) {
             if (strlen($component_type) > ilProviderDB::CLASS_NAME_LENGTH) {
@@ -103,7 +103,7 @@ class ilProviderDB implements ProviderDB {
 
         if($row = $this->ilDB->fetchAssoc($res)) {
             $owner = $this->buildObjectByObjId($row["owner"]);
-            return $this->buildUnboundProvider($id, $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
+            return $this->buildSeparatedUnboundProvider($id, $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
         }
         else {
             throw new \InvalidArgumentException("Unbound provider with id '$id' does not exist.");
@@ -113,8 +113,8 @@ class ilProviderDB implements ProviderDB {
     /**
      * @inheritdocs
      */
-    public function delete(UnboundProvider $provider) {
-        $id = $provider->id();
+    public function delete(UnboundProvider $provider, \ilObject $owner) {
+        $id = $provider->idFor($owner);
 
         $this->ilDB->manipulate("DELETE FROM ".ilProviderDB::PROVIDER_TABLE." WHERE id = ".$this->ilDB->quote($id, "integer"));
         $this->ilDB->manipulate("DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ".$this->ilDB->quote($id, "integer"));
@@ -124,19 +124,22 @@ class ilProviderDB implements ProviderDB {
      * @inheritdocs
      */
     public function update(UnboundProvider $provider) {
-        $id = $provider->id();
-        $this->ilDB->manipulate("DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ".$this->ilDB->quote($id, "integer"));
+        $component_types = $provider->componentTypes();
+        foreach ($provider->owners() as $owner) {
+            $id = $provider->idFor($owner);
+            $this->ilDB->manipulate("DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ".$this->ilDB->quote($id, "integer"));
 
-        foreach ($provider->componentTypes() as $component_type) {
-            if (strlen($component_type) > ilProviderDB::CLASS_NAME_LENGTH) {
-                throw new \LogicException(
-                            "Expected component type '$class_name' to have at most "
-                            .ilProviderDB::CLASS_NAME_LENGTH." chars.");
+            foreach ($component_types as $component_type) {
+                if (strlen($component_type) > ilProviderDB::CLASS_NAME_LENGTH) {
+                    throw new \LogicException(
+                                "Expected component type '$class_name' to have at most "
+                                .ilProviderDB::CLASS_NAME_LENGTH." chars.");
+                }
+                $this->ilDB->insert(ilProviderDB::COMPONENT_TABLE,
+                    [ "id" => ["integer", $id]
+                    , "component_type" => ["string", $component_type]
+                    ]);
             }
-            $this->ilDB->insert(ilProviderDB::COMPONENT_TABLE,
-                [ "id" => ["integer", $id]
-                , "component_type" => ["string", $component_type]
-                ]);
         }
     }
 
@@ -153,7 +156,7 @@ class ilProviderDB implements ProviderDB {
         $res = $this->ilDB->query($query);
 
         while($row = $this->ilDB->fetchAssoc($res)) {
-            $ret[] = $this->buildUnboundProvider((int)$row["id"], $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
+            $ret[] = $this->buildSeparatedUnboundProvider((int)$row["id"], $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
         }
 
         return $ret;
@@ -164,38 +167,13 @@ class ilProviderDB implements ProviderDB {
      */
     public function providersFor(\ilObject $object, $component_type = null) {
         assert('is_null($component_type) || is_string($component_type)');
-        $ref_id = $object->getRefId();
-        $sub_nodes_refs = $this->ilTree->getSubTreeIds($ref_id);
-		$all_nodes_refs = array_merge([$ref_id], $sub_nodes_refs);
-        $this->ilObjectDataCache->preloadReferenceCache($all_nodes_refs);
-        $nodes_id_mapping = [];
-        $nodes_ids = [];
-        foreach ($all_nodes_refs as $ref_id) {
-            $id = $this->ilObjectDataCache->lookupObjId($ref_id);
-            $nodes_id_mapping[$id] = $ref_id;
-            $nodes_ids[] = $id;
-        }
 
+        list($nodes_ids, $nodes_id_mapping) = $this->getSubtreeObjectIdsAndRefIdMapping((int)$object->getRefId());
         $object_type = $object->getType();
-        if ($component_type === null) {
-            $query =
-                "SELECT id, owner, class_name, include_path ".
-                "FROM ".ilProviderDB::PROVIDER_TABLE." ".
-                "WHERE ".$this->ilDB->in("owner", $nodes_ids, false, "integer").
-                " AND object_type = ".$this->ilDB->quote($object_type, "string");
-        }
-        else {
-            $query =
-                "SELECT prv.id, prv.owner, prv.class_name, prv.include_path ".
-                "FROM ".ilProviderDB::PROVIDER_TABLE." prv ".
-                "JOIN ".ilProviderDB::COMPONENT_TABLE." cmp ".
-                "ON prv.id = cmp.id ".
-                "WHERE ".$this->ilDB->in("owner", $nodes_ids, false, "integer").
-                " AND object_type = ".$this->ilDB->quote($object_type, "string").
-                " AND component_type = ".$this->ilDB->quote($component_type, "string");
-        }
 
         $ret = [];
+
+        $query = $this->buildSeparatedUnboundProviderQueryForObjects($nodes_ids, $object_type, $component_type);
         $res = $this->ilDB->query($query);
         while ($row = $this->ilDB->fetchAssoc($res)) {
             $obj_id = $row["owner"];
@@ -203,9 +181,31 @@ class ilProviderDB implements ProviderDB {
             $owner = $this->buildObjectByRefId($ref_id);
             $ret[] = new Provider
                 ( $object
-                , $this->buildUnboundProvider
+                , $this->buildSeparatedUnboundProvider
                     ( (int)$row["id"]
                     , $owner
+                    , $object_type
+                    , $row["class_name"]
+                    , $row["include_path"]
+                    )
+                );
+        }
+
+        $query = $this->buildSharedUnboundProviderQueryForObjects($nodes_ids, $object_type, $component_type);
+        $res = $this->ilDB->query($query);
+        while ($row = $this->ilDB->fetchAssoc($res)) {
+            $obj_ids = explode(",", $row["owners"]);
+            $prv_ids = explode(",", $row["ids"]);
+            $owners = [];
+            foreach ($obj_ids as $obj_id) {
+                $ref_id = $nodes_id_mapping[$obj_id];
+                $prv_id = array_shift($prv_ids);
+                $owners[$prv_id] = $this->buildObjectByRefId($ref_id);
+            }
+            $ret[] = new Provider
+                ( $object
+                , $this->buildSharedUnboundProvider
+                    ( $owners
                     , $object_type
                     , $row["class_name"]
                     , $row["include_path"]
@@ -217,51 +217,93 @@ class ilProviderDB implements ProviderDB {
     }
 
     /**
-     * TODO: This could be made faster for the filtered case by using getSubtree.
-	 *
-     * @inheritdocs
+     * Get the object ids of the subtree starting at and including $ref_id with
+     * a mapping from $obj_id to $ref_id.
+     *
+     * @param   int $ref_id
+     * @return  array   [int[], array<int,int>]
      */
-    public function providersOf($component_type, array $objects = null) {
-        $query = "SELECT prv.id, prv.owner, prv.object_type, prv.class_name, prv.include_path "
-                ."FROM ".ilProviderDB::PROVIDER_TABLE." prv "
-                ."JOIN ".ilProviderDB::COMPONENT_TABLE." cmp ON prv.id = cmp.id "
-                ."WHERE cmp.component_type = ".$this->ilDB->quote($component_type, "string");
-        $res = $this->ilDB->query($query);
+    protected function getSubtreeObjectIdsAndRefIdMapping($ref_id) {
+        $sub_nodes_refs = $this->ilTree->getSubTreeIds($ref_id);
+		$all_nodes_refs = array_merge([$ref_id], $sub_nodes_refs);
+        $this->ilObjectDataCache->preloadReferenceCache($all_nodes_refs);
 
-        $ret = [];
-        if ($objects !== null) {
-            $filter_ref_ids = array_map(function($o) { return $o->getRefId(); }, $objects);
+        $nodes_id_mapping = [];
+        $nodes_ids = [];
+        foreach ($all_nodes_refs as $ref_id) {
+            $id = $this->ilObjectDataCache->lookupObjId($ref_id);
+            $nodes_id_mapping[$id] = $ref_id;
+            $nodes_ids[] = $id;
+        }
+        return [$nodes_ids, $nodes_id_mapping];
+    }
+
+    /**
+     * Get a query for all SeparatedUnboundProviders that are owned by the given nodes
+     * providing for a given object type.
+     *
+     * @param   int[]       $node_ids
+     * @param   string      $object_type
+     * @param   string|null $component_type
+     * @return  string
+     */
+    protected function buildSeparatedUnboundProviderQueryForObjects(array $node_ids, $object_type, $component_type) {
+        assert('is_string($object_type)');
+        assert('is_null($component_type) || is_string($component_type)');
+        if ($component_type === null) {
+            return
+                "SELECT id, owner, class_name, include_path ".
+                "FROM ".ilProviderDB::PROVIDER_TABLE." ".
+                "WHERE shared = 0".
+                " AND ".$this->ilDB->in("owner", $node_ids, false, "integer").
+                " AND object_type = ".$this->ilDB->quote($object_type, "string");
         }
         else {
-            $filter_ref_ids = null;
+            return
+                "SELECT prv.id, prv.owner, prv.class_name, prv.include_path ".
+                "FROM ".ilProviderDB::PROVIDER_TABLE." prv ".
+                "JOIN ".ilProviderDB::COMPONENT_TABLE." cmp ".
+                "ON prv.id = cmp.id ".
+                "WHERE shared = 0".
+                " AND ".$this->ilDB->in("owner", $node_ids, false, "integer").
+                " AND object_type = ".$this->ilDB->quote($object_type, "string").
+                " AND component_type = ".$this->ilDB->quote($component_type, "string");
         }
-        while ($row = $this->ilDB->fetchAssoc($res)) {
-            $ref_ids = $this->getAllReferenceIdsFor($row["owner"]);
-            foreach ($ref_ids as $ref_id) {
-                $owner = $this->buildObjectByRefId($ref_id);
-                $unbound_provider =
-                    $this->buildUnboundProvider
-                        ( (int)$row["id"]
-                        , $owner
-                        , $row["object_type"]
-                        , $row["class_name"]
-                        , $row["include_path"]
-                        );
-                $path = $this->ilTree->getNodePath($ref_id);
-                if ($path !== null) {
-                    foreach ($path as $node) {
-                        if ($node["type"] === $row["object_type"]) {
-                            if ($filter_ref_ids === null || in_array($node["child"], $filter_ref_ids)) {
-                                $object = $this->buildObjectByRefId($node["child"]);
-                                $ret[] = new Provider($object, $unbound_provider);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    }
 
-        return $ret;
+    /**
+     * Get a query for all SharedUnboundProviders that are owned by the given nodes
+     * providing for a given object type.
+     *
+     * @param   int[]       $node_ids
+     * @param   string      $object_type
+     * @param   string|null $component_type
+     * @return  string
+     */
+    protected function buildSharedUnboundProviderQueryForObjects(array $node_ids, $object_type, $component_type) {
+        assert('is_string($object_type)');
+        assert('is_null($component_type) || is_string($component_type)');
+        if ($component_type === null) {
+            return
+                "SELECT GROUP_CONCAT(id SEPARATOR \",\") ids, GROUP_CONCAT(owner SEPARATOR \",\") owners, class_name, include_path ".
+                "FROM ".ilProviderDB::PROVIDER_TABLE." ".
+                "WHERE shared = 1".
+                " AND ".$this->ilDB->in("owner", $node_ids, false, "integer").
+                " AND object_type = ".$this->ilDB->quote($object_type, "string").
+                " GROUP BY class_name, include_path";
+        }
+        else {
+            return
+                "SELECT GROUP_CONCAT(prv.id SEPARATOR \",\") ids, GROUP_CONCAT(prv.owner SEPARATOR \",\") owners, prv.class_name, prv.include_path ".
+                "FROM ".ilProviderDB::PROVIDER_TABLE." prv ".
+                "JOIN ".ilProviderDB::COMPONENT_TABLE." cmp ".
+                "ON prv.id = cmp.id ".
+                "WHERE shared = 1".
+                " AND ".$this->ilDB->in("owner", $node_ids, false, "integer").
+                " AND object_type = ".$this->ilDB->quote($object_type, "string").
+                " AND component_type = ".$this->ilDB->quote($component_type, "string").
+                " GROUP BY prv.class_name, prv.include_path";
+        }
     }
 
     /**
@@ -288,18 +330,23 @@ class ilProviderDB implements ProviderDB {
                 ]);
             $this->ilDB->addPrimaryKey(ilProviderDB::COMPONENT_TABLE, ["id", "component_type"]);
         }
+        if (!$this->ilDB->tableColumnExists(ilProviderDB::PROVIDER_TABLE, "shared")) {
+            $this->ilDB->addTableColumn(ilProviderDB::PROVIDER_TABLE, "shared", ["type" => "integer", "length" => 1, "notnull" => true, "default" => 0]);
+            $this->ilDB->addIndex(ilProviderDB::PROVIDER_TABLE, "shared");
+        }
     }
 
     /**
-     * Create an unbound provider.
+     * Create a separated unbound provider.
      *
+     * @param   int         $id
      * @param   \ilObject   $owner
      * @param   string      $object_type
      * @param   string      $class_name
      * @param   string      $include_path
      * @return  UnboundProvider
      */
-    protected function buildUnboundProvider($id, \ilObject $owner, $object_type, $class_name, $include_path) {
+    protected function buildSeparatedUnboundProvider($id, \ilObject $owner, $object_type, $class_name, $include_path) {
         assert('is_int($id)');
         assert('is_string($object_type)');
         assert('is_string($class_name)');
@@ -310,12 +357,39 @@ class ilProviderDB implements ProviderDB {
 
         assert('class_exists($class_name)');
 
-        if (!is_subclass_of($class_name, UnboundProvider::class)) {
+        if (!is_subclass_of($class_name, SeparatedUnboundProvider::class)) {
             throw new \UnexpectedValueException(
                         "Class '$class_name' does not extend UnboundProvider.");
         }
 
         return new $class_name($id, $owner, $object_type);
+    }
+
+    /**
+     * Create a shared unbound provider.
+     *
+     * @param   array<int,\ilObject>   $owners
+     * @param   string      $object_type
+     * @param   string      $class_name
+     * @param   string      $include_path
+     * @return  UnboundProvider
+     */
+    protected function buildSharedUnboundProvider(array $owners, $object_type, $class_name, $include_path) {
+        assert('is_string($object_type)');
+        assert('is_string($class_name)');
+        assert('is_string($include_path)');
+        assert('file_exists($include_path)');
+
+        require_once($include_path);
+
+        assert('class_exists($class_name)');
+
+        if (!is_subclass_of($class_name, SharedUnboundProvider::class)) {
+            throw new \UnexpectedValueException(
+                        "Class '$class_name' does not extend UnboundProvider.");
+        }
+
+        return new $class_name($owners, $object_type);
     }
 
     /**

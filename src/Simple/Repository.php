@@ -53,30 +53,6 @@ class Repository implements Ente\Repository {
     }
 
     /**
-     * @inheritdocs
-     */
-    public function providersForComponentType($component_type, $entities = null) {
-        if ($entities !== null) {
-            $entities = array_map(function($e) { return serialize($e->id()); }, $entities);
-        }
-
-        $ret = [];
-        foreach ($this->providers as $id => $providers) {
-            if ($entities !== null && !in_array($id, $entities)) {
-                continue;
-            }
-            $ret[$id] = ["entity" => $this->entities[$id], "providers" => []];
-            foreach ($providers as $provider) {
-                if (in_array($component_type, $provider->componentTypes())) {
-                    continue;
-                }
-                $ret[$id]["providers"][] = $provider;
-            }
-        }
-        return array_values($ret);
-    }
-
-    /**
      * Add a provider to this repository.
      *
      * @param   Provider    $provider

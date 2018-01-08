@@ -83,10 +83,10 @@ final class Provider implements \CaT\Ente\Provider {
     /**
      * Get the owner object of the component.
      *
-     * @return  \ilObject
+     * @return  \ilObject[]
      */
-    final public function owner() {
-        return $this->unbound_provider->owner();
+    final public function owners() {
+        return $this->unbound_provider->owners();
     }
 
     /**

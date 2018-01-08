@@ -59,36 +59,6 @@ abstract class RepositoryTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    /**
-     * @dataProvider has_providers_for_component_types
-     */
-    public function test_providers_for_component_types($component_type) {
-        $result = $this->repository()->providersForComponentType($component_type);
-        foreach ($result as $providers) {
-            $this->assertArrayHasKey("entity", $providers);
-            $this->assertArrayHasKey("providers", $providers);
-            foreach ($providers["providers"] as $provider) {
-                $this->assertContains($component_type, $provider->componentTypes());
-            }
-        } 
-    }
-
-    /**
-     * @dataProvider has_providers_for_entities_and_component_types
-     */
-    public function test_providers_for_component_types_filtered($entity, $component_type) {
-        $result = $this->repository()->providersForComponentType($component_type, [$entity]);
-        $this->assertCount(1, $result);
-        $this->assertArrayHasKey("entity", $result[0]);
-        $this->assertArrayHasKey("providers", $result[0]);
-        $other_entity = $result[0]["entity"];
-        $this->assertEquals($entity, $other_entity);
-        foreach ($result[0]["providers"] as $provider) {
-            $this->assertEquals($entity->id(), $provider->entity()->id());
-            $this->assertContains($component_type, $provider->componentTypes());
-        }
-    }
-
     // DATA PROVIDERS
 
     public function has_providers_for_entities() {

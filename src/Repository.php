@@ -28,18 +28,6 @@ interface Repository {
      */
     public function providersForEntity(Entity $entity, $component_type = null);
 
-    /**
-     * Get all providers that provide a certain component type grouped by
-     * entity, possibly restricted to certain entities.
-     *
-     * @param   string          $component_type
-     * @param   Entity[]|null   $entities
-     * @return  array[]         each containing
-     *                                  "entity" => Entity
-     *                                  "providers" => Provider[]
-     */
-    public function providersForComponentType($component_type, $entities = null);
-
 	/**
 	 * Get components for the entity, possibly filtered by component type.
 	 *

@@ -46,10 +46,7 @@ class ILIAS_RepositoryTest extends RepositoryTest {
      * @inheritdocs
      */
     protected function repository() {
-        $this->provider_db = $this
-            ->getMockBuilder(ProviderDB::class)
-            ->setMethods(["create", "load", "delete", "update", "unboundProvidersOf", "providersFor", "providersOf"]) 
-            ->getMock();
+        $this->provider_db = $this->createMock(ProviderDB::class);
 
         $this->provider_1 = $this
             ->getMockBuilder(Provider::class)
@@ -92,18 +89,6 @@ class ILIAS_RepositoryTest extends RepositoryTest {
                 }
                 $this->assertFalse("This does not exist.");
             }));
-
-		$this->provider_db
-			->method("providersOf")
-			->will($this->returnCallback(function($ct, $entities = null) {
-				if ($ct == AttachInt::class && ($entities === null || in_array($this->entity(1), $entities))) {
-					return [$this->provider_1];
-				}
-				if ($ct == AttachString::class && ($entities === null || in_array($this->entity(2), $entities))) {
-					return [$this->provider_2];
-				}
-                return [];
-			}));
 
         return new Repository($this->provider_db);
     }

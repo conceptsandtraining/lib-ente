@@ -37,27 +37,4 @@ class Repository implements Ente\Repository {
         }
         return $this->provider_db->providersFor($entity->object(), $component_type);
     }
-
-    /**
-     * @inheritdocs
-     */
-    public function providersForComponentType($component_type, $entities = null) {
-		$returns = [];
-        if ($entities) {
-            foreach($entities as $entity) {
-                $returns[$entity->id()] = ["entity" => $entity, "providers" => []];
-            }
-            $entities = array_map(function($o) { return $o->object(); }, $entities);
-        }
-        $providers = $this->provider_db->providersOf($component_type, $entities);
-		foreach ($providers as $provider) {
-			$entity = $provider->entity();
-			$id = $entity->id();
-			if (!isset($returns[$id])) {
-				$returns[$id] = ["entity" => $entity, "providers" => []];
-			}
-			$returns[$id]["providers"][] = $provider;
-		}
-		return array_values($returns);
-    }
 }

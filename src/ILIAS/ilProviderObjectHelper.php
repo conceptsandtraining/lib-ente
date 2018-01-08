@@ -31,7 +31,7 @@ trait ilProviderObjectHelper {
 		$provider_db = $this->getProviderDB();
 		$unbound_providers = $provider_db->unboundProvidersOf($this);
 		foreach ($unbound_providers as $unbound_provider) {
-			$provider_db->delete($unbound_provider);
+			$provider_db->delete($unbound_provider, $this);
 		}
 	}
 
@@ -48,6 +48,6 @@ trait ilProviderObjectHelper {
 			throw new \LogicException("ilProviderObjectHelper can only be used with ilObjects.");
 		} 
 
-		$this->getProviderDB()->create($this, $object_type, $class_name, $path);
+		$this->getProviderDB()->createSeparatedUnboundProvider($this, $object_type, $class_name, $path);
 	}
 }

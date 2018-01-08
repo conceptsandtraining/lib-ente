@@ -10,7 +10,7 @@
 
 use CaT\Ente\ILIAS\Entity;
 use CaT\Ente\ILIAS\Provider;
-use CaT\Ente\ILIAS\UnboundProvider;
+use CaT\Ente\ILIAS\SeparatedUnboundProvider;
 use CaT\Ente\Simple;
 use CaT\Ente\Simple\AttachString;
 use CaT\Ente\Simple\AttachStringMemory;
@@ -21,7 +21,7 @@ if (!class_exists("ilObject")) {
     require_once(__DIR__."/ilObject.php");
 }
 
-class Test_UnboundProvider extends UnboundProvider {
+class Test_SeparatedUnboundProvider extends SeparatedUnboundProvider {
     public function componentTypes() {
         return [AttachString::class, AttachInt::class];
     }
@@ -41,25 +41,35 @@ class Test_UnboundProvider extends UnboundProvider {
     }
 }
 
-class ILIAS_UnboundProviderTest extends PHPUnit_Framework_TestCase {
+class ILIAS_SeparatedUnboundProviderTest extends PHPUnit_Framework_TestCase {
     /**
      * @inheritdocs
      */
     protected function unboundProvider() {
-        $owner = $this
+        $this->owner = $this
             ->getMockBuilder(\ilObject::class)
             ->setMethods(["getId"])
             ->getMock();
 
         $this->owner_id = 42;
-        $owner
+        $this->owner
             ->method("getId")
             ->willReturn($this->owner_id);
+
+        $this->no_owner = $this
+            ->getMockBuilder(\ilObject::class)
+            ->setMethods(["getId"])
+            ->getMock();
+
+        $this->no_owner_id = 43;
+        $this->no_owner
+            ->method("getId")
+            ->willReturn($this->no_owner_id);
 
         $this->unbound_provider_id = 23;
         $this->object_type = "object_type";
 
-        $provider = new Test_UnboundProvider($this->unbound_provider_id, $owner, $this->object_type);
+        $provider = new Test_SeparatedUnboundProvider($this->unbound_provider_id, $this->owner, $this->object_type);
 
         return $provider;
     }
@@ -70,14 +80,30 @@ class ILIAS_UnboundProviderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_owner() {
-        $owner = $this->unboundProvider()->owner();
+        $owners = $this->unboundProvider()->owners();
+        $this->assertCount(1, $owners);
+
+        $owner = array_shift($owners);
         $this->assertInstanceOf(\ilObject::class, $owner);
         $this->assertEquals($this->owner_id, $owner->getId());
     }
 
-    public function test_id() {
+    public function test_idFor() {
         $unbound_provider = $this->unboundProvider();
-        $this->assertEquals($this->unbound_provider_id, $unbound_provider->id());
+        $this->assertEquals($this->unbound_provider_id, $unbound_provider->idFor($this->owner));
+    }
+
+   public function test_idFor_throws() {
+        $unbound_provider = $this->unboundProvider();
+
+        try {
+            $unbound_provider->idFor($this->no_owner);
+            $raised = false;
+        }
+        catch (\InvalidArgumentException $e) {
+            $raised = true;
+        }
+        $this->assertTrue($raised);
     }
 
     public function test_object_type() {
