@@ -143,7 +143,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
 
         $new_provider_id = 23;
         $object_type = "crs";
-        $class_name = Test_UnboundProvider::class;
+        $class_name = Test_SeparatedUnboundProvider::class;
         $include_path = __DIR__."/SeparatedUnboundProviderTest.php";
 
         $insert_provider =
@@ -181,7 +181,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), []);
         $unbound_provider = $db->createSeparatedUnboundProvider($owner, $object_type, $class_name, $include_path);
 
-        $this->assertInstanceOf(Test_UnboundProvider::class, $unbound_provider);
+        $this->assertInstanceOf(Test_SeparatedUnboundProvider::class, $unbound_provider);
     }
 
     public function test_delete() {
@@ -323,7 +323,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->willReturn($result);
 
         $object_type = "type";
-        $class_name = "Test_UnboundProvider";
+        $class_name = Test_SeparatedUnboundProvider::class;
         $include_path = __DIR__."/SeparatedUnboundProviderTest.php";
 
         $il_db
@@ -342,7 +342,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $this->assertCount(2, $providers);
 
         foreach ($providers as $provider) {
-            $this->assertInstanceOf(Test_UnboundProvider::class, $provider);
+            $this->assertInstanceOf(Test_SeparatedUnboundProvider::class, $provider);
             $this->assertEquals($object_type, $provider->objectType());
             $this->assertEquals([$owner], $provider->owners());
         }
@@ -371,7 +371,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->willReturn($result);
 
         $object_type = "type";
-        $class_name = "Test_UnboundProvider";
+        $class_name = Test_SeparatedUnboundProvider::class;
         $include_path = __DIR__."/SeparatedUnboundProviderTest.php";
 
         $il_db
@@ -389,7 +389,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $db->object_obj[$owner_id] = $owner;
         $provider = $db->load($provider_id);
 
-        $this->assertInstanceOf(Test_UnboundProvider::class, $provider);
+        $this->assertInstanceOf(Test_SeparatedUnboundProvider::class, $provider);
         $this->assertEquals($object_type, $provider->objectType());
         $this->assertEquals([$owner], $provider->owners());
         $this->assertEquals($provider_id, $provider->idFor($owner));
@@ -460,7 +460,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
                 )
             ->will($this->onConsecutiveCalls($result1, $result2));
 
-        $class_name = "Test_UnboundProvider";
+        $class_name = Test_SeparatedUnboundProvider::class;
         $include_path = __DIR__."/SeparatedUnboundProviderTest.php";
 
         $il_db
