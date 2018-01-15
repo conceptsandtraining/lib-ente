@@ -19,20 +19,16 @@ trait ilHandlerObjectHelper {
 	use ilObjectHelper;
 
     /**
-     * @var \CaT\Ente\ILIAS\Repository|null
-     */
-    protected $repository = null;
-
-    /**
      * Get a repository for providers and components.
      *
      * @return \CaT\Ente\Repository
      */
     protected function getRepository() {
-        if ($this->repository === null) {
-            $this->repository = new \CaT\Ente\ILIAS\Repository($this->getProviderDB());
+		$DIC = $this->getDIC();
+		if (!isset($DIC["ente.Repository"])) {
+            $DIC["ente.Repository"] = new \CaT\Ente\ILIAS\Repository($this->getProviderDB());
         }
-        return $this->repository;
+        return $DIC["ente.Repository"];
     }
 
 	/**
