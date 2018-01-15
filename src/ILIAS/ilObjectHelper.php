@@ -18,25 +18,20 @@ use CaT\Ente;
  * ilProviderObjectHelper.
  */
 trait ilObjectHelper {
-	/**
-	 * @var Ente\ILIAS\ProviderDB
-	 */
-	private $provider_db = null;
-
     /**
      * @return \CaT\Ente\ILIAS\ProviderDB
      */
     protected function getProviderDB() {
 		$DIC = $this->getDIC();
-        if ($this->provider_db === null) {
-            $this->provider_db = new \CaT\Ente\ILIAS\ilProviderDB
+		if (!isset($DIC["ente.ProviderDB"])) {
+			$DIC["ente.ProviderDB"] = new \CaT\Ente\ILIAS\ilProviderDB
                 ( $DIC["ilDB"]
                 , $DIC["tree"]
                 , $DIC["ilObjDataCache"]
 				, $DIC
                 );
         }
-        return $this->provider_db;
+        return $DIC["ente.ProviderDB"];
     }
 
 	/**
