@@ -38,11 +38,9 @@ trait ilHandlerObjectHelper {
 	/**
 	 * Get components for the entity.
 	 *
-	 * TODO: this may as well be protected
-	 *
 	 * @return	Component[]
 	 */
-	public function getComponents() {
+	protected function getComponents() {
 		$repository = $this->getRepository();
 		return $repository->componentsForEntity($this->getEntity());
 	}
@@ -50,12 +48,10 @@ trait ilHandlerObjectHelper {
 	/**
 	 * Get components for the entity.
 	 *
-	 * TODO: this may as well be protected
-	 *
 	 * @param	string		$component_type
 	 * @return	Component[]
 	 */
-	public function getComponentsOfType($component_type) {
+	protected function getComponentsOfType($component_type) {
 		assert('is_string($component_type)');
 		$repository = $this->getRepository();
 		return $repository->componentsForEntity($this->getEntity(), $component_type);
