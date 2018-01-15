@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/conceptsandtraining/lib-ente.svg?token=4shwrT94iPQfpaEX1GWY&branch=master)](https://travis-ci.com/conceptsandtraining/lib-ente)
 # ente.php
 
-*An entity component framework for PHP.*
+*An entity component framework for ILIAS.*
 
 **Contact:** [Richard Klees](https://github.com/klees)
 
