@@ -12,7 +12,9 @@ namespace CaT\Ente;
 
 /**
  * Adds a caching wrapper around another repository that only calls
- * the underlying repos providersForEntity once per entity.
+ * the underlying repos providersForEntity once per entity. The cached
+ * providers are wrapped in CachedProviders to enable caching for
+ * components as well.
  */
 class CachedRepository implements Repository {
 	use RepositoryHelper;
@@ -38,7 +40,9 @@ class CachedRepository implements Repository {
     public function providersForEntity(Entity $entity, $component_type = null) {
 		$id = $entity->id();
 		if (!isset($this->cache[$id])) {
-			$this->cache[$id] = $this->repository->providersForEntity($entity);
+			$this->cache[$id] = array_map(function(Provider $p) {
+				return new CachedProvider($p);
+			}, $this->repository->providersForEntity($entity));
 		}
 
 		if ($component_type === null) {

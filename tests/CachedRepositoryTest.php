@@ -34,8 +34,8 @@ class CachedRepositoryTest extends PHPUnit_Framework_TestCase {
 		$res1 = $this->cached_repo->providersForEntity($entity);
 		$res2 = $this->cached_repo->providersForEntity($entity);
 
-		$this->assertEquals([$provider], $res1);
-		$this->assertEquals([$provider], $res2);
+		$this->assertEquals([new Ente\CachedProvider($provider)], $res1);
+		$this->assertEquals([new Ente\CachedProvider($provider)], $res2);
 	}
 
 	public function test_componentsForEntity_calls_providersForEntity() {
@@ -102,7 +102,7 @@ class CachedRepositoryTest extends PHPUnit_Framework_TestCase {
 		$res1 = $this->cached_repo->providersForEntity($entity, $component_type1);
 		$res2 = $this->cached_repo->providersForEntity($entity, $component_type2);
 
-		$this->assertEquals([$provider1], $res1);
-		$this->assertEquals([$provider1, $provider2], $res2);
+		$this->assertEquals([new Ente\CachedProvider($provider1)], $res1);
+		$this->assertEquals([new Ente\CachedProvider($provider1), new Ente\CachedProvider($provider2)], $res2);
 	}
 }
