@@ -26,7 +26,8 @@ trait ilHandlerObjectHelper {
     protected function getRepository() {
 		$DIC = $this->getDIC();
 		if (!isset($DIC["ente.Repository"])) {
-            $DIC["ente.Repository"] = new \CaT\Ente\ILIAS\Repository($this->getProviderDB());
+            $DIC["ente.Repository"] = new Ente\CachedRepository
+				(new \CaT\Ente\ILIAS\Repository($this->getProviderDB()));
         }
         return $DIC["ente.Repository"];
     }
