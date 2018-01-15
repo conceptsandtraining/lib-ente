@@ -332,7 +332,7 @@ class ilProviderDB implements ProviderDB {
         }
         if (!$this->ilDB->tableColumnExists(ilProviderDB::PROVIDER_TABLE, "shared")) {
             $this->ilDB->addTableColumn(ilProviderDB::PROVIDER_TABLE, "shared", ["type" => "integer", "length" => 1, "notnull" => true, "default" => 0]);
-            $this->ilDB->addIndex(ilProviderDB::PROVIDER_TABLE, "shared", "ids");
+            $this->ilDB->addIndex(ilProviderDB::PROVIDER_TABLE, ["shared"], "ids");
         }
     }
 
