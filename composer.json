@@ -1,7 +1,7 @@
 {
-    "name": "cat/ente",
-    "version": "2.1.2",
-    "description": "An entity component framework for PHP.",
+    "name": "conceptsandtraining/ente",
+    "version": "3.0.0",
+    "description": "An entity component framework for ILIAS.",
     "type": "library",
     "license": "GPLv3",
     "authors": [
