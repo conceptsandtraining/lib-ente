@@ -22,22 +22,22 @@ trait ilObjectHelper {
      * @return \CaT\Ente\ILIAS\ProviderDB
      */
     protected function getProviderDB() {
-		$DIC = $this->getDIC();
-		if (!isset($DIC["ente.ProviderDB"])) {
-			$DIC["ente.ProviderDB"] = new \CaT\Ente\ILIAS\ilProviderDB
+        $DIC = $this->getDIC();
+        if (!isset($DIC["ente.ProviderDB"])) {
+            $DIC["ente.ProviderDB"] = new \CaT\Ente\ILIAS\ilProviderDB
                 ( $DIC["ilDB"]
                 , $DIC["tree"]
                 , $DIC["ilObjDataCache"]
-				, $DIC
+                , $DIC
                 );
         }
         return $DIC["ente.ProviderDB"];
     }
 
-	/**
-	 * Get the ILIAS DIC.
-	 *
-	 * @return \ArrayAccess
-	 */
-	abstract protected function getDIC();
+    /**
+     * Get the ILIAS DIC.
+     *
+     * @return \ArrayAccess
+     */
+    abstract protected function getDIC();
 }
