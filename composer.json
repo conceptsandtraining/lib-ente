@@ -1,6 +1,6 @@
 {
     "name": "conceptsandtraining/ente",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "description": "An entity component framework for ILIAS.",
     "type": "library",
     "license": "GPLv3",
