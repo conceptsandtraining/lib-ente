@@ -72,6 +72,13 @@ abstract class SeparatedUnboundProvider implements UnboundProvider {
     /**
      * @inheritdocs
      */
+    final public function owner() {
+        return $this->owner;
+    }
+
+    /**
+     * @inheritdocs
+     */
     final public function objectType() {
         return $this->object_type;
     }

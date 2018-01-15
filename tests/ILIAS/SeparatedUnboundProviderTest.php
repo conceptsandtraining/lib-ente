@@ -80,6 +80,13 @@ class ILIAS_SeparatedUnboundProviderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_owner() {
+        $owner = $this->unboundProvider()->owner();
+
+        $this->assertInstanceOf(\ilObject::class, $owner);
+        $this->assertEquals($this->owner_id, $owner->getId());
+    }
+
+    public function test_owners() {
         $owners = $this->unboundProvider()->owners();
         $this->assertCount(1, $owners);
 
