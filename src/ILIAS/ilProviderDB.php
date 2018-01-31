@@ -45,35 +45,10 @@ class ilProviderDB implements ProviderDB {
      * @inheritdocs
      */
     public function createSeparatedUnboundProvider(\ilObject $owner, $object_type, $class_name, $include_path) {
-        assert('is_string($object_type)');
-        assert('is_string($class_name)');
-        assert('is_string($include_path)');
         $this->validateCreationParams($object_type, $class_name, $include_path);
-
-        // TODO: check if class exist first
-        $id = (int)$this->ilDB->nextId(ilProviderDB::PROVIDER_TABLE);
-        $this->ilDB->insert(ilProviderDB::PROVIDER_TABLE,
-            [ "id" => ["integer", $id]
-            , "owner" => ["integer", $owner->getId()]
-            , "object_type" => ["string", $object_type]
-            , "class_name" => ["string", $class_name]
-            , "include_path" => ["string", $include_path]
-            ]);
-
-        $unbound_provider = $this->buildSeparatedUnboundProvider($id, $owner, $class_name, $class_name, $include_path);
-
-        foreach ($unbound_provider->componentTypes() as $component_type) {
-            if (strlen($component_type) > ilProviderDB::CLASS_NAME_LENGTH) {
-                throw new \LogicException(
-                            "Expected component type '$class_name' to have at most "
-                            .ilProviderDB::CLASS_NAME_LENGTH." chars.");
-            }
-            $this->ilDB->insert(ilProviderDB::COMPONENT_TABLE,
-                [ "id" => ["integer", $id]
-                , "component_type" => ["string", $component_type]
-                ]);
-        }
-
+        $shared = false;
+        list($unbound_provider, $id) = $this->createUnboundProvider($owner, $object_type, $class_name, $include_path, $shared);
+        $this->createComponentsForUnboundProvider($unbound_provider, $id);
         return $unbound_provider;
     }
 
@@ -81,11 +56,22 @@ class ilProviderDB implements ProviderDB {
      * @inheritdocs
      */
     public function createSharedUnboundProvider(\ilObject $owner, $object_type, $class_name, $include_path) {
-        assert('is_string($object_type)');
-        assert('is_string($class_name)');
-        assert('is_string($include_path)');
         $this->validateCreationParams($object_type, $class_name, $include_path);
+        $shared = true;
+        list($unbound_provider, $id) = $this->createUnboundProvider($owner, $object_type, $class_name, $include_path, $shared);
+        $this->createComponentsForUnboundProvider($unbound_provider, $id);
+        return $unbound_provider;
+    }
 
+    /**
+     * @param   \ilObject   $owner
+     * @param   string      $obj_type
+     * @param   string      $class_name
+     * @param   string      $include_path
+     * @param   bool      $shared
+     * @return  array(UnboundProvider, int)
+     */
+    private function createUnboundProvider(\ilObject $owner, $object_type, $class_name, $include_path, $shared) {
         // TODO: check if class exist first
         $id = (int)$this->ilDB->nextId(ilProviderDB::PROVIDER_TABLE);
         $this->ilDB->insert(ilProviderDB::PROVIDER_TABLE,
@@ -94,25 +80,17 @@ class ilProviderDB implements ProviderDB {
             , "object_type" => ["string", $object_type]
             , "class_name" => ["string", $class_name]
             , "include_path" => ["string", $include_path]
-            , "shared" => ["integer", 1]
+            , "shared" => ["integer", $shared]
             ]);
 
-        $unbound_provider = $this->buildSharedUnboundProvider(array($owner), $class_name, $class_name, $include_path);
-
-        foreach ($unbound_provider->componentTypes() as $component_type) {
-            if (strlen($component_type) > ilProviderDB::CLASS_NAME_LENGTH) {
-                throw new \LogicException(
-                            "Expected component type '$class_name' to have at most "
-                            .ilProviderDB::CLASS_NAME_LENGTH." chars.");
-            }
-            $this->ilDB->insert(ilProviderDB::COMPONENT_TABLE,
-                [ "id" => ["integer", $id]
-                , "component_type" => ["string", $component_type]
-                ]);
+        if($shared===true) {
+            $unbound_provider = $this->buildSharedUnboundProvider(array($owner), $class_name, $class_name, $include_path);
+        } else {
+            $unbound_provider = $this->buildSeparatedUnboundProvider($id, $owner, $class_name, $class_name, $include_path);
         }
-
-        return $unbound_provider;
+        return array($unbound_provider, $id);
     }
+
 
     /**
      *
@@ -123,6 +101,9 @@ class ilProviderDB implements ProviderDB {
      * @return  void
      */
     private function validateCreationParams($object_type, $class_name, $include_path) {
+        assert('is_string($object_type)');
+        assert('is_string($class_name)');
+        assert('is_string($include_path)');
         if (strlen($object_type) > 4) {
             throw new \LogicException("Expected object type '$object_type' to have four or less chars.");
         }
@@ -135,6 +116,27 @@ class ilProviderDB implements ProviderDB {
             throw new \LogicException(
                         "Expected include path '$include_path' to have at most "
                         .ilProviderDB::PATH_LENGTH." chars.");
+        }
+    }
+
+    /**
+     *
+     * @param   UnboundProvider     $unbound_provider
+     * @param   int     $id
+     * @throws  \LogicException     if class_name of component is out of bounds
+     * @return  void
+     */
+    private function createComponentsForUnboundProvider(UnboundProvider $unbound_provider, $id) {
+        foreach ($unbound_provider->componentTypes() as $component_type) {
+            if (strlen($component_type) > ilProviderDB::CLASS_NAME_LENGTH) {
+                throw new \LogicException(
+                            "Expected component type '$class_name' to have at most "
+                            .ilProviderDB::CLASS_NAME_LENGTH." chars.");
+            }
+            $this->ilDB->insert(ilProviderDB::COMPONENT_TABLE,
+                [ "id" => ["integer", $id]
+                , "component_type" => ["string", $component_type]
+                ]);
         }
     }
 
