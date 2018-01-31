@@ -12,7 +12,7 @@ namespace CaT\Ente\ILIAS;
 
 /**
  * An shared unbound provider is an unbound provider that has a multiple owners
- * and may provide componentes based on a combination of owners properties.
+ * and may provide components based on a combination of owners properties.
  */
 abstract class SharedUnboundProvider implements UnboundProvider {
     /**
