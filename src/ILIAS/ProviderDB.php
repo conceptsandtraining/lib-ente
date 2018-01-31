@@ -15,7 +15,21 @@ namespace CaT\Ente\ILIAS;
  */
 interface ProviderDB {
     /**
-     * Create a new unbound provider for the given owner.
+     * Create a new separated unbound provider for the given owner.
+     *
+     * The provider will belong to objects above the $owner in the tree that also
+     * have the type $obj_type.
+     *
+     * @param   \ilObject   $owner
+     * @param   string      $obj_type
+     * @param   string      $class_name
+     * @param   string      $include_path
+     * @return  SeparatedUnboundProvider
+     */
+    public function createSeparatedUnboundProvider(\ilObject $owner, $obj_type, $class_name, $include_path);
+
+    /**
+     * Create a new shared unbound provider for the given owner.
      *
      * The provider will be belong to objects above the $owner in the tree that also
      * have the type $obj_type.
@@ -24,9 +38,9 @@ interface ProviderDB {
      * @param   string      $obj_type
      * @param   string      $class_name
      * @param   string      $include_path
-     * @return  SeparatedUnboundProvider
+     * @return  SharedUnboundProvider
      */
-    public function createSeparatedUnboundProvider(\ilObject $owner, $obj_type, $class_name, $include_path);
+    public function createSharedUnboundProvider(\ilObject $owner, $obj_type, $class_name, $include_path);
 
     /**
      * Load the unbound provider with the given id.

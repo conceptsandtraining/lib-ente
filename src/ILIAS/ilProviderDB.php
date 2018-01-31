@@ -48,19 +48,7 @@ class ilProviderDB implements ProviderDB {
         assert('is_string($object_type)');
         assert('is_string($class_name)');
         assert('is_string($include_path)');
-        if (strlen($object_type) > 4) {
-            throw new \LogicException("Expected object type '$object_type' to have four or less chars.");
-        }
-        if (strlen($class_name) > ilProviderDB::CLASS_NAME_LENGTH) {
-            throw new \LogicException(
-                        "Expected class name '$class_name' to have at most "
-                        .ilProviderDB::CLASS_NAME_LENGTH." chars.");
-        }
-        if (strlen($include_path) > ilProviderDB::PATH_LENGTH) {
-            throw new \LogicException(
-                        "Expected include path '$include_path' to have at most "
-                        .ilProviderDB::PATH_LENGTH." chars.");
-        }
+        $this->validateCreationParams($object_type, $class_name, $include_path);
 
         // TODO: check if class exist first
         $id = (int)$this->ilDB->nextId(ilProviderDB::PROVIDER_TABLE);
@@ -87,6 +75,67 @@ class ilProviderDB implements ProviderDB {
         }
 
         return $unbound_provider;
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function createSharedUnboundProvider(\ilObject $owner, $object_type, $class_name, $include_path) {
+        assert('is_string($object_type)');
+        assert('is_string($class_name)');
+        assert('is_string($include_path)');
+        $this->validateCreationParams($object_type, $class_name, $include_path);
+
+        // TODO: check if class exist first
+        $id = (int)$this->ilDB->nextId(ilProviderDB::PROVIDER_TABLE);
+        $this->ilDB->insert(ilProviderDB::PROVIDER_TABLE,
+            [ "id" => ["integer", $id]
+            , "owner" => ["integer", $owner->getId()]
+            , "object_type" => ["string", $object_type]
+            , "class_name" => ["string", $class_name]
+            , "include_path" => ["string", $include_path]
+            , "shared" => ["integer", 1]
+            ]);
+
+        $unbound_provider = $this->buildSharedUnboundProvider(array($owner), $class_name, $class_name, $include_path);
+
+        foreach ($unbound_provider->componentTypes() as $component_type) {
+            if (strlen($component_type) > ilProviderDB::CLASS_NAME_LENGTH) {
+                throw new \LogicException(
+                            "Expected component type '$class_name' to have at most "
+                            .ilProviderDB::CLASS_NAME_LENGTH." chars.");
+            }
+            $this->ilDB->insert(ilProviderDB::COMPONENT_TABLE,
+                [ "id" => ["integer", $id]
+                , "component_type" => ["string", $component_type]
+                ]);
+        }
+
+        return $unbound_provider;
+    }
+
+    /**
+     *
+     * @param   string      $obj_type
+     * @param   string      $class_name
+     * @param   string      $include_path
+     * @throws  \LogicException     if any parameter is out of bounds
+     * @return  void
+     */
+    private function validateCreationParams($object_type, $class_name, $include_path) {
+        if (strlen($object_type) > 4) {
+            throw new \LogicException("Expected object type '$object_type' to have four or less chars.");
+        }
+        if (strlen($class_name) > ilProviderDB::CLASS_NAME_LENGTH) {
+            throw new \LogicException(
+                        "Expected class name '$class_name' to have at most "
+                        .ilProviderDB::CLASS_NAME_LENGTH." chars.");
+        }
+        if (strlen($include_path) > ilProviderDB::PATH_LENGTH) {
+            throw new \LogicException(
+                        "Expected include path '$include_path' to have at most "
+                        .ilProviderDB::PATH_LENGTH." chars.");
+        }
     }
 
     /**
