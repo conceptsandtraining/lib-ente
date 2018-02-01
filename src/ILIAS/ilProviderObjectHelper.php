@@ -26,7 +26,7 @@ trait ilProviderObjectHelper {
 	protected function deleteUnboundProviders() {
 		if (!($this instanceof \ilObject)) {
 			throw new \LogicException("ilProviderObjectHelper can only be used with ilObjects.");
-		} 
+		}
 
 		$provider_db = $this->getProviderDB();
 		$unbound_providers = $provider_db->unboundProvidersOf($this);
@@ -46,8 +46,12 @@ trait ilProviderObjectHelper {
 	protected function createUnboundProvider($object_type, $class_name, $path) {
 		if (!($this instanceof \ilObject)) {
 			throw new \LogicException("ilProviderObjectHelper can only be used with ilObjects.");
-		} 
-
-		$this->getProviderDB()->createSeparatedUnboundProvider($this, $object_type, $class_name, $path);
+		}
+		if(is_subclass_of($class_name, 'CaT\Ente\ILIAS\SeparatedUnboundProvider')) {
+			$this->getProviderDB()->createSeparatedUnboundProvider($this, $object_type, $class_name, $path);
+		}
+		if(is_subclass_of($class_name, 'CaT\Ente\ILIAS\SharedUnboundProvider')) {
+			$this->getProviderDB()->createSharedUnboundProvider($this, $object_type, $class_name, $path);
+		}
 	}
 }
