@@ -84,7 +84,7 @@ class ilProviderDB implements ProviderDB {
             ]);
 
         if($shared===true) {
-            $unbound_provider = $this->buildSharedUnboundProvider(array($owner), $class_name, $class_name, $include_path);
+            $unbound_provider = $this->buildSharedUnboundProvider(array($id=>$owner), $class_name, $class_name, $include_path);
         } else {
             $unbound_provider = $this->buildSeparatedUnboundProvider($id, $owner, $class_name, $class_name, $include_path);
         }
@@ -166,7 +166,6 @@ class ilProviderDB implements ProviderDB {
      */
     public function delete(UnboundProvider $provider, \ilObject $owner) {
         $id = $provider->idFor($owner);
-
         $this->ilDB->manipulate("DELETE FROM ".ilProviderDB::PROVIDER_TABLE." WHERE id = ".$this->ilDB->quote($id, "integer"));
         $this->ilDB->manipulate("DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ".$this->ilDB->quote($id, "integer"));
     }
@@ -207,7 +206,12 @@ class ilProviderDB implements ProviderDB {
         $res = $this->ilDB->query($query);
 
         while($row = $this->ilDB->fetchAssoc($res)) {
-            $ret[] = $this->buildSeparatedUnboundProvider((int)$row["id"], $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
+            if(is_subclass_of($row["class_name"], 'CaT\Ente\ILIAS\SeparatedUnboundProvider')) {
+                $ret[] = $this->buildSeparatedUnboundProvider((int)$row["id"], $owner, $row["object_type"], $row["class_name"], $row["include_path"]);
+            }
+            if(is_subclass_of($row["class_name"], 'CaT\Ente\ILIAS\SharedUnboundProvider')) {
+                $ret[] = $this->buildSharedUnboundProvider(array($row["id"]=>$owner), $row["object_type"], $row["class_name"], $row["include_path"]);
+            }
         }
 
         return $ret;
