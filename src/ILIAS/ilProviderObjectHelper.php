@@ -47,11 +47,16 @@ trait ilProviderObjectHelper {
 		if (!($this instanceof \ilObject)) {
 			throw new \LogicException("ilProviderObjectHelper can only be used with ilObjects.");
 		}
-		if(is_subclass_of($class_name, 'CaT\Ente\ILIAS\SeparatedUnboundProvider')) {
+		if(is_subclass_of($class_name, SeparatedUnboundProvider::class)) {
 			$this->getProviderDB()->createSeparatedUnboundProvider($this, $object_type, $class_name, $path);
 		}
-		if(is_subclass_of($class_name, 'CaT\Ente\ILIAS\SharedUnboundProvider')) {
+		else if(is_subclass_of($class_name, SharedUnboundProvider::class)) {
 			$this->getProviderDB()->createSharedUnboundProvider($this, $object_type, $class_name, $path);
+		}
+		else {
+			throw new \LogicException(
+				"createUnboundProvider can only create providers ".
+				"derived from Shared- or SeperatedUnboundProvider.");
 		}
 	}
 }
