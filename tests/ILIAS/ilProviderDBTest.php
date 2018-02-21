@@ -122,7 +122,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $il_db
             ->expects($this->once())
             ->method("addIndex")
-            ->with(ilProviderDB::PROVIDER_TABLE, "shared");
+            ->with(ilProviderDB::PROVIDER_TABLE, ["shared"], "ids");
    
         $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), []);
         $db->createTables();
@@ -152,6 +152,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             , "object_type" => ["string", $object_type]
             , "class_name" => ["string", $class_name]
             , "include_path" => ["string", $include_path]
+			, "shared" => ["integer", 0]
             ];
 
         $insert_component_1 =
