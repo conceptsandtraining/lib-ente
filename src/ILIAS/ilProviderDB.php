@@ -455,18 +455,28 @@ class ilProviderDB implements ProviderDB {
      * @return  \ilObject
      */
     protected function buildObjectByRefId($ref_id) {
-        return \ilObjectFactory::getInstanceByRefId($ref_id);
+        $obj = \ilObjectFactory::getInstanceByRefId($ref_id, false);
+        if ($obj === false) {
+            throw new \InvalidArgumentException("Cannot build object with obj_id='$ref_id'");
+        }
+        assert($obj instanceof \ilObject);
+        return $obj;
     }
 
     /**
      * Build an object by its object id.
      *
-     * @param   int     $ref_id
+     * @param   int     $obj_id
      * @throws  \InvalidArgumentException if object could not be build
      * @return  \ilObject
      */
-    protected function buildObjectByObjId($ref_id) {
-        return \ilObjectFactory::getInstanceByObjId($ref_id);
+    protected function buildObjectByObjId($obj_id) {
+        $obj = \ilObjectFactory::getInstanceByObjId($ref_id, false);
+        if ($obj === false) {
+            throw new \InvalidArgumentException("Cannot build object with obj_id='$obj_id'");
+        }
+        assert($obj instanceof \ilObject);
+        return $obj;
     }
 
     /**
