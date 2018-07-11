@@ -33,12 +33,19 @@ if (!interface_exists("ilObjectDataCache")) {
 
 class Test_ilProviderDB extends ilProviderDB {
     public $object_ref = [];
+	public $throws = false;
     protected function buildObjectByRefId($ref_id) {
+		if ($this->throws) {
+			throw new \InvalidArgumentException();
+		}
         assert(isset($this->object_ref[$ref_id]));
         return $this->object_ref[$ref_id];
     }
     public $object_obj = [];
     protected function buildObjectByObjId($obj_id) {
+		if ($this->throws) {
+			throw new \InvalidArgumentException();
+		}
         assert(isset($this->object_obj[$obj_id]));
         return $this->object_obj[$obj_id];
     }
@@ -703,4 +710,174 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(1, $provider->unboundProvider()->idFor($owner_1));
         $this->assertEquals(2, $provider->unboundProvider()->idFor($owner_2));
     }
+
+    public function test_providersFor_for_unbuildable_object() {
+        $il_db = $this->il_db_mock();
+        $il_tree = $this->il_tree_mock();
+        $il_cache = $this->il_object_data_cache_mock();
+
+        $object_ref_id = 42;
+        $object_type = "crs";
+        $object = $this
+            ->getMockBuilder(\ilObject::class)
+            ->setMethods(["getRefId", "getType"])
+            ->getMock();
+
+        $object
+            ->expects($this->atLeastOnce())
+            ->method("getRefId")
+            ->willReturn($object_ref_id);
+
+        $object
+            ->expects($this->atLeastOnce())
+            ->method("getType")
+            ->willReturn($object_type);
+
+        $sub_tree_ids = ["3", "14"];
+        $il_tree
+            ->expects($this->once())
+            ->method("getSubTreeIds")
+            ->with($object_ref_id)
+            ->willReturn($sub_tree_ids);
+
+		$tree_ids = array_merge([$object_ref_id], $sub_tree_ids);
+        $il_cache
+            ->expects($this->once())
+            ->method("preloadReferenceCache")
+            ->with($tree_ids);
+
+        $il_cache
+            ->expects($this->exactly(3))
+            ->method("lookupObjId")
+            ->withConsecutive([$tree_ids[0]],[$tree_ids[1]], [$tree_ids[2]])
+            ->will($this->onConsecutiveCalls($tree_ids[0], $tree_ids[1], $tree_ids[2]));
+
+        $il_db
+            ->expects($this->exactly(2))
+            ->method("in")
+            ->with("owner", $tree_ids, false, "integer")
+            ->willReturn("~IN~");
+
+        $il_db
+            ->expects($this->exactly(2))
+            ->method("quote")
+            ->with($object_type)
+            ->willReturn("~TYPE~");
+
+        $result1 = "RESULT 1";
+        $result2 = "RESULT 2";
+        $il_db
+            ->expects($this->exactly(2))
+            ->method("query")
+            ->withConsecutive
+                ( ["SELECT id, owner, class_name, include_path FROM ".ilProviderDB::PROVIDER_TABLE." WHERE shared = 0 AND ~IN~ AND object_type = ~TYPE~"]
+
+                , ["SELECT GROUP_CONCAT(id SEPARATOR \",\") ids, GROUP_CONCAT(owner SEPARATOR \",\") owners, class_name, include_path FROM ".ilProviderDB::PROVIDER_TABLE." WHERE shared = 1 AND ~IN~ AND object_type = ~TYPE~ GROUP BY class_name, include_path"]
+                )
+            ->will($this->onConsecutiveCalls($result1, $result2));
+
+        $class_name = Test_SeparatedUnboundProvider::class;
+        $include_path = __DIR__."/SeparatedUnboundProviderTest.php";
+
+        $il_db
+            ->expects($this->exactly(4))
+            ->method("fetchAssoc")
+            ->withConsecutive([$result1],[$result1],[$result1],[$result2])
+            ->will($this->onConsecutiveCalls(
+                ["id" => 1, "owner" => $sub_tree_ids[0], "class_name" => $class_name, "include_path" => $include_path],
+                ["id" => 2, "owner" => $sub_tree_ids[1], "class_name" => $class_name, "include_path" => $include_path],
+                null,
+                null));
+
+        $db = new Test_ilProviderDB($il_db, $il_tree, $il_cache, []);
+		$db->throws = true;
+
+        $providers = $db->providersFor($object);
+        $this->assertCount(0, $providers);
+    }
+
+    public function test_providersFor_shared_for_unbuildable_objects() {
+        $il_db = $this->il_db_mock();
+        $il_tree = $this->il_tree_mock();
+        $il_cache = $this->il_object_data_cache_mock();
+
+        $object_ref_id = 42;
+        $object_type = "crs";
+        $object = $this
+            ->getMockBuilder(\ilObject::class)
+            ->setMethods(["getRefId", "getType"])
+            ->getMock();
+
+        $object
+            ->expects($this->atLeastOnce())
+            ->method("getRefId")
+            ->willReturn($object_ref_id);
+
+        $object
+            ->expects($this->atLeastOnce())
+            ->method("getType")
+            ->willReturn($object_type);
+
+        $sub_tree_ids = ["3", "14"];
+        $il_tree
+            ->expects($this->once())
+            ->method("getSubTreeIds")
+            ->with($object_ref_id)
+            ->willReturn($sub_tree_ids);
+
+		$tree_ids = array_merge([$object_ref_id], $sub_tree_ids);
+        $il_cache
+            ->expects($this->once())
+            ->method("preloadReferenceCache")
+            ->with($tree_ids);
+
+        $il_cache
+            ->expects($this->exactly(3))
+            ->method("lookupObjId")
+            ->withConsecutive([$tree_ids[0]],[$tree_ids[1]], [$tree_ids[2]])
+            ->will($this->onConsecutiveCalls($tree_ids[0], $tree_ids[1], $tree_ids[2]));
+
+        $il_db
+            ->expects($this->exactly(2))
+            ->method("in")
+            ->with("owner", $tree_ids, false, "integer")
+            ->willReturn("~IN~");
+
+        $il_db
+            ->expects($this->exactly(2))
+            ->method("quote")
+            ->with($object_type)
+            ->willReturn("~TYPE~");
+
+        $result1 = "RESULT 1";
+        $result2 = "RESULT 2";
+        $il_db
+            ->expects($this->exactly(2))
+            ->method("query")
+            ->withConsecutive
+                ( ["SELECT id, owner, class_name, include_path FROM ".ilProviderDB::PROVIDER_TABLE." WHERE shared = 0 AND ~IN~ AND object_type = ~TYPE~"]
+
+                , ["SELECT GROUP_CONCAT(id SEPARATOR \",\") ids, GROUP_CONCAT(owner SEPARATOR \",\") owners, class_name, include_path FROM ".ilProviderDB::PROVIDER_TABLE." WHERE shared = 1 AND ~IN~ AND object_type = ~TYPE~ GROUP BY class_name, include_path"]
+                )
+            ->will($this->onConsecutiveCalls($result1, $result2));
+
+        $class_name = "Test_SharedUnboundProvider";
+        $include_path = __DIR__."/SharedUnboundProviderTest.php";
+
+        $il_db
+            ->expects($this->exactly(3))
+            ->method("fetchAssoc")
+            ->withConsecutive([$result1],[$result2],[$result2])
+            ->will($this->onConsecutiveCalls(
+                null,
+                ["ids" => "1,2", "owners" => $sub_tree_ids[0].",".$sub_tree_ids[1], "class_name" => $class_name, "include_path" => $include_path],
+                null));
+
+        $db = new Test_ilProviderDB($il_db, $il_tree, $il_cache, []);
+		$db->throws = true;
+
+        $providers = $db->providersFor($object);
+        $this->assertCount(0, $providers);
+    }
+
 }
