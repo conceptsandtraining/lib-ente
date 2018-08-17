@@ -315,7 +315,7 @@ class ilProviderDB implements ProviderDB {
         while ($row = $this->ilDB->fetchAssoc($res)) {
             yield [
                 "id" => (int)$row["id"],
-                "owner" => $row["owner"],
+                "owner" => (int)$row["owner"],
                 "class_name" => $row["class_name"],
                 "include_path" => $row["include_path"]
             ];
@@ -331,12 +331,15 @@ class ilProviderDB implements ProviderDB {
      * @return  array
      */
     protected function getSharedUnboundProviderDataOf($node_ids, string $object_type, string $component_type = null) {
+        $to_int_list = function ($r) {
+            return array_map(function($v) { return (int)$v; }, explode(",", $r));
+        };
         $query = $this->buildSharedUnboundProviderQueryForObjects($node_ids, $object_type, $component_type);
         $res = $this->ilDB->query($query);
         while ($row = $this->ilDB->fetchAssoc($res)) {
             yield [
-                "owners" => explode(",", $row["owners"]),
-                "ids" => explode(",", $row["ids"]),
+                "owners" => $to_int_list($row["owners"]),
+                "ids" => $to_int_list($row["ids"]),
                 "class_name" => $row["class_name"],
                 "include_path" => $row["include_path"]
             ];
