@@ -228,10 +228,9 @@ class ilProviderDB implements ProviderDB {
 
         $ret = [];
 
-        $query = $this->buildSeparatedUnboundProviderQueryForObjects($nodes_ids, $object_type, $component_type);
-        $res = $this->ilDB->query($query);
-        while ($row = $this->ilDB->fetchAssoc($res)) {
-            $obj_id = $row["owner"];
+        $provider_data = $this->getSeperatedUnboundProviderDataOf($nodes_ids, $object_type, $component_type);
+        foreach ($provider_data as $data) {
+            $obj_id = $data["owner"];
             $ref_id = $nodes_id_mapping[$obj_id];
             try {
                 $owner = $this->buildObjectByRefId($ref_id);
@@ -242,24 +241,21 @@ class ilProviderDB implements ProviderDB {
             $ret[] = new Provider
                 ( $object
                 , $this->buildSeparatedUnboundProvider
-                    ( (int)$row["id"]
+                    ( $data["id"]
                     , $owner
                     , $object_type
-                    , $row["class_name"]
-                    , $row["include_path"]
+                    , $data["class_name"]
+                    , $data["include_path"]
                     )
                 );
         }
 
-        $query = $this->buildSharedUnboundProviderQueryForObjects($nodes_ids, $object_type, $component_type);
-        $res = $this->ilDB->query($query);
-        while ($row = $this->ilDB->fetchAssoc($res)) {
-            $obj_ids = explode(",", $row["owners"]);
-            $prv_ids = explode(",", $row["ids"]);
+        $provider_data = $this->getSharedUnboundProviderDataOf($nodes_ids, $object_type, $component_type);
+        foreach ($provider_data as $data) {
             $owners = [];
-            foreach ($obj_ids as $obj_id) {
+            foreach ($data["owners"] as $obj_id) {
                 $ref_id = $nodes_id_mapping[$obj_id];
-                $prv_id = array_shift($prv_ids);
+                $prv_id = array_shift($data["ids"]);
                 try {
                     $owners[$prv_id] = $this->buildObjectByRefId($ref_id);
                 }
@@ -273,8 +269,8 @@ class ilProviderDB implements ProviderDB {
                     , $this->buildSharedUnboundProvider
                         ( $owners
                         , $object_type
-                        , $row["class_name"]
-                        , $row["include_path"]
+                        , $data["class_name"]
+                        , $data["include_path"]
                         )
                     );
             }
@@ -292,7 +288,7 @@ class ilProviderDB implements ProviderDB {
      */
     protected function getSubtreeObjectIdsAndRefIdMapping($ref_id) {
         $sub_nodes_refs = $this->ilTree->getSubTreeIds($ref_id);
-		$all_nodes_refs = array_merge([$ref_id], $sub_nodes_refs);
+        $all_nodes_refs = array_merge([$ref_id], $sub_nodes_refs);
         $this->ilObjectDataCache->preloadReferenceCache($all_nodes_refs);
 
         $nodes_id_mapping = [];
@@ -303,6 +299,48 @@ class ilProviderDB implements ProviderDB {
             $nodes_ids[] = $id;
         }
         return [$nodes_ids, $nodes_id_mapping];
+    }
+
+    /**
+     * Get the data of the seperated unbound providers of the given nodes.
+     *
+     * @param   int[]       $node_ids
+     * @param   string      $object_type
+     * @param   string|null $component_type
+     * @return  array
+     */
+    protected function getSeperatedUnboundProviderDataOf($node_ids, string $object_type, string $component_type = null) {
+        $query = $this->buildSeparatedUnboundProviderQueryForObjects($node_ids, $object_type, $component_type);
+        $res = $this->ilDB->query($query);
+        while ($row = $this->ilDB->fetchAssoc($res)) {
+            yield [
+                "id" => (int)$row["id"],
+                "owner" => $row["owner"],
+                "class_name" => $row["class_name"],
+                "include_path" => $row["include_path"]
+            ];
+        }
+    }
+
+    /**
+     * Get the data of the shared unbound providers of the given nodes.
+     *
+     * @param   int[]       $node_ids
+     * @param   string      $object_type
+     * @param   string|null $component_type
+     * @return  array
+     */
+    protected function getSharedUnboundProviderDataOf($node_ids, string $object_type, string $component_type = null) {
+        $query = $this->buildSharedUnboundProviderQueryForObjects($node_ids, $object_type, $component_type);
+        $res = $this->ilDB->query($query);
+        while ($row = $this->ilDB->fetchAssoc($res)) {
+            yield [
+                "owners" => explode(",", $row["owners"]),
+                "ids" => explode(",", $row["ids"]),
+                "class_name" => $row["class_name"],
+                "include_path" => $row["include_path"]
+            ];
+        }
     }
 
     /**
@@ -435,7 +473,7 @@ class ilProviderDB implements ProviderDB {
     /**
      * Create a shared unbound provider.
      *
-     * @param   array<int,\ilObject>   $owners 	with a minimum 1 entries
+     * @param   array<int,\ilObject>   $owners  with a minimum 1 entries
      * @param   string      $object_type
      * @param   string      $class_name
      * @param   string      $include_path
