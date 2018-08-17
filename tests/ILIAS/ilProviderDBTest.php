@@ -131,7 +131,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->method("addIndex")
             ->with(ilProviderDB::PROVIDER_TABLE, ["shared"], "ids");
    
-        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), []);
+        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock());
         $db->createTables();
     }
 
@@ -186,7 +186,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
             ->with(ilProviderDB::PROVIDER_TABLE)
             ->willReturn($new_provider_id);
 
-        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), []);
+        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock());
         $unbound_provider = $db->createSeparatedUnboundProvider($owner, $object_type, $class_name, $include_path);
 
         $this->assertInstanceOf(Test_SeparatedUnboundProvider::class, $unbound_provider);
@@ -223,7 +223,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
                 ["DELETE FROM ".ilProviderDB::PROVIDER_TABLE." WHERE id = ~$unbound_provider_id~"],
                 ["DELETE FROM ".ilProviderDB::COMPONENT_TABLE." WHERE id = ~$unbound_provider_id~"]);
 
-        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), []);
+        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock());
         $db->delete($unbound_provider, $owner);
     }
 
@@ -300,7 +300,7 @@ class ILIAS_ilProviderDBTest extends PHPUnit_Framework_TestCase {
                 [ilProviderDB::COMPONENT_TABLE, $insert_component_3],
                 [ilProviderDB::COMPONENT_TABLE, $insert_component_4]);
 
-        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), []);
+        $db = new ilProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock());
         $db->update($unbound_provider);
     }
 
