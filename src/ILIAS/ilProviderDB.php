@@ -444,12 +444,12 @@ class ilProviderDB implements ProviderDB {
         }
     }
 
-	public function addIndizes() {
-		if (!$this->tableExists(ilProviderDB::PROVIDER_TABLE)) {
-			return;
-		}
-		$this->ilDB->addIndex(ilProviderDB::PROVIDER_TABLE, ["owner"], "idxowner", false);
-	}
+    public function addIndizes() {
+        if (!$this->ilDB->tableExists(ilProviderDB::PROVIDER_TABLE)) {
+            return;
+        }
+        $this->ilDB->addIndex(ilProviderDB::PROVIDER_TABLE, ["owner"], "idxowner", false);
+    }
 
     /**
      * Create a separated unbound provider.
