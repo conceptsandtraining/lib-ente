@@ -448,7 +448,7 @@ class ilProviderDB implements ProviderDB {
         if (!$this->ilDB->tableExists(ilProviderDB::PROVIDER_TABLE)) {
             return;
         }
-        $this->ilDB->addIndex(ilProviderDB::PROVIDER_TABLE, ["owner"], "idxowner", false);
+        $this->ilDB->addIndex(ilProviderDB::PROVIDER_TABLE, ["owner"], "ido", false);
     }
 
     /**
