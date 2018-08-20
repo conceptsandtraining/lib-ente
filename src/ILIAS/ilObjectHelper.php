@@ -23,15 +23,15 @@ trait ilObjectHelper {
      */
     protected function getProviderDB() {
         $DIC = $this->getDIC();
-        if (!isset($DIC["ente.ProviderDB"])) {
-            $DIC["ente.ProviderDB"] = new \CaT\Ente\ILIAS\ilProviderDB
+        if (!isset($DIC["ente.provider_db"])) {
+            $DIC["ente.provider_db"] = new \CaT\Ente\ILIAS\ilProviderDB
                 ( $DIC["ilDB"]
                 , $DIC["tree"]
                 , $DIC["ilObjDataCache"]
                 , $DIC
                 );
         }
-        return $DIC["ente.ProviderDB"];
+        return $DIC["ente.provider_db"];
     }
 
     /**

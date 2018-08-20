@@ -25,11 +25,12 @@ trait ilHandlerObjectHelper {
      */
     protected function getRepository() {
         $DIC = $this->getDIC();
-        if (!isset($DIC["ente.Repository"])) {
-            $DIC["ente.Repository"] = new Ente\CachedRepository
-                (new \CaT\Ente\ILIAS\Repository($this->getProviderDB()));
+        if (!isset($DIC["ente.repository"])) {
+            $DIC["ente.epository"] = new Ente\CachedRepository(
+				new \CaT\Ente\ILIAS\Repository($c["ente.provider_db"])
+			);
         }
-        return $DIC["ente.Repository"];
+        return $DIC["ente.repository"];
     }
 
     /**
