@@ -445,7 +445,7 @@ class ilProviderDB implements ProviderDB {
     }
 
 	public function addIndizes() {
-		if (!$this->tableExists(ilProviderDB::PROVIDER_TABLE)) {
+		if (!$this->tableExists(ilProviderDB::PROVIDER_TABLE)) {
 			return;
 		}
 		$this->ilDB->addIndex(ilProviderDB::PROVIDER_TABLE, ["owner"], "idxowner", false);
