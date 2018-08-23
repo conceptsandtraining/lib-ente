@@ -13,7 +13,7 @@ namespace CaT\Ente\ILIAS;
 /**
  * A database that stores ILIAS providers and uses a cache.
  */
-class ilCachedProviderDB extends ilProviderDB {
+class ilCachesSingleOwnerProviderDB extends ilProviderDB {
     /**
      * @var Cache
      */
