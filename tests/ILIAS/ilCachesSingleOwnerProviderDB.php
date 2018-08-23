@@ -11,7 +11,7 @@
 use CaT\Ente\ILIAS\SeparatedUnboundProvider;
 use CaT\Ente\ILIAS\UnboundProvider;
 use CaT\Ente\Provider;
-use CaT\Ente\ILIAS\ilCachedProviderDB;
+use CaT\Ente\ILIAS\ilCachesSingleOwnerProviderDB;
 use CaT\Ente\ILIAS\ilProviderDB;
 use CaT\Ente\ILIAS\Cache;
 use CaT\Ente\Simple\AttachString;
@@ -33,7 +33,7 @@ if (!interface_exists("ilObjectDataCache")) {
     require_once(__DIR__."/ilObjectDataCache.php");
 }
 
-class Test_ilCachedProviderDB extends ilCachedProviderDB {
+class Test_ilCachesSingleOwnerProviderDB extends ilCachesSingleOwnerProviderDB {
     public $object_ref = [];
 	public $throws = false;
     protected function buildObjectByRefId($ref_id) {
@@ -58,7 +58,7 @@ class Test_ilCachedProviderDB extends ilCachedProviderDB {
     }
 }
 
-class ILIAS_ilCachedProviderDBTest extends PHPUnit_Framework_TestCase {
+class ILIAS_ilCachesSingleOwnerProviderDBTest extends PHPUnit_Framework_TestCase {
     protected function il_db_mock() {
         return $this->createMock(\ilDBInterface::class);
     }
@@ -135,7 +135,7 @@ class ILIAS_ilCachedProviderDBTest extends PHPUnit_Framework_TestCase {
             ->method("delete")
             ->with("$owner_id-$object_type-separated");
 
-        $db = new ilCachedProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), $cache);
+        $db = new ilCachesSingleOwnerProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), $cache);
         $unbound_provider = $db->createSeparatedUnboundProvider($owner, $object_type, $class_name, $include_path);
 
         $this->assertInstanceOf(Test_SeparatedUnboundProvider::class, $unbound_provider);
@@ -190,7 +190,7 @@ class ILIAS_ilCachedProviderDBTest extends PHPUnit_Framework_TestCase {
                 ["$owner_id-$object_type-shared"]
             );
 
-        $db = new ilCachedProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), $cache);
+        $db = new ilCachesSingleOwnerProviderDB($il_db, $this->il_tree_mock(), $this->il_object_data_cache_mock(), $cache);
         $db->delete($unbound_provider, $owner);
     }
 
@@ -328,7 +328,7 @@ class ILIAS_ilCachedProviderDBTest extends PHPUnit_Framework_TestCase {
                 null,
                 null));
 
-        $db = new Test_ilCachedProviderDB($il_db, $il_tree, $il_cache, $cache);
+        $db = new Test_ilCachesSingleOwnerProviderDB($il_db, $il_tree, $il_cache, $cache);
 
         $owner_1 = $this
             ->getMockBuilder(\ilObject::class)
@@ -489,7 +489,7 @@ class ILIAS_ilCachedProviderDBTest extends PHPUnit_Framework_TestCase {
                 null,
                 null));
 
-        $db = new Test_ilCachedProviderDB($il_db, $il_tree, $il_cache, $cache);
+        $db = new Test_ilCachesSingleOwnerProviderDB($il_db, $il_tree, $il_cache, $cache);
 
         $owner_1 = $this
             ->getMockBuilder(\ilObject::class)
