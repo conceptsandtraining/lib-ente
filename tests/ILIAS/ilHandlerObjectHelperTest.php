@@ -32,12 +32,17 @@ class ilHandlerObjectHelperTest extends PHPUnit_Framework_TestCase {
 			->setMethods(["getProviderDB", "getDIC", "getEntityRefId"])
 			->getMock();
 
+		$dic = [
+			"ente.provider_db" => $provider_db
+		];
 		$mock
 			->expects($this->once())
-			->method("getProviderDB")
-			->willReturn($provider_db);
+			->method("getDIC")
+			->willReturn($dic);
 
 		$repository = $mock->_getRepository();
+		// unwrap creation closure
+		$repository = $repository($dic);
 
 		$this->assertInstanceOf(Ente\Repository::class, $repository);
 	}
