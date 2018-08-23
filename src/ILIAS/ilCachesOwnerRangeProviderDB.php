@@ -138,6 +138,10 @@ class ilCachesOwnerRangeProviderDB extends ilProviderDB {
     protected function refreshShard(int $shard_id) {
         unset($this->shards[$shard_id]);
         $data = $this->loadShardDataFromDB($shard_id);
+        // For some reason we get a null in maybeLoadShardDataFromCache if the array
+        // is completely empty. This produces (wrong) cache misses. To prevent them
+        // we set this key.
+        $data["i am"] = "here";
         $this->shards[$shard_id] = $data;
         $this->cache->set("$shard_id", $data);
     } 
