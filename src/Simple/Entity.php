@@ -8,26 +8,30 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\Simple;
 
 /**
  * Simple implementation for an entity.
  */
-class Entity implements \CaT\Ente\Entity {
-    /**
-     * @var integer
-     */
-    private $id;
+class Entity implements \CaT\Ente\Entity
+{
+	/**
+	* @var integer
+	*/
+	private $id;
 
-    public function __construct($id) {
-        assert('is_integer($id)');
-        $this->id = $id;
-    }
+	public function __construct(int $id)
+	{
+		$this->id = $id;
+	}
 
-    /**
-     * @inheritdocs
-     */
-    public function id() {
-        return $this->id;
-    }
+	/**
+	* @inheritdocs
+	*/
+	public function id() : int
+	{
+		return $this->id;
+	}
 }

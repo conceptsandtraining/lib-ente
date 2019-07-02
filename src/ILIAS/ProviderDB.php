@@ -8,82 +8,75 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\ILIAS;
 
 /**
  * A database that stores ILIAS providers.
  */
-interface ProviderDB {
-    /**
-     * Create a new separated unbound provider for the given owner.
-     *
-     * The provider will belong to objects above the $owner in the tree that also
-     * have the type $obj_type.
-     *
-     * @param   \ilObject   $owner
-     * @param   string      $obj_type
-     * @param   string      $class_name
-     * @param   string      $include_path
-     * @return  SeparatedUnboundProvider
-     */
-    public function createSeparatedUnboundProvider(\ilObject $owner, $obj_type, $class_name, $include_path);
-
-    /**
-     * Create a new shared unbound provider for the given owner.
-     *
-     * The provider will be belong to objects above the $owner in the tree that also
-     * have the type $obj_type.
+interface ProviderDB
+{
+	/**
+	 * Create a new separated unbound provider for the given owner.
 	 *
-     * @param   \ilObject   $owner
-     * @param   string      $obj_type
-     * @param   string      $class_name
-     * @param   string      $include_path
-     * @return  SharedUnboundProvider
-     */
-    public function createSharedUnboundProvider(\ilObject $owner, $obj_type, $class_name, $include_path);
+	 * The provider will belong to objects above the $owner in the tree that also
+	 * have the type $obj_type.
+	 */
+	public function createSeparatedUnboundProvider(
+		\ilObject $owner,
+		string $obj_type,
+		string $class_name,
+		string $include_path
+	) : SeparatedUnboundProvider;
 
-    /**
-     * Load the unbound provider with the given id.
-     *
-     * @param   int         $id
-     * @throws  \InvalidArgumentException if the provider with the supplied id does not exist.
-     * @return  UnboundProvider
-     */
-    public function load($id);
+	/**
+	 * Create a new shared unbound provider for the given owner.
+	 *
+	 * The provider will be belong to objects above the $owner in the tree that also
+	 * have the type $obj_type.
+	 */
+	public function createSharedUnboundProvider(
+		\ilObject $owner,
+		string $obj_type,
+		string $class_name,
+		string $include_path
+	) : SharedUnboundProvider;
 
-    /**
-     * Delete a given unbound provider.
-     *
-     * @param   UnboundProvider    $provider
-     * @param   UnboundProvider    $provider
-     * @return  null
-     */
-    public function delete(UnboundProvider $provider, \ilObject $owner);
+	/**
+	 * Load the unbound provider with the given id.
+	 * @throws  \InvalidArgumentException if the provider with the supplied id does not exist.
+	 */
+	public function load(int $id) :  UnboundProvider;
 
-    /**
-     * Update the given unbound provider.
-     *
-     * The only thing that may be updated are the components that are provided.
-     *
-     * @param   UnboundProvider    $provider
-     * @return  null
-     */
-    public function update(UnboundProvider $provider);
+	/**
+	 * Delete a given unbound provider.
+	 * @param   UnboundProvider    $provider
+	 * @param   UnboundProvider    $provider
+	 * @return  null
+	 */
+	public function delete(UnboundProvider $provider, \ilObject $owner);
 
-    /**
-     * Get all unbound providers of a given owner.
-     *
-     * @param   \ilObject   $owner
-     * @return  UnboundProvider[]
-     */
-    public function unboundProvidersOf(\ilObject $owner);
+	/**
+	 * Update the given unbound provider.
+	 *
+	 * The only thing that may be updated are the components that are provided.
+	 * @param UnboundProvider    $provider
+	 */
+	public function update(UnboundProvider $provider);
 
-    /**
-     * Get all providers for the given object.
-     *
-     * @param   \ilObject   $object
-     * @param   string|null $component_type
-     * @return  Provider[]
-     */
-    public function providersFor(\ilObject $object, $component_type = null);
+	/**
+	 * Get all unbound providers of a given owner.
+	 * @return  UnboundProvider[]
+	 */
+	public function unboundProvidersOf(\ilObject $owner) : array;
+
+	/**
+	 * Get all providers for the given object.
+	 * @return  Provider[]
+	 */
+	public function providersFor(
+		\ilObject $object,
+		string $component_type = null
+	) : array;
 }

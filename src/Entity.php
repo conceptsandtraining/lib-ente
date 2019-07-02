@@ -8,6 +8,8 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente;
 
 /**
@@ -19,14 +21,13 @@ namespace CaT\Ente;
  *    are known, thus couple the entity to all existing components. This dependency
  *    should not be introduced to have an extensible system.
  */
-interface Entity {
-    /**
-     * Some ID for this entity.
-     *
-     * It needs to be guaranteed that every entity has exactly one unique id.
-     * It needs to be guaranteed that the id can be serialised.
-     *
-     * @return  mixed
-     */
-    public function id();
+interface Entity
+{
+	/**
+	 * Some ID for this entity.
+	 *
+	 * It needs to be guaranteed that every entity has exactly one unique id.
+	 * It needs to be guaranteed that the id can be serialised.
+	 */
+	public function id() : int;
 }

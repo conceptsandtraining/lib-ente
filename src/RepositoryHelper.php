@@ -8,30 +8,31 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente;
 
 /**
  * Helper for all repositories. Repos only need to implement a minimal amount
  * of methods then.
  */
-trait RepositoryHelper {
-    /**
-     * Get providers for an entity, possibly filtered by a component type.
-     *
-     * @param   Entity      $entity
-     * @param   string|null $component_type
-     * @return  Provider[]
-     */
-    abstract public function providersForEntity(Entity $entity, $component_type = null);
+trait RepositoryHelper
+{
+	/**
+	 * Get providers for an entity, possibly filtered by a component type.
+	 * @return Provider[]
+	 */
+	abstract public function providersForEntity(
+		Entity $entity,
+		string $component_type = null
+	) : array;
 
 	/**
 	 * Get components for the entity, possibly filtered by component type.
-	 *
-	 * @param	Entity		$entity
-	 * @param	string|null	$component_type
-	 * @return	Component[]
+	 * @return Component[]
 	 */
-	public function componentsForEntity(Entity $entity, $component_type = null) {
+	public function componentsForEntity(Entity $entity, string $component_type = null) : array
+	{
 		$providers = $this->providersForEntity($entity, $component_type);
 		$components = [];
 		foreach ($providers as $provider) {

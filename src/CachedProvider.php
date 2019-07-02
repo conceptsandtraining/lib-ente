@@ -8,49 +8,56 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente;
 
 /**
  * A chaching wrapper around a provider that caches components per type
  * and passes through the other methods.
  */
-class CachedProvider implements Provider {
-    /**
-     * @var Provider
-     */
-    protected $provider;
+class CachedProvider implements Provider
+{
+	/**
+	* @var Provider
+	*/
+	protected $provider;
 
-    /**
-     * @var array<string,Component[]>
-     */
-    protected $cache;
+	/**
+	* @var array<string,Component[]>
+	*/
+	protected $cache;
 
-    public function __construct(Provider $provider) {
-        $this->provider = $provider;
-        $this->cache = [];
-    }
+	public function __construct(Provider $provider)
+	{
+		$this->provider = $provider;
+		$this->cache = [];
+	}
 
-    /**
-     * @inheritdocs
-     */
-    public function componentsOfType($component_type) {
-        if (!isset($this->cache[$component_type])) {
-            $this->cache[$component_type] = $this->provider->componentsOfType($component_type);
-        }
-        return $this->cache[$component_type];
-    }
+	/**
+	* @inheritdocs
+	*/
+	public function componentsOfType(string $component_type) : array
+	{
+		if (!isset($this->cache[$component_type])) {
+			$this->cache[$component_type] = $this->provider->componentsOfType($component_type);
+		}
+		return $this->cache[$component_type];
+	}
 
-    /**
-     * @inheritdocs
-     */
-    public function componentTypes() {
-        return $this->provider->componentTypes();
-    }
+	/**
+	* @inheritdocs
+	*/
+	public function componentTypes() : string
+	{
+		return $this->provider->componentTypes();
+	}
 
-    /**
-     * @inheritdocs
-     */
-    public function entity() {
-        return $this->provider->entity();
-    }
+	/**
+	* @inheritdocs
+	*/
+	public function entity() : Entity
+	{
+		return $this->provider->entity();
+	}
 }

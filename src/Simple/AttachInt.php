@@ -8,18 +8,21 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\Simple;
+
+use \CaT\Ente\Component;
 
 /**
  * Attaches an integer to an entity.
  *
  * Intended to be used for testing.
  */
-interface AttachInt extends \CaT\Ente\Component {
-    /**
-     * Get the attached integer.
-     *
-     * @return int
-     */
-    public function attachedInt();
+interface AttachInt extends Component
+{
+	/**
+	 * Get the attached integer.
+	 */
+	public function attachedInt() : int;
 }

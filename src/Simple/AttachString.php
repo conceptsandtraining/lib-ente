@@ -8,18 +8,21 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\Simple;
+
+use \CaT\Ente\Component;
 
 /**
  * Attaches a string to an entity.
  *
  * Intended to be used for testing.
  */
-interface AttachString extends \CaT\Ente\Component {
-    /**
-     * Get the attached string.
-     *
-     * @return string 
-     */
-    public function attachedString();
+interface AttachString extends Component
+{
+	/**
+	 * Get the attached string.
+	 */
+	public function attachedString() : string;
 }
