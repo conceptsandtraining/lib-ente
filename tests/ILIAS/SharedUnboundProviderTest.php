@@ -9,13 +9,13 @@
  */
 
 use CaT\Ente\ILIAS\Entity;
-use CaT\Ente\ILIAS\Provider;
 use CaT\Ente\ILIAS\SharedUnboundProvider;
-use CaT\Ente\Simple;
 use CaT\Ente\Simple\AttachString;
 use CaT\Ente\Simple\AttachStringMemory;
 use CaT\Ente\Simple\AttachInt;
 use CaT\Ente\Simple\AttachIntMemory;
+
+use CaT\Ente\Entity AS IEntity;
 
 if (!class_exists("ilObject")) {
     require_once(__DIR__."/ilObject.php");
@@ -26,7 +26,7 @@ class Test_SharedUnboundProvider extends SharedUnboundProvider {
         return [AttachString::class, AttachInt::class];
     }
 
-    public function buildComponentsOf($component_type, Entity $entity) {
+    public function buildComponentsOf(string $component_type, IEntity $entity) : array {
         assert(is_string($component_type));
         $this->callsTo_buildComponentsOf[] = $component_type;
         $object = $entity->object();

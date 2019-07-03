@@ -8,72 +8,71 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\ILIAS;
 
-use CaT\Ente;
+use \CaT\Ente\Component AS IComponent;
+use \CaT\Ente\Entity AS IEntity;
+use \CaT\Ente\CachedRepository;
 
 /**
  * Helper for repository objects that want to handle components.
  */
-trait ilHandlerObjectHelper {
-    use ilObjectHelper;
+trait ilHandlerObjectHelper
+{
+	use ilObjectHelper;
 
-    /**
-     * Get a repository for providers and components.
-     *
-     * @return \CaT\Ente\Repository
-     */
-    protected function getRepository() {
-        $DIC = $this->getDIC();
-        if (!isset($DIC["ente.repository"])) {
-            $DIC["ente.repository"] = function ($c) {
-                return new Ente\CachedRepository(
-                    new \CaT\Ente\ILIAS\Repository($c["ente.provider_db"])
-                );
+	/**
+	 * Get a repository for providers and components.
+	 *
+	 * @return \CaT\Ente\Repository
+	 */
+	protected function getRepository() {
+		$DIC = $this->getDIC();
+		if (!isset($DIC["ente.repository"])) {
+			$DIC["ente.repository"] = function ($c) {
+				return new CachedRepository(
+					new Repository($c["ente.provider_db"])
+				);
 			};
-        }
-        return $DIC["ente.repository"];
-    }
+		}
+		return $DIC["ente.repository"];
+	}
 
-    /**
-     * Get components for the entity.
-     *
-     * @return  Component[]
-     */
-    protected function getComponents() {
-        $repository = $this->getRepository();
-        return $repository->componentsForEntity($this->getEntity());
-    }
+	/**
+	 * Get components for the entity.
+	 *
+	 * @return IComponent[]
+	 */
+	protected function getComponents() {
+		$repository = $this->getRepository();
+		return $repository->componentsForEntity($this->getEntity());
+	}
 
-    /**
-     * Get components for the entity.
-     *
-     * @param   string      $component_type
-     * @return  Component[]
-     */
-    protected function getComponentsOfType($component_type) {
-        assert('is_string($component_type)');
-        $repository = $this->getRepository();
-        return $repository->componentsForEntity($this->getEntity(), $component_type);
-    }
+	/**
+	 * @return IComponent[]
+	 */
+	protected function getComponentsOfType(string $component_type) : array
+	{
+		$repository = $this->getRepository();
+		return $repository->componentsForEntity($this->getEntity(), $component_type);
+	}
 
-    /**
-     * Get the entity this object handles components for.
-     *
-     * @return Ente\Entity
-     */
-    protected function getEntity() {
-        return new \CaT\Ente\ILIAS\Entity
-            ( \ilObjectFactory::getInstanceByRefId
-                ( $this->getEntityRefId()
-                )
-            );
-    }
+	/**
+	 * Get the entity this object handles components for.
+	 */
+	protected function getEntity() : IEntity
+	{
+		return new Entity(
+			\ilObjectFactory::getInstanceByRefId(
+				$this->getEntityRefId()
+			)
+		);
+	}
 
-    /**
-     * Get the ref_id of the object this object handles components for.
-     *
-     * @return int
-     */
-    abstract protected function getEntityRefId();
+	/**
+	 * Get the ref_id of the object this object handles components for.
+	 */
+	abstract protected function getEntityRefId() : int;
 }

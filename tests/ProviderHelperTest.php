@@ -8,6 +8,7 @@
  * the license along with the code.
  */
 
+use CaT\Ente\Entity;
 use CaT\Ente\Component;
 use CaT\Ente\ProviderHelper;
 
@@ -21,7 +22,7 @@ interface Unrelated {
 }
 
 class SomeComponentImplementation implements SomeComponent, SomeOtherComponent, Unrelated {
-    public function entity() { throw new \RuntimeException(); }
+    public function entity() : Entity { throw new \RuntimeException(); }
 }
 
 class ProviderHelperTest extends PHPUnit_Framework_TestCase {

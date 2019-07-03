@@ -47,13 +47,10 @@ interface ProviderDB
 	 * Load the unbound provider with the given id.
 	 * @throws  \InvalidArgumentException if the provider with the supplied id does not exist.
 	 */
-	public function load(int $id) :  UnboundProvider;
+	public function load(int $id) : UnboundProvider;
 
 	/**
 	 * Delete a given unbound provider.
-	 * @param   UnboundProvider    $provider
-	 * @param   UnboundProvider    $provider
-	 * @return  null
 	 */
 	public function delete(UnboundProvider $provider, \ilObject $owner);
 
@@ -61,7 +58,6 @@ interface ProviderDB
 	 * Update the given unbound provider.
 	 *
 	 * The only thing that may be updated are the components that are provided.
-	 * @param UnboundProvider    $provider
 	 */
 	public function update(UnboundProvider $provider);
 

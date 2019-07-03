@@ -48,7 +48,7 @@ class CachedProvider implements Provider
 	/**
 	* @inheritdocs
 	*/
-	public function componentTypes() : string
+	public function componentTypes() : array
 	{
 		return $this->provider->componentTypes();
 	}

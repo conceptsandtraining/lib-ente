@@ -33,10 +33,12 @@ if (!interface_exists("ilObjectDataCache")) {
     require_once(__DIR__."/ilObjectDataCache.php");
 }
 
-class Test_ilCachesOwnerRangeProviderDB extends ilCachesOwnerRangeProviderDB {
+class Test_ilCachesOwnerRangeProviderDB extends ilCachesOwnerRangeProviderDB
+{
     public $object_ref = [];
 	public $throws = false;
-    protected function buildObjectByRefId($ref_id) {
+    protected function buildObjectByRefId(int $ref_id) : \ilObject
+	{
 		if ($this->throws) {
 			throw new \InvalidArgumentException();
 		}
@@ -44,7 +46,8 @@ class Test_ilCachesOwnerRangeProviderDB extends ilCachesOwnerRangeProviderDB {
         return $this->object_ref[$ref_id];
     }
     public $object_obj = [];
-    protected function buildObjectByObjId($obj_id) {
+    protected function buildObjectByObjId(int $obj_id) : \ilObject
+	{
 		if ($this->throws) {
 			throw new \InvalidArgumentException();
 		}
@@ -52,13 +55,15 @@ class Test_ilCachesOwnerRangeProviderDB extends ilCachesOwnerRangeProviderDB {
         return $this->object_obj[$obj_id];
     }
     public $reference_ids = [];
-    protected function getAllReferenceIdsFor($obj_id) {
+    protected function getAllReferenceIdsFor(int $obj_id) : array
+	{
         assert(isset($this->reference_ids[$obj_id]));
         return $this->reference_ids[$obj_id];
     }
 }
 
-class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase {
+class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase
+{
     protected function il_db_mock() {
         return $this->createMock(\ilDBInterface::class);
     }
@@ -101,7 +106,7 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase 
 
         $sub_tree_id1 = 3;
         $sub_tree_id2 = 14;
-        $sub_tree_ids = ["$sub_tree_id1", "$sub_tree_id2"];
+        $sub_tree_ids = [$sub_tree_id1, $sub_tree_id2];
         $il_tree
             ->expects($this->once())
             ->method("getSubTreeIds")
@@ -163,6 +168,7 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase 
 								]
 							]
 					]],
+					"i am" => "here"
                 ]
             );
 
@@ -217,7 +223,8 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase 
         $this->assertEquals([$owner_2], $provider2->owners());
     }
 
-    public function test_providersFor_with_cache() {
+    public function test_providersFor_with_cache()
+	{
         $il_db = $this->il_db_mock();
         $il_tree = $this->il_tree_mock();
         $il_cache = $this->il_object_data_cache_mock();
@@ -241,7 +248,7 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase 
 
         $sub_tree_id1 = 3;
         $sub_tree_id2 = 14;
-        $sub_tree_ids = ["$sub_tree_id1", "$sub_tree_id2"];
+        $sub_tree_ids = [$sub_tree_id1, $sub_tree_id2];
         $il_tree
             ->expects($this->once())
             ->method("getSubTreeIds")
@@ -272,10 +279,15 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase 
             ->with("0")
             ->willReturn(
 				[
-					$object_ref_id => [ $object_type => [ "separated" => [], "shared" => []]],
-					$sub_tree_id1 => [ $object_type => [
-						"separated" => 
-							[
+					$object_ref_id => [
+						$object_type => [
+							"separated" => [],
+							"shared" => []
+						]
+					],
+					$sub_tree_id1 => [
+						$object_type => [
+							"separated" => [
 								[
 									"id" => 1,
 									"owner" => $sub_tree_id1,
@@ -283,11 +295,12 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase 
 									"include_path" => $include_path
 								]
 							],
-						"shared" => []
-					]],
-					$sub_tree_id2 => [ $object_type => [
-						"separated" => 
-							[
+							"shared" => []
+						]
+					],
+					$sub_tree_id2 => [
+						$object_type => [
+							"separated" => [
 								[
 									"id" => 2,
 									"owner" => $sub_tree_id2,
@@ -295,8 +308,9 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase 
 									"include_path" => $include_path
 								]
 							],
-						"shared" => []
-					]],
+							"shared" => []
+						]
+					],
                 ]
             );
 

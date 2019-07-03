@@ -8,14 +8,15 @@
  * the license along with the code.
  */
 
-namespace CaT\Ente\ILIAS;
+declare(strict_types=1);
 
-use CaT\Ente;
+namespace CaT\Ente\ILIAS;
 
 /**
  * Helper for repository objects that want to provide components.
  */
-trait ilProviderObjectHelper {
+trait ilProviderObjectHelper
+{
 	use ilObjectHelper;
 
 	/**
@@ -41,7 +42,7 @@ trait ilProviderObjectHelper {
 	 * @param	string	$object_type	for which the object provides
 	 * @param	string	$class_name		of the unbound provider
 	 * @param	string	$path			of the include file for the unbound provider class
-	 * @return 	void
+	 * @return	void
 	 */
 	protected function createUnboundProvider($object_type, $class_name, $path) {
 		if (!($this instanceof \ilObject)) {

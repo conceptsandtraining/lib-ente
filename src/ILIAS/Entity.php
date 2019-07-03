@@ -12,10 +12,12 @@ declare(strict_types=1);
 
 namespace CaT\Ente\ILIAS;
 
+use \CaT\Ente\Entity AS IEntity;
+
 /**
  * An entity over an ILIAS object.
  */
-class Entity implements \CaT\Ente\Entity
+class Entity implements IEntity
 {
 	/**
 	 * @var \ilObject

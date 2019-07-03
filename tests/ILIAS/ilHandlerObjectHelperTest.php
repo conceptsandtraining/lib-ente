@@ -66,7 +66,7 @@ class ilHandlerObjectHelperTest extends PHPUnit_Framework_TestCase {
 			->method("getEntity")
 			->willReturn($entity);
 
-		$array = new \StdClass();
+		$array = [new \StdClass()];
 
 		$repository
 			->expects($this->once())
@@ -99,7 +99,7 @@ class ilHandlerObjectHelperTest extends PHPUnit_Framework_TestCase {
 			->method("getEntity")
 			->willReturn($entity);
 
-		$array = new \StdClass();
+		$array = [new \StdClass()];
 		$type = "TYPE";
 
 		$repository

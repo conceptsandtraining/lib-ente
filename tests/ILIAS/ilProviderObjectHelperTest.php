@@ -39,12 +39,12 @@ abstract class ilProviderObjectHelperMock extends ilObject {
 
 class _SeparatedUnboundProvider extends Ente\ILIAS\SeparatedUnboundProvider {
 	public function componentTypes() {}
-	public function buildComponentsOf($c, Ente\ILIAS\Entity $e) {}
+	public function buildComponentsOf(string $c, Ente\Entity $e) : array {}
 }
 
 class _SharedUnboundProvider extends Ente\ILIAS\SharedUnboundProvider {
 	public function componentTypes() {}
-	public function buildComponentsOf($c, Ente\ILIAS\Entity $e) {}
+	public function buildComponentsOf(string $c, Ente\Entity $e) : array {}
 }
 
 class ilProviderObjectHelperTest extends PHPUnit_Framework_TestCase {
@@ -132,12 +132,17 @@ class ilProviderObjectHelperTest extends PHPUnit_Framework_TestCase {
 		$class_name = "CLASS";
 		$path = "PATH";
 
+		$mock = $this
+			->getMockBuilder(ilProviderObjectHelperMock::class)
+			->setMethods(["getProviderDB", "getDIC"])
+			->getMock();
+
 		$thrown = true;
 		try {
 			$mock->_createUnboundProvider($object_type, $class_name, $path);
 			$this->assertFalse("This should not happen.");
 		}
-		catch (\Exception $e) {
+		catch (\LogicException $e) {
 			$thrown = true;
 		}
 		$this->assertTrue($thrown);

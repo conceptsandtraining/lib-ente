@@ -8,14 +8,13 @@
  * the license along with the code.
  */
 
-use CaT\Ente\ILIAS\Entity;
-use CaT\Ente\ILIAS\Provider;
 use CaT\Ente\ILIAS\SeparatedUnboundProvider;
-use CaT\Ente\Simple;
 use CaT\Ente\Simple\AttachString;
 use CaT\Ente\Simple\AttachStringMemory;
 use CaT\Ente\Simple\AttachInt;
 use CaT\Ente\Simple\AttachIntMemory;
+
+use CaT\Ente\Entity AS IEntity;
 
 if (!class_exists("ilObject")) {
     require_once(__DIR__."/ilObject.php");
@@ -26,11 +25,10 @@ class Test_SeparatedUnboundProvider extends SeparatedUnboundProvider {
         return [AttachString::class, AttachInt::class];
     }
 
-    public function buildComponentsOf($component_type, Entity $entity) {
-        assert(is_string($component_type));
+    public function buildComponentsOf(string $component_type, IEntity $entity) : array
+	{
         $this->callsTo_buildComponentsOf[] = $component_type;
         $object = $entity->object();
-        $entity = $entity;
         if ($component_type == AttachString::class) {
             return [new AttachStringMemory($entity, "id: {$object->getId()}")];
         }
