@@ -1,9 +1,12 @@
 <?php
 
-require_once("./Services/Repository/classes/class.ilObjectPluginGUI.php");
-require_once("./Services/Form/classes/class.ilPropertyFormGUI.php");
-require_once("./Services/Form/classes/class.ilTextInputGUI.php");
+/* Copyright (c) 2018 Richard Klees <richard.klees@concepts-and-training.de> */
 
+declare(strict_types=1);
+
+require_once "./Services/Repository/classes/class.ilObjectPluginGUI.php";
+require_once "./Services/Form/classes/class.ilPropertyFormGUI.php";
+require_once "./Services/Form/classes/class.ilTextInputGUI.php";
 
 /**
  * Plugin object GUI class. Baseclass for all GUI action in ILIAS
@@ -14,17 +17,18 @@ require_once("./Services/Form/classes/class.ilTextInputGUI.php");
 class ilObjComponentProviderExampleGUI extends ilObjectPluginGUI
 {
     const VALUES_FIELD_NAME = "values";
-    const SAVE_CMD = "saveForm";
+    const CMD_SAVE = "saveForm";
+    const CMD_SHOW_CONTENT = "showContent";
 
     /**
      * @var \ilTemplate
      */
-    protected $ilTemplate;
+    protected $tpl;
 
     /**
      * @var \ilCtrl
      */
-    protected $ilCtrl;
+    protected $ctrl;
 
     /**
      * Called after parent constructor. It's possible to define some plugin special values
@@ -32,8 +36,8 @@ class ilObjComponentProviderExampleGUI extends ilObjectPluginGUI
     protected function afterConstructor()
     {
         global $DIC;
-        $this->ilTemplate = $DIC->ui()->mainTemplate();
-        $this->ilCtrl = $DIC->ctrl();
+        $this->tpl = $DIC["tpl"];
+        $this->ctrl = $DIC["ilCtrl"];
     }
 
     /**
@@ -50,10 +54,11 @@ class ilObjComponentProviderExampleGUI extends ilObjectPluginGUI
     function performCommand($cmd)
     {
         switch ($cmd) {
-            case self::SAVE_CMD:
+            case self::CMD_SAVE:
                 $this->saveForm();
-            case "showContent":
-                $this->ilTemplate->setContent($this->showContent());
+                break;
+            case self::CMD_SHOW_CONTENT:
+                $this->showContent();
                 break;
             default:
                 throw new \InvalidArgumentException("Unknown Command: '$cmd'");
@@ -69,7 +74,7 @@ class ilObjComponentProviderExampleGUI extends ilObjectPluginGUI
         $settings = $db->getFor((int)$this->object->getId());
         $settings = $settings->withProvidedStrings($_POST[self::VALUES_FIELD_NAME]);
         $db->update($settings);
-        $this->ilCtrl->redirect($this, "showContent");
+        $this->ctrl->redirect($this, self::CMD_SHOW_CONTENT);
     }
 
     /**
@@ -83,33 +88,37 @@ class ilObjComponentProviderExampleGUI extends ilObjectPluginGUI
         $settings = $db->getFor((int)$this->object->getId());
 
         $form = new \ilPropertyFormGUI();
-        $form->setTitle($this->plugin->txt("settings_form_title"));
-        $form->setFormAction($this->ilCtrl->getFormAction($this));
-        $form->addCommandButton(self::SAVE_CMD, $this->txt("save"));
+        $form->setTitle($this->txt("settings_form_title"));
+        $form->setFormAction($this->ctrl->getFormAction($this));
+        $form->addCommandButton(self::CMD_SAVE, $this->txt("save"));
 
-        $input = new \ilTextInputGUI($this->plugin->txt("values"), self::VALUES_FIELD_NAME);
+        $input = new \ilTextInputGUI($this->txt("values"), self::VALUES_FIELD_NAME);
         $input->setMulti(true);
         $input->setMaxLength(64);
         $input->setValue($settings->providedStrings());
-
         $form->addItem($input);
 
-        return $form->getHTML();
+        $this->tpl->setContent( $form->getHTML());
     }
 
     /**
      * After object has been created -> jump to this command
      */
-    function getAfterCreationCmd()
+    public function getAfterCreationCmd()
     {
-        return "showContent";
+        return self::CMD_SHOW_CONTENT;
     }
 
     /**
      * Get standard command
      */
-    function getStandardCmd()
+    public function getStandardCmd()
     {
-        return "showContent";
+        return self::CMD_SHOW_CONTENT;
+    }
+
+    protected function txt(string $code) :  string
+    {
+        return $this->plugin->txt($code);
     }
 }

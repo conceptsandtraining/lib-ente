@@ -1,13 +1,7 @@
 {
 	"require": {
-		"cat/ente": "@dev"
+		"conceptsandtraining/ente": "^4.0.0"
 	},
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "git@github.com:/conceptsandtraining/lib-ente.git"
-		}
-	],
 	"autoload": {
 		"psr-4": {
 			"CaT\\Plugins\\ComponentHandlerExample\\": "./classes"

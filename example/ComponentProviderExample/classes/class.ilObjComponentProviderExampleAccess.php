@@ -1,4 +1,9 @@
 <?php
+
+/* Copyright (c) 2018 Richard Klees <richard.klees@concepts-and-training.de> */
+
+declare(strict_types=1);
+
 require_once 'Services/Repository/classes/class.ilObjectPluginAccess.php';
 
 /**
@@ -36,7 +41,7 @@ class ilObjComponentProviderExampleAccess extends ilObjectPluginAccess
 
         switch ($a_permission) {
             case "read":
-                if (!self::checkOnline($a_obj_id)
+                if (self::_isOffline($a_obj_id)
                     && !$ilAccess->checkAccessOfUser($a_user_id, "write", "", $a_ref_id)) {
                     return false;
                 }
@@ -48,8 +53,8 @@ class ilObjComponentProviderExampleAccess extends ilObjectPluginAccess
     /**
      * Check online status of object
      */
-    static public function checkOnline($a_id)
+    static public function _isOffline($a_obj_id)
     {
-        return true;
+        return false;
     }
 }

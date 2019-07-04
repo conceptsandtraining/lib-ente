@@ -1,9 +1,10 @@
 <?php
 
-require_once("./Services/Repository/classes/class.ilObjectPluginGUI.php");
-require_once("./Services/Form/classes/class.ilPropertyFormGUI.php");
-require_once("./Services/Form/classes/class.ilTextInputGUI.php");
+/* Copyright (c) 2018 Richard Klees <richard.klees@concepts-and-training.de> */
 
+declare(strict_types=1);
+
+require_once("./Services/Repository/classes/class.ilObjectPluginGUI.php");
 
 /**
  * Plugin object GUI class. Baseclass for all GUI action in ILIAS
@@ -13,10 +14,12 @@ require_once("./Services/Form/classes/class.ilTextInputGUI.php");
  */
 class ilObjComponentHandlerExampleGUI extends ilObjectPluginGUI
 {
+    const CMD_SHOW_CONTENT = "showContent";
+
     /**
      * @var \ilTemplate
      */
-    protected $ilTemplate;
+    protected $tpl;
 
     /**
      * @var \ILIAS\UI\Factory
@@ -34,9 +37,9 @@ class ilObjComponentHandlerExampleGUI extends ilObjectPluginGUI
     protected function afterConstructor()
     {
         global $DIC;
-        $this->ilTemplate = $DIC->ui()->mainTemplate();
-        $this->ui_factory = $DIC->ui()->factory();
-        $this->ui_renderer = $DIC->ui()->renderer();
+        $this->tpl = $DIC["tpl"];
+        $this->ui_factory = $DIC["ui.factory"];
+        $this->ui_renderer = $DIC["ui.renderer"];
     }
 
     /**
@@ -53,39 +56,36 @@ class ilObjComponentHandlerExampleGUI extends ilObjectPluginGUI
     function performCommand($cmd)
     {
         switch ($cmd) {
-            case "showContent":
-                $this->ilTemplate->setContent($this->showContent());
+            case self::CMD_SHOW_CONTENT:
+                $this->showContent();
                 break;
             default:
                 throw new \InvalidArgumentException("Unknown Command: '$cmd'");
         }
     }
 
-    /**
-     * Show the edit form.
-     *
-     * @return string
-     */
     public function showContent()
     {
         $items = $this->object->getProvidedStrings();
         $listing = $this->ui_factory->listing()->ordered($items);
-        return $this->ui_renderer->render($listing);
+        $this->tpl->setContent(
+            $this->ui_renderer->render($listing)
+        );
     }
 
     /**
      * After object has been created -> jump to this command
      */
-    function getAfterCreationCmd()
+    public function getAfterCreationCmd()
     {
-        return "showContent";
+        return self::CMD_SHOW_CONTENT;
     }
 
     /**
      * Get standard command
      */
-    function getStandardCmd()
+    public function getStandardCmd()
     {
-        return "showContent";
+        return self::CMD_SHOW_CONTENT;
     }
 }

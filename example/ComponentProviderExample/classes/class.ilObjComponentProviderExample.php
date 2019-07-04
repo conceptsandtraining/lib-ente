@@ -1,13 +1,18 @@
 <?php
-include_once("Services/Repository/classes/class.ilObjectPlugin.php");
+
+/* Copyright (c) 2018 Richard Klees <richard.klees@concepts-and-training.de> */
+
+declare(strict_types=1);
 
 use CaT\Plugins\ComponentProviderExample\UnboundProvider;
 use CaT\Ente\ILIAS\ilProviderObjectHelper;
 
+require_once "Services/Repository/classes/class.ilObjectPlugin.php";
+
 /**
  * Object of the plugin
  */
-class ilObjComponentProviderExample extends ilObjectPlugin
+class ilObjComponentProviderExample extends \ilObjectPlugin
 {
     use ilProviderObjectHelper;
 
@@ -29,7 +34,11 @@ class ilObjComponentProviderExample extends ilObjectPlugin
      */
     public function doCreate()
     {
-        $this->createUnboundProvider("crs", UnboundProvider::class, __DIR__ . "/UnboundProvider.php");
+        $this->createUnboundProvider(
+            "crs",
+            UnboundProvider::class,
+            __DIR__ . "/UnboundProvider.php"
+        );
     }
 
     /**

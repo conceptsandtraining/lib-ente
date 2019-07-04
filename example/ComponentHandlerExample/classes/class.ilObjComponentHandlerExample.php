@@ -1,7 +1,13 @@
 <?php
-include_once("Services/Repository/classes/class.ilObjectPlugin.php");
 
+/* Copyright (c) 2018 Richard Klees <richard.klees@concepts-and-training.de> */
+
+declare(strict_types=1);
+
+use CaT\Ente\Simple;
 use CaT\Ente\ILIAS;
+
+require_once "Services/Repository/classes/class.ilObjectPlugin.php";
 
 /**
  * Object of the plugin
@@ -26,12 +32,10 @@ class ilObjComponentHandlerExample extends ilObjectPlugin
     /**
      * Returns an array with title => string[] entries containing the strings
      * provided for the object this plugin object is contained in.
-     *
-     * @return  array<string,string[]>
      */
-    public function getProvidedStrings()
+    public function getProvidedStrings() : array
     {
-        $components = $this->getComponentsOfType(\CaT\Ente\Simple\AttachString::class);
+        $components = $this->getComponentsOfType(Simple\AttachString::class);
 
         $provided_strings = [];
         foreach ($components as $component) {
@@ -41,14 +45,8 @@ class ilObjComponentHandlerExample extends ilObjectPlugin
         return $provided_strings;
     }
 
-    /**
-     * Get the ref_id of the object this object handles components for.
-     *
-     * @return int
-     */
-    protected function getEntityRefId()
+    protected function getEntityRefId() : int
     {
-        global $DIC;
-        return $DIC->repositoryTree()->getParentId($this->getRefId());
+        return (int)$$this->getDIC()["tree"]->getParentId($this->getRefId());
     }
 }

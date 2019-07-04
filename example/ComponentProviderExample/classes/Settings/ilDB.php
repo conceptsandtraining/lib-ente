@@ -1,5 +1,9 @@
 <?php
 
+/* Copyright (c) 2018 Richard Klees <richard.klees@concepts-and-training.de> */
+
+declare(strict_types=1);
+
 namespace CaT\Plugins\ComponentProviderExample\Settings;
 
 /**
@@ -12,11 +16,11 @@ class ilDB
     /**
      * @var \ilDBInterface
      */
-    protected $ilDB;
+    protected $db;
 
-    public function __construct(\ilDBInterface $ilDB)
+    public function __construct(\ilDBInterface $db)
     {
-        $this->ilDB = $ilDB;
+        $this->db = $db;
     }
 
     /**
@@ -27,26 +31,33 @@ class ilDB
         $obj_id = $settings->objId();
         $this->deleteFor($obj_id);
         foreach ($settings->providedStrings() as $value) {
-            $this->ilDB->insert(self::TABLE_NAME,
-                ["obj_id" => ["integer", $obj_id]
-                    , "value" => ["string", $value]
-                ]);
+            $this->db->insert(
+                self::TABLE_NAME,
+                [
+                    "obj_id" => [
+                        "integer",
+                        $obj_id
+                    ],
+                    "value" => [
+                        "string",
+                        $value
+                    ]
+                ]
+            );
         }
     }
 
     /**
      * @inheritdoc
      */
-    public function getFor($obj_id)
+    public function getFor(int $obj_id) : ComponentProviderExample
     {
-        assert('is_int($obj_id)');
-        $query =
-            "SELECT value FROM " . self::TABLE_NAME .
-            " WHERE obj_id = " . $this->ilDB->quote($obj_id, "integer");
-        $res = $this->ilDB->query($query);
+        $query = "SELECT value FROM " . self::TABLE_NAME . PHP_EOL
+            ." WHERE obj_id = " . $this->db->quote($obj_id, "integer");
+        $res = $this->db->query($query);
 
         $values = [];
-        while ($row = $this->ilDB->fetchAssoc($res)) {
+        while ($row = $this->db->fetchAssoc($res)) {
             $values[] = $row["value"];
         }
 
@@ -56,23 +67,33 @@ class ilDB
     /**
      * @inheritdoc
      */
-    public function deleteFor($obj_id)
+    public function deleteFor(int $obj_id)
     {
-        $statement =
-            "DELETE FROM " . self::TABLE_NAME .
-            " WHERE obj_id = " . $this->ilDB->quote($obj_id, "integer");
+        $statement = "DELETE FROM " . self::TABLE_NAME . PHP_EOL
+            ."WHERE obj_id = " . $this->db->quote($obj_id, "integer");
         $this->ilDB->manipulate($statement);
     }
 
     public function install()
     {
-        if (!$this->ilDB->tableExists(self::TABLE_NAME)) {
-            $this->ilDB->createTable(self::TABLE_NAME,
-                ["obj_id" => ["type" => "integer", "length" => 4, "notnull" => true]
-                    , "value" => ["type" => "text", "length" => 64, "notnull" => true]
-                ]);
+        if (!$this->db->tableExists(self::TABLE_NAME)) {
+            $this->db->createTable(
+                self::TABLE_NAME,
+                [
+                    "obj_id" => [
+                        "type" => "integer",
+                        "length" => 4,
+                        "notnull" => true
+                    ],
+                    "value" => [
+                        "type" => "text",
+                        "length" => 64,
+                        "notnull" => true
+                    ]
+                ]
+            );
 
-            $this->ilDB->addPrimaryKey(self::TABLE_NAME, ["obj_id", "value"]);
+            $this->db->addPrimaryKey(self::TABLE_NAME, ["obj_id", "value"]);
         }
     }
 }

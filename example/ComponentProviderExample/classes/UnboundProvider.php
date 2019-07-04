@@ -1,13 +1,18 @@
 <?php
 
-namespace CaT\Plugins\ComponentProviderExample;
+/* Copyright (c) 2018 Richard Klees <richard.klees@concepts-and-training.de> */
 
-require_once(__DIR__ . "/../vendor/autoload.php");
+declare(strict_types=1);
+
+namespace CaT\Plugins\ComponentProviderExample;
 
 use \CaT\Ente\ILIAS\SeparatedUnboundProvider as Base;
 use \CaT\Ente\Simple\AttachString;
 use \CaT\Ente\Simple\AttachStringMemory;
-use \CaT\Ente\ILIAS\Entity;
+use \CaT\Ente\Entity as IEntity;
+use \CaT\Ente\Component as IComponent;
+
+require_once __DIR__ . "/../vendor/autoload.php";
 
 class UnboundProvider extends Base
 {
@@ -20,13 +25,9 @@ class UnboundProvider extends Base
     }
 
     /**
-     * Build the component(s) of the given type for the given object.
-     *
-     * @param string $component_type
-     * @param Entity $provider
-     * @return  Component[]
+     * @return  IComponent[]
      */
-    public function buildComponentsOf($component_type, Entity $entity)
+    public function buildComponentsOf(string $component_type, IEntity $entity) : array
     {
         if ($component_type === AttachString::class) {
             $returns = [];

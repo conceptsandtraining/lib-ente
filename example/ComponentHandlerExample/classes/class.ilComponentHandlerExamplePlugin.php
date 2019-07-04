@@ -1,17 +1,17 @@
 <?php
-include_once("./Services/Repository/classes/class.ilRepositoryObjectPlugin.php");
-require_once(__DIR__ . "/../vendor/autoload.php");
+
+/* Copyright (c) 2018 Richard Klees <richard.klees@concepts-and-training.de> */
+
+declare(strict_types=1);
+
+require_once "./Services/Repository/classes/class.ilRepositoryObjectPlugin.php";
+require_once __DIR__ . "/../vendor/autoload.php";
 
 /**
  * Plugin base class. Keeps all information the plugin needs
  */
 class ilComponentHandlerExamplePlugin extends ilRepositoryObjectPlugin
 {
-    /**
-     * @var \ilDBInterface
-     */
-    protected $ilDB;
-
     /**
      * Get the name of the Plugin
      *
