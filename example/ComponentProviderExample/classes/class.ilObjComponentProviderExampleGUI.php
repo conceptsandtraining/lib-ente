@@ -8,17 +8,22 @@ require_once "./Services/Repository/classes/class.ilObjectPluginGUI.php";
 require_once "./Services/Form/classes/class.ilPropertyFormGUI.php";
 require_once "./Services/Form/classes/class.ilTextInputGUI.php";
 
+use CaT\Plugins\ComponentProviderExample\DI;
+
 /**
  * Plugin object GUI class. Baseclass for all GUI action in ILIAS
  *
  * @ilCtrl_isCalledBy ilObjComponentProviderExampleGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
  * @ilCtrl_Calls ilObjComponentProviderExampleGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI
+ * @ilCtrl_Calls ilObjComponentProviderExampleGUI: ilProvidedComponentsGUI
  */
 class ilObjComponentProviderExampleGUI extends ilObjectPluginGUI
 {
-    const VALUES_FIELD_NAME = "values";
-    const CMD_SAVE = "saveForm";
+    use DI;
+
     const CMD_SHOW_CONTENT = "showContent";
+
+    const TAB_SETTINGS = "tab_settings";
 
     /**
      * @var \ilTemplate
@@ -31,14 +36,19 @@ class ilObjComponentProviderExampleGUI extends ilObjectPluginGUI
     protected $ctrl;
 
     /**
-     * Called after parent constructor. It's possible to define some plugin special values
+     * @var ArrayAccess
      */
-    protected function afterConstructor()
-    {
-        global $DIC;
-        $this->tpl = $DIC["tpl"];
-        $this->ctrl = $DIC["ilCtrl"];
-    }
+    protected $dic;
+
+    /**
+     * @var ilAccess
+     */
+    protected $access;
+
+    /**
+     * @var ilTabsGUI
+     */
+    protected $tabs;
 
     /**
      * Get type.  Same value as choosen in plugin.php
@@ -53,52 +63,55 @@ class ilObjComponentProviderExampleGUI extends ilObjectPluginGUI
      */
     function performCommand($cmd)
     {
-        switch ($cmd) {
-            case self::CMD_SAVE:
-                $this->saveForm();
-                break;
-            case self::CMD_SHOW_CONTENT:
-                $this->showContent();
+        $this->initClassProperties();
+
+        $next_class = $this->ctrl->getNextClass();
+        switch($next_class) {
+            case "ilprovidedcomponentsgui":
+                $gui = $this->dic["settings.gui"];
+                $this->ctrl->forwardCommand($gui);
                 break;
             default:
-                throw new \InvalidArgumentException("Unknown Command: '$cmd'");
+                switch ($cmd) {
+                    case self::CMD_SHOW_CONTENT:
+                        $this->redirectSettings();
+                        break;
+                    default:
+                        throw new \InvalidArgumentException("Unknown Command: '$cmd'");
+                }
         }
+
     }
 
-    /**
-     * Save values provided from form.
-     */
-    protected function saveForm()
+    protected function initClassProperties()
     {
-        $db = $this->plugin->settingsDB();
-        $settings = $db->getFor((int)$this->object->getId());
-        $settings = $settings->withProvidedStrings($_POST[self::VALUES_FIELD_NAME]);
-        $db->update($settings);
-        $this->ctrl->redirect($this, self::CMD_SHOW_CONTENT);
+        $this->dic = $this->getObjDic();
+        $this->tpl = $this->dic["tpl"];
+        $this->ctrl = $this->dic["ilCtrl"];
+        $this->access = $this->dic["ilAccess"];
+        $this->tabs = $this->dic["ilTabs"];
     }
 
-    /**
-     * Show the edit form.
-     *
-     * @return string
-     */
-    public function showContent()
+    protected function redirectSettings()
     {
-        $db = $this->plugin->settingsDB();
-        $settings = $db->getFor((int)$this->object->getId());
+        $link = $this->dic["settings.gui.link"];
+        $this->ctrl->redirectToUrl($link);
+    }
 
-        $form = new \ilPropertyFormGUI();
-        $form->setTitle($this->txt("settings_form_title"));
-        $form->setFormAction($this->ctrl->getFormAction($this));
-        $form->addCommandButton(self::CMD_SAVE, $this->txt("save"));
+    protected function setTabs()
+    {
+        $this->addInfoTab();
 
-        $input = new \ilTextInputGUI($this->txt("values"), self::VALUES_FIELD_NAME);
-        $input->setMulti(true);
-        $input->setMaxLength(64);
-        $input->setValue($settings->providedStrings());
-        $form->addItem($input);
+        if ($this->access->checkAccess("write", "", $this->object->getRefId())) {
+            $link = $this->dic["settings.gui.link"];
+            $this->tabs->addTab(
+                self::TAB_SETTINGS,
+                $this->txt(self::TAB_SETTINGS),
+                $link
+            );
+        }
 
-        $this->tpl->setContent( $form->getHTML());
+        $this->addPermissionTab();
     }
 
     /**
@@ -119,6 +132,12 @@ class ilObjComponentProviderExampleGUI extends ilObjectPluginGUI
 
     protected function txt(string $code) :  string
     {
-        return $this->plugin->txt($code);
+        return $this->txt($code);
+    }
+
+    protected function getObjDic() : Pimple\Container
+    {
+        global $DIC;
+        return $this->getObjectDIC($this->object, $DIC);
     }
 }

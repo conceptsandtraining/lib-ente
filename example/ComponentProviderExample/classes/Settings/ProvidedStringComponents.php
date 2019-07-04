@@ -9,7 +9,7 @@ namespace CaT\Plugins\ComponentProviderExample\Settings;
 /**
  * Settings for an ComponentProviderExample.
  */
-class ComponentProviderExample
+class ProvidedStringComponents
 {
     /**
      * @var int

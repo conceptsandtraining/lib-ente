@@ -66,4 +66,11 @@ class ilObjComponentProviderExample extends \ilObjectPlugin
         }
         return $returns;
     }
+
+    public function getTxtClosure()
+    {
+        return function ($code) {
+            return $this->getPlugin()->txt($code);
+        };
+    }
 }

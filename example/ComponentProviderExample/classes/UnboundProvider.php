@@ -25,7 +25,7 @@ class UnboundProvider extends Base
     }
 
     /**
-     * @return  IComponent[]
+     * @return IComponent[]
      */
     public function buildComponentsOf(string $component_type, IEntity $entity) : array
     {

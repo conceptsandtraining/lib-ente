@@ -12,20 +12,20 @@ class SettingsTest extends TestCase
 {
     public function test_objId()
     {
-        $cpe = new ComponentProviderExample(23, []);
+        $cpe = new ProvidedStringComponents(23, []);
         $this->assertEquals(23, $cpe->getObjId());
     }
 
     public function test_providedStrings()
     {
         $some_strings = ["a", "b", "c"];
-        $cpe = new ComponentProviderExample(23, $some_strings);
+        $cpe = new ProvidedStringComponents(23, $some_strings);
         $this->assertEquals($some_strings, $cpe->getProvidedStrings());
     }
 
     public function test_withProvidedStrings()
     {
-        $cpe = new ComponentProviderExample(23, []);
+        $cpe = new ProvidedStringComponents(23, []);
         $this->assertEquals([], $cpe->getProvidedStrings());
         $some_strings = ["d", "e", "f"];
         $cpe = $cpe->withProvidedStrings($some_strings);
