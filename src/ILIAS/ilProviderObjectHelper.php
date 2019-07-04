@@ -15,9 +15,23 @@ namespace CaT\Ente\ILIAS;
 /**
  * Helper for repository objects that want to provide components.
  */
-trait ilProviderObjectHelper
+class ilProviderObjectHelper
 {
-    use ilObjectHelper;
+    /**
+     * @var ProviderDB
+     */
+    protected $provider_db;
+
+    /**
+     * @var \ilObject
+     */
+    protected $object;
+
+    public function __construct(\ilObject $object, ProviderDB $provider_db)
+    {
+        $this->provider_db = $provider_db;
+        $this->object = $object;
+    }
 
     /**
      * Delete all unbound providers of this object.
@@ -26,14 +40,9 @@ trait ilProviderObjectHelper
      */
     protected function deleteUnboundProviders()
     {
-        if (!($this instanceof \ilObject)) {
-            throw new \LogicException("ilProviderObjectHelper can only be used with ilObjects.");
-        }
-
-        $provider_db = $this->getProviderDB();
-        $unbound_providers = $provider_db->unboundProvidersOf($this);
+        $unbound_providers = $this->provider_db->unboundProvidersOf($this->object);
         foreach ($unbound_providers as $unbound_provider) {
-            $provider_db->delete($unbound_provider, $this);
+            $this->provider_db->delete($unbound_provider, $this->object);
         }
     }
 
@@ -47,13 +56,10 @@ trait ilProviderObjectHelper
      */
     protected function createUnboundProvider($object_type, $class_name, $path)
     {
-        if (!($this instanceof \ilObject)) {
-            throw new \LogicException("ilProviderObjectHelper can only be used with ilObjects.");
-        }
         if (is_subclass_of($class_name, SeparatedUnboundProvider::class)) {
-            $this->getProviderDB()->createSeparatedUnboundProvider($this, $object_type, $class_name, $path);
+            $this->provider_db->createSeparatedUnboundProvider($this->object, $object_type, $class_name, $path);
         } else if (is_subclass_of($class_name, SharedUnboundProvider::class)) {
-            $this->getProviderDB()->createSharedUnboundProvider($this, $object_type, $class_name, $path);
+            $this->provider_db->createSharedUnboundProvider($this->object, $object_type, $class_name, $path);
         } else {
             throw new \LogicException(
                 "createUnboundProvider can only create providers " .

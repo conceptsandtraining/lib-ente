@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 namespace CaT\Plugins\ComponentProviderExample;
 
-use function foo\func;
+use CaT\Ente\ILIAS;
 use Pimple\Container;
 
 trait DI
@@ -36,6 +36,10 @@ trait DI
             return $object->getTxtClosure();
         };
 
+        $container["ilObjDataCache"] = function ($c) use ($dic) {
+            return $dic["ilObjDataCache"];
+        };
+
         $container["settings.db"] = function ($c) {
             return new Settings\ilDB($c["ilDB"]);
         };
@@ -56,6 +60,21 @@ trait DI
                 $c["ilCtrl"],
                 $c["txtclosure"],
                 $c["settings.db"]
+            );
+        };
+
+        $container["provider.db"] = function ($c) {
+            new ILIAS\ilProviderDB(
+                $c["ilDB"],
+                $c["tree"],
+                $c["ilObjDataCache"]
+            );
+        };
+
+        $container["object.help.provider"] = function ($c) use ($object) {
+            return new ILIAS\ilProviderObjectHelper(
+                $object,
+                $c["provider.db"]
             );
         };
 
