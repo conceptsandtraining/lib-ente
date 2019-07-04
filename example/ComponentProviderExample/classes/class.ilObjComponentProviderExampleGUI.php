@@ -11,7 +11,8 @@ require_once("./Services/Form/classes/class.ilTextInputGUI.php");
  * @ilCtrl_isCalledBy ilObjComponentProviderExampleGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
  * @ilCtrl_Calls ilObjComponentProviderExampleGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI
  */
-class ilObjComponentProviderExampleGUI  extends ilObjectPluginGUI {
+class ilObjComponentProviderExampleGUI extends ilObjectPluginGUI
+{
     const VALUES_FIELD_NAME = "values";
     const SAVE_CMD = "saveForm";
 
@@ -25,41 +26,45 @@ class ilObjComponentProviderExampleGUI  extends ilObjectPluginGUI {
      */
     protected $ilCtrl;
 
-	/**
-	 * Called after parent constructor. It's possible to define some plugin special values
-	 */
-	protected function afterConstructor() {
+    /**
+     * Called after parent constructor. It's possible to define some plugin special values
+     */
+    protected function afterConstructor()
+    {
         global $DIC;
         $this->ilTemplate = $DIC->ui()->mainTemplate();
         $this->ilCtrl = $DIC->ctrl();
-	}
+    }
 
-	/**
-	* Get type.  Same value as choosen in plugin.php
-	*/
-	final function getType() {
-		return "xlep";
-	}
+    /**
+     * Get type.  Same value as choosen in plugin.php
+     */
+    final function getType()
+    {
+        return "xlep";
+    }
 
-	/**
-	* Handles all commmands of this class, centralizes permission checks
-	*/
-	function performCommand($cmd) {
-		switch ($cmd) {
+    /**
+     * Handles all commmands of this class, centralizes permission checks
+     */
+    function performCommand($cmd)
+    {
+        switch ($cmd) {
             case self::SAVE_CMD:
                 $this->saveForm();
             case "showContent":
                 $this->ilTemplate->setContent($this->showContent());
                 break;
-			default:
+            default:
                 throw new \InvalidArgumentException("Unknown Command: '$cmd'");
-		}
-	}
+        }
+    }
 
     /**
      * Save values provided from form.
      */
-    protected function saveForm() {
+    protected function saveForm()
+    {
         $db = $this->plugin->settingsDB();
         $settings = $db->getFor((int)$this->object->getId());
         $settings = $settings->withProvidedStrings($_POST[self::VALUES_FIELD_NAME]);
@@ -72,7 +77,8 @@ class ilObjComponentProviderExampleGUI  extends ilObjectPluginGUI {
      *
      * @return string
      */
-    public function showContent() {
+    public function showContent()
+    {
         $db = $this->plugin->settingsDB();
         $settings = $db->getFor((int)$this->object->getId());
 
@@ -91,17 +97,19 @@ class ilObjComponentProviderExampleGUI  extends ilObjectPluginGUI {
         return $form->getHTML();
     }
 
-	/**
-	* After object has been created -> jump to this command
-	*/
-	function getAfterCreationCmd() {
-		return "showContent";
-	}
+    /**
+     * After object has been created -> jump to this command
+     */
+    function getAfterCreationCmd()
+    {
+        return "showContent";
+    }
 
-	/**
-	* Get standard command
-	*/
-	function getStandardCmd() {
-		return "showContent";
-	}
+    /**
+     * Get standard command
+     */
+    function getStandardCmd()
+    {
+        return "showContent";
+    }
 }

@@ -17,21 +17,21 @@ namespace CaT\Ente\Simple;
  */
 class Entity implements \CaT\Ente\Entity
 {
-	/**
-	* @var integer
-	*/
-	private $id;
+    /**
+     * @var integer
+     */
+    private $id;
 
-	public function __construct(int $id)
-	{
-		$this->id = $id;
-	}
+    public function __construct(int $id)
+    {
+        $this->id = $id;
+    }
 
-	/**
-	* @inheritdocs
-	*/
-	public function id() : int
-	{
-		return $this->id;
-	}
+    /**
+     * @inheritdocs
+     */
+    public function id(): int
+    {
+        return $this->id;
+    }
 }

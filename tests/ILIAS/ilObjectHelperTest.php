@@ -12,48 +12,53 @@ use CaT\Ente;
 
 
 if (!interface_exists("ilDBInterface")) {
-    require_once(__DIR__."/ilDBInterface.php");
+    require_once(__DIR__ . "/ilDBInterface.php");
 }
 
 if (!interface_exists("ilTree")) {
-    require_once(__DIR__."/ilTree.php");
+    require_once(__DIR__ . "/ilTree.php");
 }
 
 if (!interface_exists("ilObjectDataCache")) {
-    require_once(__DIR__."/ilObjectDataCache.php");
+    require_once(__DIR__ . "/ilObjectDataCache.php");
 }
 
-abstract class ilObjectHelperMock {
-	use Ente\ILIAS\ilObjectHelper;
-	public function _getProviderDB() {
-		return $this->getProviderDB();
-	}
+abstract class ilObjectHelperMock
+{
+    use Ente\ILIAS\ilObjectHelper;
+
+    public function _getProviderDB()
+    {
+        return $this->getProviderDB();
+    }
 }
 
-class ilObjectHelperTest extends PHPUnit_Framework_TestCase {
-	public function test_getProviderDB() {
-		$db = $this->createMock(\ilDBInterface::class);
-		$tree = $this->createMock(\ilTree::class);
-		$objDataCache = $this->createMock(\ilObjectDataCache::class);
+class ilObjectHelperTest extends PHPUnit_Framework_TestCase
+{
+    public function test_getProviderDB()
+    {
+        $db = $this->createMock(\ilDBInterface::class);
+        $tree = $this->createMock(\ilTree::class);
+        $objDataCache = $this->createMock(\ilObjectDataCache::class);
 
-		$dic = [];
-		$dic["ilDB"] = $db;
-		$dic["tree"] = $tree;
-		$dic["ilObjDataCache"] = $objDataCache;
+        $dic = [];
+        $dic["ilDB"] = $db;
+        $dic["tree"] = $tree;
+        $dic["ilObjDataCache"] = $objDataCache;
 
-		$mock = $this
-			->getMockBuilder(ilObjectHelperMock::class)
-			->setMethods(["getDIC"])
-			->getMock();
-	
+        $mock = $this
+            ->getMockBuilder(ilObjectHelperMock::class)
+            ->setMethods(["getDIC"])
+            ->getMock();
 
-		$mock
-			->expects($this->once())
-			->method("getDIC")
-			->willReturn($dic);
 
-		$provider_db = $mock->_getProviderDB();
+        $mock
+            ->expects($this->once())
+            ->method("getDIC")
+            ->willReturn($dic);
 
-		$this->assertInstanceOf(Ente\ILIAS\ProviderDB::class, $provider_db);
-	}
+        $provider_db = $mock->_getProviderDB();
+
+        $this->assertInstanceOf(Ente\ILIAS\ProviderDB::class, $provider_db);
+    }
 }

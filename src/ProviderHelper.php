@@ -17,19 +17,19 @@ namespace CaT\Ente;
  */
 trait ProviderHelper
 {
-	/**
-	* Get the component types implemented by the given component.
-	* Traverses all implemented interfaces and checks if they extend `Component`.
-	* @return  string[]
-	*/
-	public function componentTypesOf(Component $component) : array
-	{
-		$ret = [];
-		foreach (class_implements(get_class($component)) as $interface) {
-			if (is_subclass_of($interface, Component::class)) {
-				$ret[] = $interface;
-			}
-		}
-		return $ret;
-	}
+    /**
+     * Get the component types implemented by the given component.
+     * Traverses all implemented interfaces and checks if they extend `Component`.
+     * @return  string[]
+     */
+    public function componentTypesOf(Component $component): array
+    {
+        $ret = [];
+        foreach (class_implements(get_class($component)) as $interface) {
+            if (is_subclass_of($interface, Component::class)) {
+                $ret[] = $interface;
+            }
+        }
+        return $ret;
+    }
 }

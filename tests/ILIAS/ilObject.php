@@ -11,31 +11,35 @@
 /**
  * Essentials of ILIAS object for this framework.
  */
-abstract class ilObject {
-	/**
-	* get object id
-	* @access	public
-	* @return	integer	object id
-	*/
-    public function getId() {
+abstract class ilObject
+{
+    /**
+     * get object id
+     * @access    public
+     * @return    integer    object id
+     */
+    public function getId()
+    {
         assert(false);
     }
 
-	/**
-	* get reference id
-	* @access	public
-	* @return	integer	reference id
-	*/
-    public function getRefId() {
+    /**
+     * get reference id
+     * @access    public
+     * @return    integer    reference id
+     */
+    public function getRefId()
+    {
         assert(false);
     }
 
-	/**
-	* get object type
-	* @access	public
-	* @return	string		object type
-	*/
-	public function getType() {
+    /**
+     * get object type
+     * @access    public
+     * @return    string        object type
+     */
+    public function getType()
+    {
         assert(false);
-	}
+    }
 }

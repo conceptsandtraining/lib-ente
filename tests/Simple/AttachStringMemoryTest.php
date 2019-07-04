@@ -13,24 +13,29 @@ use CaT\Ente\Simple\Entity;
 use CaT\Ente\Simple\AttachString;
 use CaT\Ente\Simple\AttachStringMemory;
 
-class Simple_AttachStringMemoryTest extends PHPUnit_Framework_TestCase {
-    use ProviderHelper; 
+class Simple_AttachStringMemoryTest extends PHPUnit_Framework_TestCase
+{
+    use ProviderHelper;
 
-    public function setUp() {
+    public function setUp()
+    {
         $this->id = rand();
         $this->entity = new Entity($this->id);
         $this->component = new AttachStringMemory($this->entity, "id: {$this->id}");
     }
 
-    public function test_entity() {
+    public function test_entity()
+    {
         $this->assertEquals($this->entity, $this->component->entity());
     }
 
-    public function test_attachedString() {
+    public function test_attachedString()
+    {
         $this->assertEquals("id: {$this->id}", $this->component->attachedString());
     }
 
-    public function test_componentTypes() {
+    public function test_componentTypes()
+    {
         $this->assertEquals([AttachString::class], $this->componentTypesOf($this->component));
     }
 }

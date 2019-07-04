@@ -22,15 +22,15 @@ namespace CaT\Ente;
  */
 interface Repository
 {
-	/**
-	 * Get providers for an entity, possibly filtered by a component type.
-	 * @return  Provider[]
-	 */
-	public function providersForEntity(Entity $entity, string $component_type = null) : array;
+    /**
+     * Get providers for an entity, possibly filtered by a component type.
+     * @return  Provider[]
+     */
+    public function providersForEntity(Entity $entity, string $component_type = null): array;
 
-	/**
-	 * Get components for the entity, possibly filtered by component type.
-	 * @return	Component[]
-	 */
-	public function componentsForEntity(Entity $entity, string $component_type = null) : array;
+    /**
+     * Get components for the entity, possibly filtered by component type.
+     * @return    Component[]
+     */
+    public function componentsForEntity(Entity $entity, string $component_type = null): array;
 }

@@ -18,45 +18,50 @@ use CaT\Ente\Simple\AttachString;
 use CaT\Ente\Simple\AttachInt;
 
 if (!class_exists("ilObject")) {
-    require_once(__DIR__."/ilObject.php");
+    require_once(__DIR__ . "/ilObject.php");
 }
 
 if (!interface_exists("ilDBInterface")) {
-    require_once(__DIR__."/ilDBInterface.php");
+    require_once(__DIR__ . "/ilDBInterface.php");
 }
 
 if (!interface_exists("ilTree")) {
-    require_once(__DIR__."/ilTree.php");
+    require_once(__DIR__ . "/ilTree.php");
 }
 
 if (!interface_exists("ilObjectDataCache")) {
-    require_once(__DIR__."/ilObjectDataCache.php");
+    require_once(__DIR__ . "/ilObjectDataCache.php");
 }
 
 class Test_ilCachesOwnerRangeProviderDB extends ilCachesOwnerRangeProviderDB
 {
     public $object_ref = [];
-	public $throws = false;
-    protected function buildObjectByRefId(int $ref_id) : \ilObject
-	{
-		if ($this->throws) {
-			throw new \InvalidArgumentException();
-		}
+    public $throws = false;
+
+    protected function buildObjectByRefId(int $ref_id): \ilObject
+    {
+        if ($this->throws) {
+            throw new \InvalidArgumentException();
+        }
         assert(isset($this->object_ref[$ref_id]));
         return $this->object_ref[$ref_id];
     }
+
     public $object_obj = [];
-    protected function buildObjectByObjId(int $obj_id) : \ilObject
-	{
-		if ($this->throws) {
-			throw new \InvalidArgumentException();
-		}
+
+    protected function buildObjectByObjId(int $obj_id): \ilObject
+    {
+        if ($this->throws) {
+            throw new \InvalidArgumentException();
+        }
         assert(isset($this->object_obj[$obj_id]));
         return $this->object_obj[$obj_id];
     }
+
     public $reference_ids = [];
-    protected function getAllReferenceIdsFor(int $obj_id) : array
-	{
+
+    protected function getAllReferenceIdsFor(int $obj_id): array
+    {
         assert(isset($this->reference_ids[$obj_id]));
         return $this->reference_ids[$obj_id];
     }
@@ -64,25 +69,29 @@ class Test_ilCachesOwnerRangeProviderDB extends ilCachesOwnerRangeProviderDB
 
 class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase
 {
-    protected function il_db_mock() {
+    protected function il_db_mock()
+    {
         return $this->createMock(\ilDBInterface::class);
     }
 
-    public function il_tree_mock() {
+    public function il_tree_mock()
+    {
         return $this
             ->getMockBuilder(\ilTree::class)
             ->setMethods(["getSubTreeIds", "getNodePath"])
             ->getMock();
     }
 
-    public function il_object_data_cache_mock() {
+    public function il_object_data_cache_mock()
+    {
         return $this
             ->getMockBuilder(\ilObjectDataCache::class)
             ->setMethods(["preloadReferenceCache", "lookupObjId"])
             ->getMock();
     }
 
-    public function test_providersFor_no_cache() {
+    public function test_providersFor_no_cache()
+    {
         $il_db = $this->il_db_mock();
         $il_tree = $this->il_tree_mock();
         $il_cache = $this->il_object_data_cache_mock();
@@ -113,7 +122,7 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase
             ->with($object_ref_id)
             ->willReturn($sub_tree_ids);
 
-		$tree_ids = array_merge([$object_ref_id], $sub_tree_ids);
+        $tree_ids = array_merge([$object_ref_id], $sub_tree_ids);
         $il_cache
             ->expects($this->once())
             ->method("preloadReferenceCache")
@@ -122,12 +131,12 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase
         $il_cache
             ->expects($this->exactly(3))
             ->method("lookupObjId")
-            ->withConsecutive([$tree_ids[0]],[$tree_ids[1]], [$tree_ids[2]])
+            ->withConsecutive([$tree_ids[0]], [$tree_ids[1]], [$tree_ids[2]])
             ->will($this->onConsecutiveCalls($tree_ids[0], $tree_ids[1], $tree_ids[2]));
 
 
         $class_name = Test_SeparatedUnboundProvider::class;
-        $include_path = __DIR__."/SeparatedUnboundProviderTest.php";
+        $include_path = __DIR__ . "/SeparatedUnboundProviderTest.php";
 
         $cache = $this->createMock(Cache::class);
         $cache
@@ -139,56 +148,56 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method("set")
             ->with("0",
-				[
-					$sub_tree_id1 => [ $object_type => [
-						"shared" => [],
-						"separated" => 
-							[
-								[
-									"id" => 1,
-									"owner" => $sub_tree_id1,
-									"class_name" => $class_name,
-									"include_path" => $include_path,
-									"object_type" => $object_type,
-									"which" => "separated"
-								]
-							]
-					]],
-					$sub_tree_id2 => [ $object_type => [
-						"shared" => [],
-						"separated" => 
-							[
-								[
-									"id" => 2,
-									"owner" => $sub_tree_id2,
-									"class_name" => $class_name,
-									"include_path" => $include_path,
-									"object_type" => $object_type,
-									"which" => "separated"
-								]
-							]
-					]],
-					"i am" => "here"
+                [
+                    $sub_tree_id1 => [$object_type => [
+                        "shared" => [],
+                        "separated" =>
+                            [
+                                [
+                                    "id" => 1,
+                                    "owner" => $sub_tree_id1,
+                                    "class_name" => $class_name,
+                                    "include_path" => $include_path,
+                                    "object_type" => $object_type,
+                                    "which" => "separated"
+                                ]
+                            ]
+                    ]],
+                    $sub_tree_id2 => [$object_type => [
+                        "shared" => [],
+                        "separated" =>
+                            [
+                                [
+                                    "id" => 2,
+                                    "owner" => $sub_tree_id2,
+                                    "class_name" => $class_name,
+                                    "include_path" => $include_path,
+                                    "object_type" => $object_type,
+                                    "which" => "separated"
+                                ]
+                            ]
+                    ]],
+                    "i am" => "here"
                 ]
             );
 
         $il_db
             ->expects($this->exactly(2))
             ->method("quote")
-            ->withConsecutive([0],[1000])
+            ->withConsecutive([0], [1000])
             ->willReturn("~RANGE~");
 
         $il_db
             ->expects($this->once())
             ->method("query")
             ->with
-                ("SELECT id, owner, class_name, include_path, object_type, shared FROM ".ilProviderDB::PROVIDER_TABLE." WHERE owner >= ~RANGE~ AND owner < ~RANGE~")
+            ("SELECT id, owner, class_name, include_path, object_type, shared FROM " . ilProviderDB::PROVIDER_TABLE . " WHERE owner >= ~RANGE~ AND owner < ~RANGE~")
             ->willReturn("R1");
 
         $il_db
             ->expects($this->exactly(3))
             ->method("fetchAssoc")
-            ->withConsecutive(["R1"],["R1"],["R1"])
+            ->withConsecutive(["R1"], ["R1"], ["R1"])
             ->will($this->onConsecutiveCalls(
                 ["id" => 1, "owner" => $sub_tree_ids[0], "class_name" => $class_name, "include_path" => $include_path, "object_type" => $object_type, "shared" => 0],
                 ["id" => 2, "owner" => $sub_tree_ids[1], "class_name" => $class_name, "include_path" => $include_path, "object_type" => $object_type, "shared" => 0],
@@ -224,7 +233,7 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase
     }
 
     public function test_providersFor_with_cache()
-	{
+    {
         $il_db = $this->il_db_mock();
         $il_tree = $this->il_tree_mock();
         $il_cache = $this->il_object_data_cache_mock();
@@ -255,7 +264,7 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase
             ->with($object_ref_id)
             ->willReturn($sub_tree_ids);
 
-		$tree_ids = array_merge([$object_ref_id], $sub_tree_ids);
+        $tree_ids = array_merge([$object_ref_id], $sub_tree_ids);
         $il_cache
             ->expects($this->once())
             ->method("preloadReferenceCache")
@@ -264,12 +273,12 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase
         $il_cache
             ->expects($this->exactly(3))
             ->method("lookupObjId")
-            ->withConsecutive([$tree_ids[0]],[$tree_ids[1]], [$tree_ids[2]])
+            ->withConsecutive([$tree_ids[0]], [$tree_ids[1]], [$tree_ids[2]])
             ->will($this->onConsecutiveCalls($tree_ids[0], $tree_ids[1], $tree_ids[2]));
 
 
         $class_name = Test_SeparatedUnboundProvider::class;
-        $include_path = __DIR__."/SeparatedUnboundProviderTest.php";
+        $include_path = __DIR__ . "/SeparatedUnboundProviderTest.php";
 
         $cache = $this->createMock(Cache::class);
 
@@ -278,39 +287,39 @@ class ILIAS_ilCachesOwnerRangeProviderDBTest extends PHPUnit_Framework_TestCase
             ->method("get")
             ->with("0")
             ->willReturn(
-				[
-					$object_ref_id => [
-						$object_type => [
-							"separated" => [],
-							"shared" => []
-						]
-					],
-					$sub_tree_id1 => [
-						$object_type => [
-							"separated" => [
-								[
-									"id" => 1,
-									"owner" => $sub_tree_id1,
-									"class_name" => $class_name,
-									"include_path" => $include_path
-								]
-							],
-							"shared" => []
-						]
-					],
-					$sub_tree_id2 => [
-						$object_type => [
-							"separated" => [
-								[
-									"id" => 2,
-									"owner" => $sub_tree_id2,
-									"class_name" => $class_name,
-									"include_path" => $include_path
-								]
-							],
-							"shared" => []
-						]
-					],
+                [
+                    $object_ref_id => [
+                        $object_type => [
+                            "separated" => [],
+                            "shared" => []
+                        ]
+                    ],
+                    $sub_tree_id1 => [
+                        $object_type => [
+                            "separated" => [
+                                [
+                                    "id" => 1,
+                                    "owner" => $sub_tree_id1,
+                                    "class_name" => $class_name,
+                                    "include_path" => $include_path
+                                ]
+                            ],
+                            "shared" => []
+                        ]
+                    ],
+                    $sub_tree_id2 => [
+                        $object_type => [
+                            "separated" => [
+                                [
+                                    "id" => 2,
+                                    "owner" => $sub_tree_id2,
+                                    "class_name" => $class_name,
+                                    "include_path" => $include_path
+                                ]
+                            ],
+                            "shared" => []
+                        ]
+                    ],
                 ]
             );
 

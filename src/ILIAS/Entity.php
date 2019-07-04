@@ -19,26 +19,26 @@ use \CaT\Ente\Entity AS IEntity;
  */
 class Entity implements IEntity
 {
-	/**
-	 * @var \ilObject
-	 */
-	private $object;
+    /**
+     * @var \ilObject
+     */
+    private $object;
 
-	public function __construct(\ilObject $object)
-	{
-		$this->object = $object;
-	}
+    public function __construct(\ilObject $object)
+    {
+        $this->object = $object;
+    }
 
-	/**
-	 * @inheritdocs
-	 */
-	public function id() : int
-	{
-		return (int)$this->object->getId();
-	}
+    /**
+     * @inheritdocs
+     */
+    public function id(): int
+    {
+        return (int)$this->object->getId();
+    }
 
-	public function object() : \ilObject
-	{
-		return $this->object;
-	}
+    public function object(): \ilObject
+    {
+        return $this->object;
+    }
 }

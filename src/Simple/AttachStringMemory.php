@@ -19,35 +19,35 @@ use CaT\Ente\Entity as IEntity;
  */
 class AttachStringMemory implements AttachString
 {
-	/**
-	* @var IEntity
-	*/
-	private $entity;
+    /**
+     * @var IEntity
+     */
+    private $entity;
 
-	/**
-	* @var string
-	*/
-	private $attached_string;
+    /**
+     * @var string
+     */
+    private $attached_string;
 
-	public function __construct(IEntity $entity, string $attached_string)
-	{
-		$this->entity = $entity;
-		$this->attached_string = $attached_string;
-	}
+    public function __construct(IEntity $entity, string $attached_string)
+    {
+        $this->entity = $entity;
+        $this->attached_string = $attached_string;
+    }
 
-	/**
-	* @inheritdocs
-	*/
-	public function entity() : IEntity
-	{
-		return $this->entity;
-	}
+    /**
+     * @inheritdocs
+     */
+    public function entity(): IEntity
+    {
+        return $this->entity;
+    }
 
-	/**
-	* @inheritdocs
-	*/
-	public function attachedString() : string
-	{
-		return $this->attached_string;
-	}
+    /**
+     * @inheritdocs
+     */
+    public function attachedString(): string
+    {
+        return $this->attached_string;
+    }
 }

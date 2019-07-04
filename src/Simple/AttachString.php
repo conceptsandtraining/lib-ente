@@ -21,8 +21,8 @@ use \CaT\Ente\Component;
  */
 interface AttachString extends Component
 {
-	/**
-	 * Get the attached string.
-	 */
-	public function attachedString() : string;
+    /**
+     * Get the attached string.
+     */
+    public function attachedString(): string;
 }

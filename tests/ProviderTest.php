@@ -13,7 +13,8 @@ use CaT\Ente;
 /**
  * This testcases must be passed by a Provider.
  */
-abstract class ProviderTest extends PHPUnit_Framework_TestCase {
+abstract class ProviderTest extends PHPUnit_Framework_TestCase
+{
     /**
      * To make this interesting, the provider should at least provide for one
      * entity.
@@ -31,7 +32,8 @@ abstract class ProviderTest extends PHPUnit_Framework_TestCase {
 
     // TEST
 
-    public function test_only_provides_announced_component_types() {
+    public function test_only_provides_announced_component_types()
+    {
         $provider = $this->provider();
         foreach ($this->doesNotProvideComponentType() as $component_type) {
             $this->assertEmpty($provider->componentsOfType($component_type));
@@ -41,10 +43,11 @@ abstract class ProviderTest extends PHPUnit_Framework_TestCase {
     /**
      * @dataProvider component_types
      */
-    public function test_provides_for_own_entity($component_type) {
+    public function test_provides_for_own_entity($component_type)
+    {
         $provider = $this->provider();
         $id = $provider->entity()->id();
-        foreach($provider->componentsOfType($component_type) as $component) {
+        foreach ($provider->componentsOfType($component_type) as $component) {
             $this->assertEquals(serialize($id), serialize($component->entity()->id()));
         }
     }
@@ -52,16 +55,18 @@ abstract class ProviderTest extends PHPUnit_Framework_TestCase {
     /**
      * @dataProvider component_types
      */
-    public function test_provides_expected_component_types($component_type) {
+    public function test_provides_expected_component_types($component_type)
+    {
         $provider = $this->provider();
-        foreach($provider->componentsOfType($component_type) as $component) {
+        foreach ($provider->componentsOfType($component_type) as $component) {
             $this->assertInstanceOf($component_type, $component);
         }
     }
 
     // DATA PROVIDERS
 
-    public function component_types() {
+    public function component_types()
+    {
         $provider = $this->provider();
         foreach ($provider->componentTypes() as $type) {
             yield [$type];

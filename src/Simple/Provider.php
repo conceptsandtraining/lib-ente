@@ -19,73 +19,73 @@ use CaT\Ente;
  */
 class Provider implements \CaT\Ente\Provider
 {
-	use Ente\ProviderHelper;
+    use Ente\ProviderHelper;
 
-	/**
-	* @var Entity
-	*/
-	private $entity;
+    /**
+     * @var Entity
+     */
+    private $entity;
 
-	/**
-	* @var array<string,Component>
-	*/
-	private $components;
+    /**
+     * @var array<string,Component>
+     */
+    private $components;
 
-	public function __construct(Entity $entity)
-	{
-		$this->entity = $entity;
-		$this->components = [];
-	}
+    public function __construct(Entity $entity)
+    {
+        $this->entity = $entity;
+        $this->components = [];
+    }
 
-	/**
-	* @inheritdocs
-	*/
-	public function componentsOfType(string $component_type) : array
-	{
-		if (isset($this->components[$component_type])) {
-			return $this->components[$component_type];
-		}
-		return [];
-	}
+    /**
+     * @inheritdocs
+     */
+    public function componentsOfType(string $component_type): array
+    {
+        if (isset($this->components[$component_type])) {
+            return $this->components[$component_type];
+        }
+        return [];
+    }
 
-	/**
-	* @inheritdocs
-	*/
-	public function componentTypes() : array
-	{
-		return array_keys($this->components);
-	}
+    /**
+     * @inheritdocs
+     */
+    public function componentTypes(): array
+    {
+        return array_keys($this->components);
+    }
 
-	/**
-	* @inheritdocs
-	*/
-	public function entity() : Ente\Entity
-	{
-		return $this->entity;
-	}
+    /**
+     * @inheritdocs
+     */
+    public function entity(): Ente\Entity
+    {
+        return $this->entity;
+    }
 
-	/**
-	* Add a component to the provider.
-	*
-	* @param   \CaT\Ente\Component   $component
-	* @throws  InvalidArgumentException if $component belongs to another entity
-	* @return  self
-	*/
-	public function addComponent(Ente\Component $component) : Provider
-	{
-		if ($component->entity()->id() !== $this->entity()->id()) {
-			$my_id = serialize($this->entity()->id());
-			$other_id = serialize($component->entity()->id());
-			throw new \InvalidArgumentException(
-			"Cannot add component of entity '$other_id' to provider for '$my_id'.");
-		}
+    /**
+     * Add a component to the provider.
+     *
+     * @param \CaT\Ente\Component $component
+     * @return  self
+     * @throws  InvalidArgumentException if $component belongs to another entity
+     */
+    public function addComponent(Ente\Component $component): Provider
+    {
+        if ($component->entity()->id() !== $this->entity()->id()) {
+            $my_id = serialize($this->entity()->id());
+            $other_id = serialize($component->entity()->id());
+            throw new \InvalidArgumentException(
+                "Cannot add component of entity '$other_id' to provider for '$my_id'.");
+        }
 
-		foreach ($this->componentTypesOf($component) as $type) {
-			if (!isset($this->components[$type])) {
-				$this->components[$type] = [];
-			}
-			$this->components[$type][] = $component;
-		}
-		return $this;
-	}
+        foreach ($this->componentTypesOf($component) as $type) {
+            if (!isset($this->components[$type])) {
+                $this->components[$type] = [];
+            }
+            $this->components[$type][] = $component;
+        }
+        return $this;
+    }
 }

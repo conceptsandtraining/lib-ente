@@ -14,27 +14,32 @@ use CaT\Ente\Simple\Provider;
 use CaT\Ente\Simple\AttachString;
 use CaT\Ente\Simple\AttachStringMemory;
 
-require_once(__DIR__."/../RepositoryTest.php");
+require_once(__DIR__ . "/../RepositoryTest.php");
 
-class _Repository extends Repository {
-    public function _providers() {
+class _Repository extends Repository
+{
+    public function _providers()
+    {
         return $this->providers;
     }
 }
 
-class Simple_RepositoryTest extends RepositoryTest {
-    protected function entities() {
-        return 
+class Simple_RepositoryTest extends RepositoryTest
+{
+    protected function entities()
+    {
+        return
             [new Entity(0),
-             new Entity(1),
-             new Entity(2),
-             new Entity(3)];
+                new Entity(1),
+                new Entity(2),
+                new Entity(3)];
     }
 
     /**
      * @inheritdocs
      */
-    protected function repository() {
+    protected function repository()
+    {
         $entities = $this->entities();
         $repo = new _Repository();
 
@@ -50,7 +55,8 @@ class Simple_RepositoryTest extends RepositoryTest {
     /**
      * @inheritdocs
      */
-    protected function hasProvidersForEntities() {
+    protected function hasProvidersForEntities()
+    {
         return $this->entities();
     }
 
@@ -59,14 +65,16 @@ class Simple_RepositoryTest extends RepositoryTest {
      *
      * @return  string[]
      */
-    protected function hasProvidersForComponentTypes() {
+    protected function hasProvidersForComponentTypes()
+    {
         return [AttachString::class];
     }
 
-    public function test_providers() {
+    public function test_providers()
+    {
         $providers = $this->repository()->_providers();
         $this->assertCount(4, $providers);
-        $this->assertEquals([serialize(0),serialize(1),serialize(2),serialize(3)], array_keys($providers));
+        $this->assertEquals([serialize(0), serialize(1), serialize(2), serialize(3)], array_keys($providers));
         $this->assertCount(1, $providers[serialize(0)]);
         $this->assertCount(1, $providers[serialize(1)]);
         $this->assertCount(1, $providers[serialize(2)]);

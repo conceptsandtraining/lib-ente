@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace CaT\Ente;
 
 /**
- * An entity is to be thought of as a naked object without any behaviour. 
+ * An entity is to be thought of as a naked object without any behaviour.
  *
  * ARCH:
  *  - The entity could have a method to provide components by itself. This would
@@ -23,11 +23,11 @@ namespace CaT\Ente;
  */
 interface Entity
 {
-	/**
-	 * Some ID for this entity.
-	 *
-	 * It needs to be guaranteed that every entity has exactly one unique id.
-	 * It needs to be guaranteed that the id can be serialised.
-	 */
-	public function id() : int;
+    /**
+     * Some ID for this entity.
+     *
+     * It needs to be guaranteed that every entity has exactly one unique id.
+     * It needs to be guaranteed that the id can be serialised.
+     */
+    public function id(): int;
 }

@@ -21,58 +21,60 @@ use \CaT\Ente\CachedRepository;
  */
 trait ilHandlerObjectHelper
 {
-	use ilObjectHelper;
+    use ilObjectHelper;
 
-	/**
-	 * Get a repository for providers and components.
-	 *
-	 * @return \CaT\Ente\Repository
-	 */
-	protected function getRepository() {
-		$DIC = $this->getDIC();
-		if (!isset($DIC["ente.repository"])) {
-			$DIC["ente.repository"] = function ($c) {
-				return new CachedRepository(
-					new Repository($c["ente.provider_db"])
-				);
-			};
-		}
-		return $DIC["ente.repository"];
-	}
+    /**
+     * Get a repository for providers and components.
+     *
+     * @return \CaT\Ente\Repository
+     */
+    protected function getRepository()
+    {
+        $DIC = $this->getDIC();
+        if (!isset($DIC["ente.repository"])) {
+            $DIC["ente.repository"] = function ($c) {
+                return new CachedRepository(
+                    new Repository($c["ente.provider_db"])
+                );
+            };
+        }
+        return $DIC["ente.repository"];
+    }
 
-	/**
-	 * Get components for the entity.
-	 *
-	 * @return IComponent[]
-	 */
-	protected function getComponents() {
-		$repository = $this->getRepository();
-		return $repository->componentsForEntity($this->getEntity());
-	}
+    /**
+     * Get components for the entity.
+     *
+     * @return IComponent[]
+     */
+    protected function getComponents()
+    {
+        $repository = $this->getRepository();
+        return $repository->componentsForEntity($this->getEntity());
+    }
 
-	/**
-	 * @return IComponent[]
-	 */
-	protected function getComponentsOfType(string $component_type) : array
-	{
-		$repository = $this->getRepository();
-		return $repository->componentsForEntity($this->getEntity(), $component_type);
-	}
+    /**
+     * @return IComponent[]
+     */
+    protected function getComponentsOfType(string $component_type): array
+    {
+        $repository = $this->getRepository();
+        return $repository->componentsForEntity($this->getEntity(), $component_type);
+    }
 
-	/**
-	 * Get the entity this object handles components for.
-	 */
-	protected function getEntity() : IEntity
-	{
-		return new Entity(
-			\ilObjectFactory::getInstanceByRefId(
-				$this->getEntityRefId()
-			)
-		);
-	}
+    /**
+     * Get the entity this object handles components for.
+     */
+    protected function getEntity(): IEntity
+    {
+        return new Entity(
+            \ilObjectFactory::getInstanceByRefId(
+                $this->getEntityRefId()
+            )
+        );
+    }
 
-	/**
-	 * Get the ref_id of the object this object handles components for.
-	 */
-	abstract protected function getEntityRefId() : int;
+    /**
+     * Get the ref_id of the object this object handles components for.
+     */
+    abstract protected function getEntityRefId(): int;
 }

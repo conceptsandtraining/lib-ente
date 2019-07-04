@@ -17,45 +17,45 @@ namespace CaT\Ente\ILIAS;
  */
 class ilGlobalCache implements Cache
 {
-	/**
-	 * @var \ilGlobalCache
-	 */
-	protected $il_global_cache;
+    /**
+     * @var \ilGlobalCache
+     */
+    protected $il_global_cache;
 
-	/**
-	 * @var int|null
-	 */
-	protected $ttl_in_seconds;
+    /**
+     * @var int|null
+     */
+    protected $ttl_in_seconds;
 
-	const PREFIX = "tms_ente_";
+    const PREFIX = "tms_ente_";
 
-	public function __construct(\ilGlobalCache $cache, int $ttl_in_seconds = null)
-	{
-		$this->il_global_cache = $cache;
-		$this->ttl_in_seconds = $ttl_in_seconds;
-	}
+    public function __construct(\ilGlobalCache $cache, int $ttl_in_seconds = null)
+    {
+        $this->il_global_cache = $cache;
+        $this->ttl_in_seconds = $ttl_in_seconds;
+    }
 
-	/**
-	 * @inheritDoc
-	 */
-	public function set(string $key, array $value)
-	{
-		return $this->il_global_cache->set(self::PREFIX.$key, $value);
-	}
+    /**
+     * @inheritDoc
+     */
+    public function set(string $key, array $value)
+    {
+        return $this->il_global_cache->set(self::PREFIX . $key, $value);
+    }
 
-	/**
-	 * @inheritDoc
-	 */
-	public function get(string $key)
-	{
-		return $this->il_global_cache->get(self::PREFIX.$key);
-	}
+    /**
+     * @inheritDoc
+     */
+    public function get(string $key)
+    {
+        return $this->il_global_cache->get(self::PREFIX . $key);
+    }
 
-	/**
-	 * @inheritDoc
-	 */
-	public function delete(string $key)
-	{
-		$this->il_global_cache->delete(self::PREFIX.$key);
-	}
+    /**
+     * @inheritDoc
+     */
+    public function delete(string $key)
+    {
+        $this->il_global_cache->delete(self::PREFIX . $key);
+    }
 }

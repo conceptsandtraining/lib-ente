@@ -11,7 +11,8 @@ require_once("./Services/Form/classes/class.ilTextInputGUI.php");
  * @ilCtrl_isCalledBy ilObjComponentHandlerExampleGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
  * @ilCtrl_Calls ilObjComponentHandlerExampleGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI
  */
-class ilObjComponentHandlerExampleGUI  extends ilObjectPluginGUI {
+class ilObjComponentHandlerExampleGUI extends ilObjectPluginGUI
+{
     /**
      * @var \ilTemplate
      */
@@ -27,58 +28,64 @@ class ilObjComponentHandlerExampleGUI  extends ilObjectPluginGUI {
      */
     protected $ui_renderer;
 
-	/**
-	 * Called after parent constructor. It's possible to define some plugin special values
-	 */
-	protected function afterConstructor() {
+    /**
+     * Called after parent constructor. It's possible to define some plugin special values
+     */
+    protected function afterConstructor()
+    {
         global $DIC;
         $this->ilTemplate = $DIC->ui()->mainTemplate();
         $this->ui_factory = $DIC->ui()->factory();
-        $this->ui_renderer= $DIC->ui()->renderer(); 
-	}
+        $this->ui_renderer = $DIC->ui()->renderer();
+    }
 
-	/**
-	* Get type.  Same value as choosen in plugin.php
-	*/
-	final function getType() {
-		return "xleh";
-	}
+    /**
+     * Get type.  Same value as choosen in plugin.php
+     */
+    final function getType()
+    {
+        return "xleh";
+    }
 
-	/**
-	* Handles all commmands of this class, centralizes permission checks
-	*/
-	function performCommand($cmd) {
-		switch ($cmd) {
+    /**
+     * Handles all commmands of this class, centralizes permission checks
+     */
+    function performCommand($cmd)
+    {
+        switch ($cmd) {
             case "showContent":
                 $this->ilTemplate->setContent($this->showContent());
                 break;
-			default:
+            default:
                 throw new \InvalidArgumentException("Unknown Command: '$cmd'");
-		}
-	}
+        }
+    }
 
     /**
      * Show the edit form.
      *
      * @return string
      */
-    public function showContent() {
+    public function showContent()
+    {
         $items = $this->object->getProvidedStrings();
         $listing = $this->ui_factory->listing()->ordered($items);
         return $this->ui_renderer->render($listing);
     }
 
-	/**
-	* After object has been created -> jump to this command
-	*/
-	function getAfterCreationCmd() {
-		return "showContent";
-	}
+    /**
+     * After object has been created -> jump to this command
+     */
+    function getAfterCreationCmd()
+    {
+        return "showContent";
+    }
 
-	/**
-	* Get standard command
-	*/
-	function getStandardCmd() {
-		return "showContent";
-	}
+    /**
+     * Get standard command
+     */
+    function getStandardCmd()
+    {
+        return "showContent";
+    }
 }

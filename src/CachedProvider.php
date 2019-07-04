@@ -18,46 +18,46 @@ namespace CaT\Ente;
  */
 class CachedProvider implements Provider
 {
-	/**
-	* @var Provider
-	*/
-	protected $provider;
+    /**
+     * @var Provider
+     */
+    protected $provider;
 
-	/**
-	* @var array<string,Component[]>
-	*/
-	protected $cache;
+    /**
+     * @var array<string,Component[]>
+     */
+    protected $cache;
 
-	public function __construct(Provider $provider)
-	{
-		$this->provider = $provider;
-		$this->cache = [];
-	}
+    public function __construct(Provider $provider)
+    {
+        $this->provider = $provider;
+        $this->cache = [];
+    }
 
-	/**
-	* @inheritdocs
-	*/
-	public function componentsOfType(string $component_type) : array
-	{
-		if (!isset($this->cache[$component_type])) {
-			$this->cache[$component_type] = $this->provider->componentsOfType($component_type);
-		}
-		return $this->cache[$component_type];
-	}
+    /**
+     * @inheritdocs
+     */
+    public function componentsOfType(string $component_type): array
+    {
+        if (!isset($this->cache[$component_type])) {
+            $this->cache[$component_type] = $this->provider->componentsOfType($component_type);
+        }
+        return $this->cache[$component_type];
+    }
 
-	/**
-	* @inheritdocs
-	*/
-	public function componentTypes() : array
-	{
-		return $this->provider->componentTypes();
-	}
+    /**
+     * @inheritdocs
+     */
+    public function componentTypes(): array
+    {
+        return $this->provider->componentTypes();
+    }
 
-	/**
-	* @inheritdocs
-	*/
-	public function entity() : Entity
-	{
-		return $this->provider->entity();
-	}
+    /**
+     * @inheritdocs
+     */
+    public function entity(): Entity
+    {
+        return $this->provider->entity();
+    }
 }

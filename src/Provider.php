@@ -23,34 +23,34 @@ namespace CaT\Ente;
  */
 interface Provider
 {
-	/**
-	 * Get the components of a given type.
-	 *
-	 * `$component_type` must be a class or interface name. The returned
-	 * components must implement that class or interface.
-	 *
-	 * For every `$component_type` not included in `providedComponentTypes`
-	 * this must return an empty array.
-	 *
-	 * For every `$entity` not included in `providesForEntities` this must
-	 * return an empty array.
-	 *
-	 * @param   string      $component_type
-	 * @return  Component[]
-	 */
-	public function componentsOfType(string $component_type) : array;
+    /**
+     * Get the components of a given type.
+     *
+     * `$component_type` must be a class or interface name. The returned
+     * components must implement that class or interface.
+     *
+     * For every `$component_type` not included in `providedComponentTypes`
+     * this must return an empty array.
+     *
+     * For every `$entity` not included in `providesForEntities` this must
+     * return an empty array.
+     *
+     * @param string $component_type
+     * @return  Component[]
+     */
+    public function componentsOfType(string $component_type): array;
 
-	/**
-	 * Get the component types this provider provides.
-	 *
-	 * @return  string[]
-	 */
-	public function componentTypes() : array;
+    /**
+     * Get the component types this provider provides.
+     *
+     * @return  string[]
+     */
+    public function componentTypes(): array;
 
-	/**
-	 * Get the entity this provider provides components for.
-	 *
-	 * @return  Entity
-	 */
-	public function entity() : Entity;
+    /**
+     * Get the entity this provider provides components for.
+     *
+     * @return  Entity
+     */
+    public function entity(): Entity;
 }

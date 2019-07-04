@@ -21,8 +21,8 @@ use \CaT\Ente\Component;
  */
 interface AttachInt extends Component
 {
-	/**
-	 * Get the attached integer.
-	 */
-	public function attachedInt() : int;
+    /**
+     * Get the attached integer.
+     */
+    public function attachedInt(): int;
 }

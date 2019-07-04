@@ -21,35 +21,35 @@ use CaT\Ente\Entity AS IEntity;
  */
 interface UnboundProvider
 {
-	/**
-	 * @inheritdocs
-	 */
-	public function componentTypes();
+    /**
+     * @inheritdocs
+     */
+    public function componentTypes();
 
-	/**
-	 * Build the component(s) of the given type for the given object.
-	 * @return Component[]
-	 */
-	public function buildComponentsOf(string $component_type, IEntity $entity) : array;
+    /**
+     * Build the component(s) of the given type for the given object.
+     * @return Component[]
+     */
+    public function buildComponentsOf(string $component_type, IEntity $entity): array;
 
-	/**
-	 * Get the id of this provider for the given owner.
-	 *
-	 * @throws \InvalidArgumentException if $owner is not an owner of this provider
-	 */
-	public function idFor(\ilObject $owner) : int;
+    /**
+     * Get the id of this provider for the given owner.
+     *
+     * @throws \InvalidArgumentException if $owner is not an owner of this provider
+     */
+    public function idFor(\ilObject $owner): int;
 
-	/**
-	 * Get the owner object of the component.
-	 *
-	 * @return \ilObject[]
-	 */
-	public function owners() : array;
+    /**
+     * Get the owner object of the component.
+     *
+     * @return \ilObject[]
+     */
+    public function owners(): array;
 
-	/**
-	 * Get the object type this binds to.
-	 *
-	 * @return string
-	 */
-	public function objectType() : string;
+    /**
+     * Get the object type this binds to.
+     *
+     * @return string
+     */
+    public function objectType(): string;
 }

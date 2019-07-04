@@ -20,49 +20,49 @@ namespace CaT\Ente;
  */
 class CachedRepository implements Repository
 {
-	use RepositoryHelper;
+    use RepositoryHelper;
 
-	/**
-	* @var Repository
-	*/
-	protected $repository;
+    /**
+     * @var Repository
+     */
+    protected $repository;
 
-	/**
-	* @var array<mixed,Provider[]>
-	*/
-	protected $cache;
+    /**
+     * @var array<mixed,Provider[]>
+     */
+    protected $cache;
 
-	public function __construct(Repository $repository)
-	{
-		$this->repository = $repository;
-		$this->cache = [];
-	}
+    public function __construct(Repository $repository)
+    {
+        $this->repository = $repository;
+        $this->cache = [];
+    }
 
-	/**
-	* @inheritdocs
-	*/
-	public function providersForEntity(Entity $entity, string $component_type = null) : array
-	{
-		$id = $entity->id();
-		if (!isset($this->cache[$id])) {
-			$this->cache[$id] = array_map(
-				function(Provider $p) {
-					return new CachedProvider($p);
-				},
-				$this->repository->providersForEntity($entity)
-			);
-		}
+    /**
+     * @inheritdocs
+     */
+    public function providersForEntity(Entity $entity, string $component_type = null): array
+    {
+        $id = $entity->id();
+        if (!isset($this->cache[$id])) {
+            $this->cache[$id] = array_map(
+                function (Provider $p) {
+                    return new CachedProvider($p);
+                },
+                $this->repository->providersForEntity($entity)
+            );
+        }
 
-		if ($component_type === null) {
-			return $this->cache[$id];
-		}
+        if ($component_type === null) {
+            return $this->cache[$id];
+        }
 
-		$providers = [];
-		foreach ($this->cache[$id] as $provider) {
-			if (in_array($component_type, $provider->componentTypes())) {
-				$providers[] = $provider;
-			}
-		}
-		return $providers;
-	}
+        $providers = [];
+        foreach ($this->cache[$id] as $provider) {
+            if (in_array($component_type, $provider->componentTypes())) {
+                $providers[] = $provider;
+            }
+        }
+        return $providers;
+    }
 }

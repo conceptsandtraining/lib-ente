@@ -19,35 +19,35 @@ use CaT\Ente\Entity as IEntity;
  */
 class AttachIntMemory implements AttachInt
 {
-	/**
-	 * @var IEntity
-	 */
-	private $entity;
+    /**
+     * @var IEntity
+     */
+    private $entity;
 
-	/**
-	 * @var int
-	 */
-	private $attached_int;
+    /**
+     * @var int
+     */
+    private $attached_int;
 
-	public function __construct(IEntity $entity, int $attached_int)
-	{
-		$this->entity = $entity;
-		$this->attached_int = $attached_int;
-	}
+    public function __construct(IEntity $entity, int $attached_int)
+    {
+        $this->entity = $entity;
+        $this->attached_int = $attached_int;
+    }
 
-	/**
-	 * @inheritdocs
-	 */
-	public function entity() : IEntity
-	{
-		return $this->entity;
-	}
+    /**
+     * @inheritdocs
+     */
+    public function entity(): IEntity
+    {
+        return $this->entity;
+    }
 
-	/**
-	 * @inheritdocs
-	 */
-	public function attachedInt() : int
-	{
-		return $this->attached_int;
-	}
+    /**
+     * @inheritdocs
+     */
+    public function attachedInt(): int
+    {
+        return $this->attached_int;
+    }
 }

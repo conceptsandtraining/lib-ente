@@ -1,11 +1,12 @@
 <?php
 
-namespace CaT\Plugins\ComponentProviderExample\Settings; 
+namespace CaT\Plugins\ComponentProviderExample\Settings;
 
 /**
  * Settings for an ComponentProviderExample.
  */
-class ComponentProviderExample {
+class ComponentProviderExample
+{
     /**
      * @var int
      */
@@ -16,7 +17,8 @@ class ComponentProviderExample {
      */
     protected $provided_strings;
 
-    public function __construct($obj_id, array $provided_strings) {
+    public function __construct($obj_id, array $provided_strings)
+    {
         assert('is_int($obj_id)');
         assert('array_sum(array_map("is_string", $provided_strings)) == count($provided_strings)');
         $this->obj_id = $obj_id;
@@ -28,7 +30,8 @@ class ComponentProviderExample {
      *
      * @return  int
      */
-    public function objId() {
+    public function objId()
+    {
         return $this->obj_id;
     }
 
@@ -37,17 +40,19 @@ class ComponentProviderExample {
      *
      * @return  string[]
      */
-    public function providedStrings() {
-        return $this->provided_strings; 
+    public function providedStrings()
+    {
+        return $this->provided_strings;
     }
 
     /**
      * Change the provided strings.
      *
-     * @param   string[]    $provided_strings
+     * @param string[] $provided_strings
      * @return  ComponentProviderExample
      */
-    public function withProvidedStrings(array $provided_strings) {
+    public function withProvidedStrings(array $provided_strings)
+    {
         assert('array_sum(array_map("is_string", $provided_strings)) == count($provided_strings)');
         $clone = clone $this;
         $clone->provided_strings = $provided_strings;

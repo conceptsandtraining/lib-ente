@@ -10,13 +10,16 @@
 
 use CaT\Ente;
 
-class CachedProviderTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class CachedProviderTest extends PHPUnit_Framework_TestCase
+{
+    public function setUp()
+    {
         $this->original_provider = $this->createMock(Ente\Provider::class);
         $this->cached_provider = new Ente\CachedProvider($this->original_provider);
     }
 
-    public function test_componentTypes_passthru() {
+    public function test_componentTypes_passthru()
+    {
         $component_types = ["A", "B"];
 
         $this->original_provider
@@ -31,7 +34,8 @@ class CachedProviderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($component_types, $res2);
     }
 
-    public function test_entity_passthru() {
+    public function test_entity_passthru()
+    {
         $entity = $this->createMock(Ente\Entity::class);
 
         $this->original_provider
@@ -46,7 +50,8 @@ class CachedProviderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($entity, $res2);
     }
 
-    public function test_componentsOfType_calls_once() {
+    public function test_componentsOfType_calls_once()
+    {
         $component_type = "CTYPE";
         $c1 = $this->createMock(Ente\Component::class);
         $c2 = $this->createMock(Ente\Component::class);
@@ -64,7 +69,8 @@ class CachedProviderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals([$c1, $c2], $res2);
     }
 
-    public function test_componentsOfType_calls_once_per_component_type() {
+    public function test_componentsOfType_calls_once_per_component_type()
+    {
         $component_type1 = "CT1";
         $component_type2 = "CT2";
         $c1 = $this->createMock(Ente\Component::class);
@@ -74,13 +80,13 @@ class CachedProviderTest extends PHPUnit_Framework_TestCase {
             ->expects($this->exactly(2))
             ->method("componentsOfType")
             ->withConsecutive
-                ( [$component_type1]
+            ([$component_type1]
                 , [$component_type2]
-                )
+            )
             ->will($this->onConsecutiveCalls
-                ( [$c1]
+            ([$c1]
                 , [$c2]
-                ));
+            ));
 
         $res1 = $this->cached_provider->componentsOfType($component_type1);
         $res2 = $this->cached_provider->componentsOfType($component_type1);

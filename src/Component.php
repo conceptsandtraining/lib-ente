@@ -24,10 +24,10 @@ namespace CaT\Ente;
  */
 interface Component
 {
-	/**
-	 * Get the entity this component is attached to.
-	 *
-	 * @return Entity
-	 */
-	public function entity() : Entity;
+    /**
+     * Get the entity this component is attached to.
+     *
+     * @return Entity
+     */
+    public function entity(): Entity;
 }

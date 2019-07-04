@@ -19,27 +19,27 @@ use CaT\Ente;
  */
 class Repository implements Ente\Repository
 {
-	use Ente\RepositoryHelper;
+    use Ente\RepositoryHelper;
 
-	/**
-	 * @var ProviderDB
-	 */
-	private $provider_db;
+    /**
+     * @var ProviderDB
+     */
+    private $provider_db;
 
-	public function __construct(ProviderDB $provider_db)
-	{
-		$this->provider_db = $provider_db;
-	}
+    public function __construct(ProviderDB $provider_db)
+    {
+        $this->provider_db = $provider_db;
+    }
 
-	/**
-	 * @inheritdocs
-	 */
-	public function providersForEntity(Ente\Entity $entity, string $component_type = null) : array
-	{
-		// This can only return entities for ILIAS
-		if (!($entity instanceof Entity)) {
-			return [];
-		}
-		return $this->provider_db->providersFor($entity->object(), $component_type);
-	}
+    /**
+     * @inheritdocs
+     */
+    public function providersForEntity(Ente\Entity $entity, string $component_type = null): array
+    {
+        // This can only return entities for ILIAS
+        if (!($entity instanceof Entity)) {
+            return [];
+        }
+        return $this->provider_db->providersFor($entity->object(), $component_type);
+    }
 }

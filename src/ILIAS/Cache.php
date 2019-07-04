@@ -17,12 +17,12 @@ namespace CaT\Ente\ILIAS;
  */
 interface Cache
 {
-	public function set(string $key, array $value);
+    public function set(string $key, array $value);
 
-	/**
-	* @return array|null
-	*/
-	public function get(string $key);
+    /**
+     * @return array|null
+     */
+    public function get(string $key);
 
-	public function delete(string $key);
+    public function delete(string $key);
 }

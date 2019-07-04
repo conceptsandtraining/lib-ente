@@ -13,7 +13,8 @@ use CaT\Ente;
 /**
  * This testcases must be passed by a Repository.
  */
-abstract class RepositoryTest extends PHPUnit_Framework_TestCase {
+abstract class RepositoryTest extends PHPUnit_Framework_TestCase
+{
     /**
      * To make this interesting, the repository should at least contain one
      * provider that provides for some entity.
@@ -41,7 +42,8 @@ abstract class RepositoryTest extends PHPUnit_Framework_TestCase {
     /**
      * @dataProvider has_providers_for_entities
      */
-    public function test_providers_for_entity($entity) {
+    public function test_providers_for_entity($entity)
+    {
         $providers = $this->repository()->providersForEntity($entity);
         foreach ($providers as $provider) {
             $this->assertEquals($entity->id(), $provider->entity()->id());
@@ -51,7 +53,8 @@ abstract class RepositoryTest extends PHPUnit_Framework_TestCase {
     /**
      * @dataProvider has_providers_for_entities_and_component_types
      */
-    public function test_providers_for_entity_filtered($entity, $component_type) {
+    public function test_providers_for_entity_filtered($entity, $component_type)
+    {
         $providers = $this->repository()->providersForEntity($entity, $component_type);
         foreach ($providers as $provider) {
             $this->assertEquals($entity->id(), $provider->entity()->id());
@@ -61,19 +64,22 @@ abstract class RepositoryTest extends PHPUnit_Framework_TestCase {
 
     // DATA PROVIDERS
 
-    public function has_providers_for_entities() {
+    public function has_providers_for_entities()
+    {
         foreach ($this->hasProvidersForEntities() as $entity) {
             yield [$entity];
         }
     }
 
-    public function has_providers_for_component_types() {
+    public function has_providers_for_component_types()
+    {
         foreach ($this->hasProvidersForComponentTypes() as $component_type) {
             yield [$component_type];
         }
     }
 
-    public function has_providers_for_entities_and_component_types() {
+    public function has_providers_for_entities_and_component_types()
+    {
         foreach ($this->hasProvidersForEntities() as $entity) {
             foreach ($this->hasProvidersForComponentTypes() as $component_type) {
                 yield [$entity, $component_type];

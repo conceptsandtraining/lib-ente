@@ -20,75 +20,75 @@ use CaT\Ente\Entity AS IEntity;
  */
 abstract class SeparatedUnboundProvider implements UnboundProvider
 {
-	/**
-	 * @var int
-	 */
-	private $id;
+    /**
+     * @var int
+     */
+    private $id;
 
-	/**
-	 * @var \ilObject
-	 */
-	private $owner;
+    /**
+     * @var \ilObject
+     */
+    private $owner;
 
-	/**
-	 * @var string
-	 */
-	private $object_type;
+    /**
+     * @var string
+     */
+    private $object_type;
 
-	final public function __construct(int $id, \ilObject $owner, string $object_type)
-	{
-		$this->id = $id;
-		$this->owner = $owner;
-		$this->object_type = $object_type;
-	}
+    final public function __construct(int $id, \ilObject $owner, string $object_type)
+    {
+        $this->id = $id;
+        $this->owner = $owner;
+        $this->object_type = $object_type;
+    }
 
-	/**
-	 * @inheritdocs
-	 */
-	abstract public function componentTypes();
+    /**
+     * @inheritdocs
+     */
+    abstract public function componentTypes();
 
-	/**
-	 * Build the component(s) of the given type for the given object.
-	 * @return  Component[]
-	 */
-	abstract public function buildComponentsOf(string $component_type, IEntity $entity) : array;
+    /**
+     * Build the component(s) of the given type for the given object.
+     * @return  Component[]
+     */
+    abstract public function buildComponentsOf(string $component_type, IEntity $entity): array;
 
-	/**
-	 * @inheritdocs
-	 */
-	final public function idFor(\ilObject $owner) : int
-	{
-		if ($owner->getId() !== $this->owner->getId()) {
-			throw new \InvalidArgumentException(
-				"Object with id "
-				.$owner->getId()
-				." is not the owner with id ".$this->owner->getId()
-			);
-		}
-		return $this->id;
-	}
+    /**
+     * @inheritdocs
+     */
+    final public function idFor(\ilObject $owner): int
+    {
+        if ($owner->getId() !== $this->owner->getId()) {
+            throw new \InvalidArgumentException(
+                "Object with id "
+                . $owner->getId()
+                . " is not the owner with id " . $this->owner->getId()
+            );
+        }
+        return $this->id;
+    }
 
-	/**
-	 * @inheritdocs
-	 */
-	final public function owners() : array
-	{
-		return [$this->owner];
-	}
+    /**
+     * @inheritdocs
+     */
+    final public function owners(): array
+    {
+        return [$this->owner];
+    }
 
-	/**
-	 * @inheritdocs
-	 */
-	final public function owner() : \ilObject
-	{
-		return $this->owner;
-	}
+    /**
+     * @inheritdocs
+     */
+    final public function owner(): \ilObject
+    {
+        return $this->owner;
+    }
 
-	/**
-	 * @inheritdocs
-	 */
-	final public function objectType() : string
-	{
-		return $this->object_type;
-	}
+    /**
+     * @inheritdocs
+     */
+    final public function objectType(): string
+    {
+        return $this->object_type;
+    }
 }

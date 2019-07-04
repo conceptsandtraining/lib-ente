@@ -10,106 +10,117 @@
 
 use CaT\Ente;
 
-abstract class ilHandlerObjectHelperMock {
-	use Ente\ILIAS\ilHandlerObjectHelper;
-	public function _getRepository() {
-		return $this->getRepository();
-	}
-	public function _getComponents() {
-		return $this->getComponents();
-	}
-	public function _getComponentsOfType($t) {
-		return $this->getComponentsOfType($t);
-	}
+abstract class ilHandlerObjectHelperMock
+{
+    use Ente\ILIAS\ilHandlerObjectHelper;
+
+    public function _getRepository()
+    {
+        return $this->getRepository();
+    }
+
+    public function _getComponents()
+    {
+        return $this->getComponents();
+    }
+
+    public function _getComponentsOfType($t)
+    {
+        return $this->getComponentsOfType($t);
+    }
 }
 
-class ilHandlerObjectHelperTest extends PHPUnit_Framework_TestCase {
-	public function test_getRepository() {
-		$provider_db = $this->createMock(Ente\ILIAS\ProviderDB::class);
+class ilHandlerObjectHelperTest extends PHPUnit_Framework_TestCase
+{
+    public function test_getRepository()
+    {
+        $provider_db = $this->createMock(Ente\ILIAS\ProviderDB::class);
 
-		$mock = $this
-			->getMockBuilder(ilHandlerObjectHelperMock::class)
-			->setMethods(["getProviderDB", "getDIC", "getEntityRefId"])
-			->getMock();
+        $mock = $this
+            ->getMockBuilder(ilHandlerObjectHelperMock::class)
+            ->setMethods(["getProviderDB", "getDIC", "getEntityRefId"])
+            ->getMock();
 
-		$dic = [
-			"ente.provider_db" => $provider_db
-		];
-		$mock
-			->expects($this->once())
-			->method("getDIC")
-			->willReturn($dic);
+        $dic = [
+            "ente.provider_db" => $provider_db
+        ];
+        $mock
+            ->expects($this->once())
+            ->method("getDIC")
+            ->willReturn($dic);
 
-		$repository = $mock->_getRepository();
-		// unwrap creation closure
-		$repository = $repository($dic);
+        $repository = $mock->_getRepository();
+        // unwrap creation closure
+        $repository = $repository($dic);
 
-		$this->assertInstanceOf(Ente\Repository::class, $repository);
-	}
+        $this->assertInstanceOf(Ente\Repository::class, $repository);
+    }
 
-	public function test_getComponents() {
-		$repository = $this->createMock(Ente\Repository::class);
-		$entity = $this->createMock(Ente\Entity::class);
+    public function test_getComponents()
+    {
+        $repository = $this->createMock(Ente\Repository::class);
+        $entity = $this->createMock(Ente\Entity::class);
 
-		$mock = $this
-			->getMockBuilder(ilHandlerObjectHelperMock::class)
-			->setMethods(["getProviderDB", "getDIC", "getEntityRefId", "getEntity", "getRepository"])
-			->getMock();
+        $mock = $this
+            ->getMockBuilder(ilHandlerObjectHelperMock::class)
+            ->setMethods(["getProviderDB", "getDIC", "getEntityRefId", "getEntity", "getRepository"])
+            ->getMock();
 
-		$mock
-			->expects($this->once())
-			->method("getRepository")
-			->willReturn($repository);
+        $mock
+            ->expects($this->once())
+            ->method("getRepository")
+            ->willReturn($repository);
 
-		$mock
-			->expects($this->once())
-			->method("getEntity")
-			->willReturn($entity);
+        $mock
+            ->expects($this->once())
+            ->method("getEntity")
+            ->willReturn($entity);
 
-		$array = [new \StdClass()];
+        $array = [new \StdClass()];
 
-		$repository
-			->expects($this->once())
-			->method("componentsForEntity")
-			->with($entity)
-			->willReturn($array);
+        $repository
+            ->expects($this->once())
+            ->method("componentsForEntity")
+            ->with($entity)
+            ->willReturn($array);
 
-		$components = $mock->_getComponents();
+        $components = $mock->_getComponents();
 
-		$this->assertSame($array, $components);
-	}
+        $this->assertSame($array, $components);
+    }
 
 
-	public function test_getComponentsOfType() {
-		$repository = $this->createMock(Ente\Repository::class);
-		$entity = $this->createMock(Ente\Entity::class);
+    public function test_getComponentsOfType()
+    {
+        $repository = $this->createMock(Ente\Repository::class);
+        $entity = $this->createMock(Ente\Entity::class);
 
-		$mock = $this
-			->getMockBuilder(ilHandlerObjectHelperMock::class)
-			->setMethods(["getProviderDB", "getDIC", "getEntityRefId", "getEntity", "getRepository"])
-			->getMock();
+        $mock = $this
+            ->getMockBuilder(ilHandlerObjectHelperMock::class)
+            ->setMethods(["getProviderDB", "getDIC", "getEntityRefId", "getEntity", "getRepository"])
+            ->getMock();
 
-		$mock
-			->expects($this->once())
-			->method("getRepository")
-			->willReturn($repository);
+        $mock
+            ->expects($this->once())
+            ->method("getRepository")
+            ->willReturn($repository);
 
-		$mock
-			->expects($this->once())
-			->method("getEntity")
-			->willReturn($entity);
+        $mock
+            ->expects($this->once())
+            ->method("getEntity")
+            ->willReturn($entity);
 
-		$array = [new \StdClass()];
-		$type = "TYPE";
+        $array = [new \StdClass()];
+        $type = "TYPE";
 
-		$repository
-			->expects($this->once())
-			->method("componentsForEntity")
-			->with($entity, $type)
-			->willReturn($array);
+        $repository
+            ->expects($this->once())
+            ->method("componentsForEntity")
+            ->with($entity, $type)
+            ->willReturn($array);
 
-		$components = $mock->_getComponentsOfType($type);
+        $components = $mock->_getComponentsOfType($type);
 
-		$this->assertSame($array, $components);
-	}
+        $this->assertSame($array, $components);
+    }
 }
