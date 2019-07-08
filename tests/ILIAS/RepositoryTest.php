@@ -17,35 +17,44 @@ use CaT\Ente\Simple\AttachStringMemory;
 use CaT\Ente\Simple\AttachInt;
 use CaT\Ente\Simple\AttachIntMemory;
 
-require_once(__DIR__."/../RepositoryTest.php");
+require_once(__DIR__ . "/../RepositoryTest.php");
 
 if (!class_exists("ilObject")) {
-    require_once(__DIR__."/ilObject.php");
+    require_once(__DIR__ . "/ilObject.php");
 }
 
-class ILIAS_RepositoryTest_Object extends ilObject {
+class ILIAS_RepositoryTest_Object extends ilObject
+{
     protected $id;
-    public function __construct($id) {
+
+    public function __construct($id)
+    {
         $this->id = $id;
     }
-    public function getId() {
+
+    public function getId()
+    {
         return $this->id;
     }
 }
 
-class ILIAS_RepositoryTest extends RepositoryTest {
-    protected function object($id) {
+class ILIAS_RepositoryTest extends RepositoryTest
+{
+    protected function object($id)
+    {
         return new ILIAS_RepositoryTest_Object($id);
     }
 
-    protected function entity($id) {
+    protected function entity($id)
+    {
         return new Entity($this->object($id));
     }
 
     /**
      * @inheritdocs
      */
-    protected function repository() {
+    protected function repository()
+    {
         $this->provider_db = $this->createMock(ProviderDB::class);
 
         $this->provider_1 = $this
@@ -76,14 +85,14 @@ class ILIAS_RepositoryTest extends RepositoryTest {
 
         $this->provider_db
             ->method("providersFor")
-            ->will($this->returnCallback(function($o, $ct) {
+            ->will($this->returnCallback(function ($o, $ct) {
                 if ($o == $this->object(1)) {
-                    if ($ct === null || $ct === AttachInt::class) 
+                    if ($ct === null || $ct === AttachInt::class)
                         return [$this->provider_1];
                     return [];
                 }
                 if ($o == $this->object(2)) {
-                    if ($ct === null || $ct === AttachString::class) 
+                    if ($ct === null || $ct === AttachString::class)
                         return [$this->provider_2];
                     return [];
                 }
@@ -96,31 +105,36 @@ class ILIAS_RepositoryTest extends RepositoryTest {
     /**
      * @inheritdocs
      */
-    protected function hasProvidersForEntities() {
+    protected function hasProvidersForEntities()
+    {
         return [$this->entity(1), $this->entity(2)];
     }
 
     /**
      * @inheritdocs
      */
-    protected function hasProvidersForComponentTypes() {
+    protected function hasProvidersForComponentTypes()
+    {
         return [AttachInt::class, AttachString::class];
     }
 
-    public function test_provider_db() {
+    public function test_provider_db()
+    {
         $this->repository();
         $this->assertEquals([$this->provider_1], $this->provider_db->providersFor($this->object(1)));
         $this->assertEquals([$this->provider_2], $this->provider_db->providersFor($this->object(2)));
     }
 
-    public function test_ILIAS_Entities_only() {
+    public function test_ILIAS_Entities_only()
+    {
         $repository = $this->repository();
         $entity = new \CaT\Ente\Simple\Entity(1);
 
         $this->assertEquals([], $repository->providersForEntity($entity));
     }
 
-    public function test_providersForEntity_calls_providersFor() {
+    public function test_providersForEntity_calls_providersFor()
+    {
         $repository = $this->repository();
 
         $this->provider_db

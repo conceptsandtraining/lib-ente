@@ -8,6 +8,8 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente;
 
 /**
@@ -19,7 +21,8 @@ namespace CaT\Ente;
  *    components for one entity. The use cases for the framework will be mostly
  *    entity centric, thus it makes more sense to have according providers.
  */
-interface Provider {
+interface Provider
+{
     /**
      * Get the components of a given type.
      *
@@ -32,22 +35,22 @@ interface Provider {
      * For every `$entity` not included in `providesForEntities` this must
      * return an empty array.
      *
-     * @param   string      $component_type
+     * @param string $component_type
      * @return  Component[]
      */
-    public function componentsOfType($component_type);
+    public function componentsOfType(string $component_type): array;
 
     /**
      * Get the component types this provider provides.
      *
      * @return  string[]
      */
-    public function componentTypes();
+    public function componentTypes(): array;
 
     /**
      * Get the entity this provider provides components for.
      *
      * @return  Entity
      */
-    public function entity();
+    public function entity(): Entity;
 }

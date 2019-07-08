@@ -10,13 +10,16 @@
 
 use CaT\Ente;
 
-class CachedRepositoryTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class CachedRepositoryTest extends PHPUnit_Framework_TestCase
+{
+    public function setUp()
+    {
         $this->original_repo = $this->createMock(Ente\Repository::class);
         $this->cached_repo = new Ente\CachedRepository($this->original_repo);
     }
 
-    public function test_caches_provider_for_entity() {
+    public function test_caches_provider_for_entity()
+    {
         $entity = $this->createMock(Ente\Entity::class);
         $entity_id = 42;
         $entity
@@ -38,7 +41,8 @@ class CachedRepositoryTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals([new Ente\CachedProvider($provider)], $res2);
     }
 
-    public function test_componentsForEntity_calls_providersForEntity() {
+    public function test_componentsForEntity_calls_providersForEntity()
+    {
         $entity = $this->createMock(Ente\Entity::class);
         $entity_id = 42;
         $entity
@@ -71,7 +75,8 @@ class CachedRepositoryTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($components, $res);
     }
 
-    public function test_providersForEntities_evaluates_component_type_internally() {
+    public function test_providersForEntities_evaluates_component_type_internally()
+    {
         $entity = $this->createMock(Ente\Entity::class);
         $entity_id = 42;
         $entity

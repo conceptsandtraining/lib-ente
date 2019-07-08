@@ -8,13 +8,19 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\ILIAS;
+
+use CaT\Ente\Component;
+use CaT\Ente\Entity AS IEntity;
 
 /**
  * An shared unbound provider is an unbound provider that has a multiple owners
  * and may provide components based on a combination of owners properties.
  */
-abstract class SharedUnboundProvider implements UnboundProvider {
+abstract class SharedUnboundProvider implements UnboundProvider
+{
     /**
      * @var \ilObject[]
      */
@@ -30,16 +36,16 @@ abstract class SharedUnboundProvider implements UnboundProvider {
      */
     private $object_type;
 
-    final public function __construct(array $owners, $object_type) {
+    final public function __construct(array $owners, string $object_type)
+    {
         $this->owners = [];
         $this->ids = [];
-        foreach($owners as $id => $owner) {
+        foreach ($owners as $id => $owner) {
             assert('is_int($id)');
             assert('$owner instanceof \ilObject');
             $this->owners[] = $owner;
             $this->ids[$owner->getId()] = $id;
         }
-        assert('is_string($object_type)');
         $this->object_type = $object_type;
     }
 
@@ -50,36 +56,36 @@ abstract class SharedUnboundProvider implements UnboundProvider {
 
     /**
      * Build the component(s) of the given type for the given object.
-     *
-     * @param   string    $component_type
-     * @param   Entity    $provider
-     * @return  Component[]
+     * @return Component[]
      */
-    abstract public function buildComponentsOf($component_type, Entity $entity);
+    abstract public function buildComponentsOf(string $component_type, IEntity $entity): array;
 
     /**
      * @inheritdocs
      */
-    final public function idFor(\ilObject $owner) {
+    final public function idFor(\ilObject $owner): int
+    {
         $id = $owner->getId();
         if (!isset($this->ids[$id])) {
             throw new \InvalidArgumentException(
-                "Object with id ".$owner->getId()." is not an owner");
+                "Object with id " . $owner->getId() . " is not an owner");
         }
-        return $this->ids[$id];
+        return (int)$this->ids[$id];
     }
 
     /**
      * @inheritdocs
      */
-    final public function owners() {
+    final public function owners(): array
+    {
         return $this->owners;
     }
 
     /**
      * @inheritdocs
      */
-    final public function objectType() {
+    final public function objectType(): string
+    {
         return $this->object_type;
     }
 }

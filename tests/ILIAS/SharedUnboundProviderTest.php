@@ -9,24 +9,27 @@
  */
 
 use CaT\Ente\ILIAS\Entity;
-use CaT\Ente\ILIAS\Provider;
 use CaT\Ente\ILIAS\SharedUnboundProvider;
-use CaT\Ente\Simple;
 use CaT\Ente\Simple\AttachString;
 use CaT\Ente\Simple\AttachStringMemory;
 use CaT\Ente\Simple\AttachInt;
 use CaT\Ente\Simple\AttachIntMemory;
 
+use CaT\Ente\Entity AS IEntity;
+
 if (!class_exists("ilObject")) {
-    require_once(__DIR__."/ilObject.php");
+    require_once(__DIR__ . "/ilObject.php");
 }
 
-class Test_SharedUnboundProvider extends SharedUnboundProvider {
-    public function componentTypes() {
+class Test_SharedUnboundProvider extends SharedUnboundProvider
+{
+    public function componentTypes()
+    {
         return [AttachString::class, AttachInt::class];
     }
 
-    public function buildComponentsOf($component_type, Entity $entity) {
+    public function buildComponentsOf(string $component_type, IEntity $entity): array
+    {
         assert(is_string($component_type));
         $this->callsTo_buildComponentsOf[] = $component_type;
         $object = $entity->object();
@@ -41,11 +44,13 @@ class Test_SharedUnboundProvider extends SharedUnboundProvider {
     }
 }
 
-class ILIAS_SharedUnboundProviderTest extends PHPUnit_Framework_TestCase {
+class ILIAS_SharedUnboundProviderTest extends PHPUnit_Framework_TestCase
+{
     /**
      * @inheritdocs
      */
-    protected function unboundProvider() {
+    protected function unboundProvider()
+    {
         $this->owner1 = $this
             ->getMockBuilder(\ilObject::class)
             ->setMethods(["getId"])
@@ -71,8 +76,8 @@ class ILIAS_SharedUnboundProviderTest extends PHPUnit_Framework_TestCase {
         $this->object_type = "object_type";
 
         $owners =
-            [ $this->unbound_provider_id1 => $this->owner1
-            , $this->unbound_provider_id2 => $this->owner2
+            [$this->unbound_provider_id1 => $this->owner1
+                , $this->unbound_provider_id2 => $this->owner2
             ];
 
         $provider = new Test_SharedUnboundProvider($owners, $this->object_type);
@@ -80,12 +85,14 @@ class ILIAS_SharedUnboundProviderTest extends PHPUnit_Framework_TestCase {
         return $provider;
     }
 
-    public function test_componentTypes() {
+    public function test_componentTypes()
+    {
         $unbound_provider = $this->unboundProvider();
         $this->assertEquals([AttachString::class, AttachInt::class], $unbound_provider->componentTypes());
     }
 
-    public function test_owner() {
+    public function test_owner()
+    {
         $owners = $this->unboundProvider()->owners();
         $this->assertCount(2, $owners);
 
@@ -98,13 +105,15 @@ class ILIAS_SharedUnboundProviderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($this->owner2_id, $owner2->getId());
     }
 
-    public function test_idFor() {
+    public function test_idFor()
+    {
         $unbound_provider = $this->unboundProvider();
         $this->assertEquals($this->unbound_provider_id1, $unbound_provider->idFor($this->owner1));
         $this->assertEquals($this->unbound_provider_id2, $unbound_provider->idFor($this->owner2));
     }
 
-   public function test_idFor_throws() {
+    public function test_idFor_throws()
+    {
         $unbound_provider = $this->unboundProvider();
         $other = $this
             ->getMockBuilder(\ilObject::class)
@@ -119,14 +128,14 @@ class ILIAS_SharedUnboundProviderTest extends PHPUnit_Framework_TestCase {
         try {
             $unbound_provider->idFor($other);
             $raised = false;
-        }
-        catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             $raised = true;
         }
         $this->assertTrue($raised);
     }
 
-    public function test_object_type() {
+    public function test_object_type()
+    {
         $unbound_provider = $this->unboundProvider();
         $this->assertEquals($this->object_type, $unbound_provider->objectType());
     }

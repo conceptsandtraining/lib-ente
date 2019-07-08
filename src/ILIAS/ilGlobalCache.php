@@ -8,12 +8,15 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\ILIAS;
 
 /**
  * Contract for a cache.
  */
-class ilGlobalCache implements Cache {
+class ilGlobalCache implements Cache
+{
     /**
      * @var \ilGlobalCache
      */
@@ -26,29 +29,33 @@ class ilGlobalCache implements Cache {
 
     const PREFIX = "tms_ente_";
 
-    public function __construct(\ilGlobalCache $cache, int $ttl_in_seconds = null) {
+    public function __construct(\ilGlobalCache $cache, int $ttl_in_seconds = null)
+    {
         $this->il_global_cache = $cache;
         $this->ttl_in_seconds = $ttl_in_seconds;
     }
 
     /**
-     * @return void
+     * @inheritDoc
      */
-    public function set(string $key, array $value) {
-        return $this->il_global_cache->set(self::PREFIX.$key, $value);
+    public function set(string $key, array $value)
+    {
+        return $this->il_global_cache->set(self::PREFIX . $key, $value);
     }
 
     /**
-     * @return array|null
+     * @inheritDoc
      */
-    public function get(string $key) {
-        return $this->il_global_cache->get(self::PREFIX.$key);
+    public function get(string $key)
+    {
+        return $this->il_global_cache->get(self::PREFIX . $key);
     }
 
     /**
-     * @return void
+     * @inheritDoc
      */
-    public function delete(string $key) {
-        $this->il_global_cache->delete(self::PREFIX.$key);
+    public function delete(string $key)
+    {
+        $this->il_global_cache->delete(self::PREFIX . $key);
     }
 }

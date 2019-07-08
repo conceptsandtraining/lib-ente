@@ -15,13 +15,15 @@ use CaT\Ente\Simple\AttachStringMemory;
 use CaT\Ente\Simple\AttachInt;
 use CaT\Ente\Simple\AttachIntMemory;
 
-require_once(__DIR__."/../ProviderTest.php");
+require_once(__DIR__ . "/../ProviderTest.php");
 
-class Simple_ProviderTest extends ProviderTest {
+class Simple_ProviderTest extends ProviderTest
+{
     /**
      * @inheritdocs
      */
-    protected function provider() {
+    protected function provider()
+    {
         $entity = new Entity(0);
         $provider = new Provider($entity);
         $component = new AttachStringMemory($entity, "id: {$entity->id()}");
@@ -34,11 +36,13 @@ class Simple_ProviderTest extends ProviderTest {
     /**
      * @inheritdocs
      */
-    protected function doesNotProvideComponentType() {
+    protected function doesNotProvideComponentType()
+    {
         return [self::class];
     }
 
-    public function test_cannot_add_for_other_entity() {
+    public function test_cannot_add_for_other_entity()
+    {
         $provider = $this->provider();
 
         $entity = new Entity(1);
@@ -47,25 +51,26 @@ class Simple_ProviderTest extends ProviderTest {
         try {
             $provider->addComponent($component);
             $this->assertFalse("This should not happen.");
-        } 
-        catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             $this->assertTrue(true);
         }
     }
 
-    public function test_componentTypes() {
+    public function test_componentTypes()
+    {
         $provider = $this->provider();
         $this->assertEquals([AttachString::class, AttachInt::class], $provider->componentTypes());
     }
 
-    public function test_add_two_components_of_same_type() {
+    public function test_add_two_components_of_same_type()
+    {
         $entity = new Entity(0);
         $provider = new Provider($entity);
         $component = new AttachStringMemory($entity, "1");
         $provider->addComponent($component);
         $component = new AttachStringMemory($entity, "2");
         $provider->addComponent($component);
- 
+
         $this->assertCount(2, $provider->componentsOfType(AttachString::class));
     }
 }

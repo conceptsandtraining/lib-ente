@@ -8,13 +8,16 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente;
 
 /**
  * A chaching wrapper around a provider that caches components per type
  * and passes through the other methods.
  */
-class CachedProvider implements Provider {
+class CachedProvider implements Provider
+{
     /**
      * @var Provider
      */
@@ -25,7 +28,8 @@ class CachedProvider implements Provider {
      */
     protected $cache;
 
-    public function __construct(Provider $provider) {
+    public function __construct(Provider $provider)
+    {
         $this->provider = $provider;
         $this->cache = [];
     }
@@ -33,7 +37,8 @@ class CachedProvider implements Provider {
     /**
      * @inheritdocs
      */
-    public function componentsOfType($component_type) {
+    public function componentsOfType(string $component_type): array
+    {
         if (!isset($this->cache[$component_type])) {
             $this->cache[$component_type] = $this->provider->componentsOfType($component_type);
         }
@@ -43,14 +48,16 @@ class CachedProvider implements Provider {
     /**
      * @inheritdocs
      */
-    public function componentTypes() {
+    public function componentTypes(): array
+    {
         return $this->provider->componentTypes();
     }
 
     /**
      * @inheritdocs
      */
-    public function entity() {
+    public function entity(): Entity
+    {
         return $this->provider->entity();
     }
 }

@@ -4,17 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3d742255057590cad00d70c503624e2c",
-    "content-hash": "272e30e103e1ef82a667b67c718bb48c",
+    "hash": "39df0d7b39836781192c2937f207efa9",
+    "content-hash": "53399f79ac9f1877c74993378b457019",
     "packages": [
         {
-            "name": "cat/ente",
-            "version": "0.1.0",
+            "name": "conceptsandtraining/ente",
+            "version": "4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/conceptsandtraining/lib-ente.git",
+                "reference": "656b99073fa6e649550938e272eca051e2325a6d"
+            },
             "dist": {
-                "type": "path",
-                "url": "../../lib/",
-                "reference": "66f0059afe55352a187b7293f0c83658869f2452",
-                "shasum": null
+                "type": "zip",
+                "url": "https://api.github.com/repos/conceptsandtraining/lib-ente/zipball/656b99073fa6e649550938e272eca051e2325a6d",
+                "reference": "656b99073fa6e649550938e272eca051e2325a6d",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.6"
             },
             "type": "library",
             "autoload": {
@@ -22,8 +30,9 @@
                     "CaT\\Ente\\": "src"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPLv3"
+                "GPL-3.0-or-later"
             ],
             "authors": [
                 {
@@ -31,15 +40,14 @@
                     "email": "richard.klees@concepts-and-training.de"
                 }
             ],
-            "description": "An entity component framework for PHP."
+            "description": "An entity component framework for ILIAS.",
+            "time": "2018-08-23 14:29:44"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "cat/ente": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

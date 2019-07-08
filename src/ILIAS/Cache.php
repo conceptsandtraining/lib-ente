@@ -8,15 +8,15 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\ILIAS;
 
 /**
  * Contract for a cache.
  */
-interface Cache {
-    /**
-     * @return void
-     */
+interface Cache
+{
     public function set(string $key, array $value);
 
     /**
@@ -24,8 +24,5 @@ interface Cache {
      */
     public function get(string $key);
 
-    /**
-     * @return void
-     */
     public function delete(string $key);
 }

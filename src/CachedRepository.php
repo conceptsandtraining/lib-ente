@@ -8,6 +8,8 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente;
 
 /**
@@ -16,7 +18,8 @@ namespace CaT\Ente;
  * providers are wrapped in CachedProviders to enable caching for
  * components as well.
  */
-class CachedRepository implements Repository {
+class CachedRepository implements Repository
+{
     use RepositoryHelper;
 
     /**
@@ -29,7 +32,8 @@ class CachedRepository implements Repository {
      */
     protected $cache;
 
-    public function __construct(Repository $repository) {
+    public function __construct(Repository $repository)
+    {
         $this->repository = $repository;
         $this->cache = [];
     }
@@ -37,12 +41,16 @@ class CachedRepository implements Repository {
     /**
      * @inheritdocs
      */
-    public function providersForEntity(Entity $entity, $component_type = null) {
+    public function providersForEntity(Entity $entity, string $component_type = null): array
+    {
         $id = $entity->id();
         if (!isset($this->cache[$id])) {
-            $this->cache[$id] = array_map(function(Provider $p) {
-                return new CachedProvider($p);
-            }, $this->repository->providersForEntity($entity));
+            $this->cache[$id] = array_map(
+                function (Provider $p) {
+                    return new CachedProvider($p);
+                },
+                $this->repository->providersForEntity($entity)
+            );
         }
 
         if ($component_type === null) {

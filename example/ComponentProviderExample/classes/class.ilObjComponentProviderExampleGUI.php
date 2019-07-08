@@ -1,107 +1,143 @@
 <?php
 
-require_once("./Services/Repository/classes/class.ilObjectPluginGUI.php");
-require_once("./Services/Form/classes/class.ilPropertyFormGUI.php");
-require_once("./Services/Form/classes/class.ilTextInputGUI.php");
+/* Copyright (c) 2018 Richard Klees <richard.klees@concepts-and-training.de> */
 
+declare(strict_types=1);
+
+require_once "./Services/Repository/classes/class.ilObjectPluginGUI.php";
+require_once "./Services/Form/classes/class.ilPropertyFormGUI.php";
+require_once "./Services/Form/classes/class.ilTextInputGUI.php";
+
+use CaT\Plugins\ComponentProviderExample\DI;
 
 /**
  * Plugin object GUI class. Baseclass for all GUI action in ILIAS
  *
  * @ilCtrl_isCalledBy ilObjComponentProviderExampleGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
  * @ilCtrl_Calls ilObjComponentProviderExampleGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI
+ * @ilCtrl_Calls ilObjComponentProviderExampleGUI: ilProvidedComponentsGUI
  */
-class ilObjComponentProviderExampleGUI  extends ilObjectPluginGUI {
-    const VALUES_FIELD_NAME = "values";
-    const SAVE_CMD = "saveForm";
+class ilObjComponentProviderExampleGUI extends ilObjectPluginGUI
+{
+    use DI;
+
+    const CMD_SHOW_CONTENT = "showContent";
+
+    const TAB_SETTINGS = "tab_settings";
 
     /**
      * @var \ilTemplate
      */
-    protected $ilTemplate;
+    protected $tpl;
 
     /**
      * @var \ilCtrl
      */
-    protected $ilCtrl;
+    protected $ctrl;
 
-	/**
-	 * Called after parent constructor. It's possible to define some plugin special values
-	 */
-	protected function afterConstructor() {
-        global $DIC;
-        $this->ilTemplate = $DIC->ui()->mainTemplate();
-        $this->ilCtrl = $DIC->ctrl();
-	}
+    /**
+     * @var ArrayAccess
+     */
+    protected $dic;
 
-	/**
-	* Get type.  Same value as choosen in plugin.php
-	*/
-	final function getType() {
-		return "xlep";
-	}
+    /**
+     * @var ilAccess
+     */
+    protected $access;
 
-	/**
-	* Handles all commmands of this class, centralizes permission checks
-	*/
-	function performCommand($cmd) {
-		switch ($cmd) {
-            case self::SAVE_CMD:
-                $this->saveForm();
-            case "showContent":
-                $this->ilTemplate->setContent($this->showContent());
+    /**
+     * @var ilTabsGUI
+     */
+    protected $tabs;
+
+    /**
+     * Get type.  Same value as choosen in plugin.php
+     */
+    final function getType()
+    {
+        return "xlep";
+    }
+
+    /**
+     * Handles all commmands of this class, centralizes permission checks
+     */
+    function performCommand($cmd)
+    {
+        $this->initClassProperties();
+
+        $next_class = $this->ctrl->getNextClass();
+        switch($next_class) {
+            case "ilprovidedcomponentsgui":
+                $gui = $this->dic["settings.gui"];
+                $this->ctrl->forwardCommand($gui);
                 break;
-			default:
-                throw new \InvalidArgumentException("Unknown Command: '$cmd'");
-		}
-	}
+            default:
+                switch ($cmd) {
+                    case self::CMD_SHOW_CONTENT:
+                        $this->redirectSettings();
+                        break;
+                    default:
+                        throw new \InvalidArgumentException("Unknown Command: '$cmd'");
+                }
+        }
 
-    /**
-     * Save values provided from form.
-     */
-    protected function saveForm() {
-        $db = $this->plugin->settingsDB();
-        $settings = $db->getFor((int)$this->object->getId());
-        $settings = $settings->withProvidedStrings($_POST[self::VALUES_FIELD_NAME]);
-        $db->update($settings);
-        $this->ilCtrl->redirect($this, "showContent");
+    }
+
+    protected function initClassProperties()
+    {
+        $this->dic = $this->getObjDic();
+        $this->tpl = $this->dic["tpl"];
+        $this->ctrl = $this->dic["ilCtrl"];
+        $this->access = $this->dic["ilAccess"];
+        $this->tabs = $this->dic["ilTabs"];
+    }
+
+    protected function redirectSettings()
+    {
+        $link = $this->dic["settings.gui.link"];
+        $this->ctrl->redirectToUrl($link);
+    }
+
+    protected function setTabs()
+    {
+        $this->addInfoTab();
+
+        if ($this->access->checkAccess("write", "", $this->object->getRefId())) {
+            $link = $this->dic["settings.gui.link"];
+            $this->tabs->addTab(
+                self::TAB_SETTINGS,
+                $this->txt(self::TAB_SETTINGS),
+                $link
+            );
+        }
+
+        $this->addPermissionTab();
     }
 
     /**
-     * Show the edit form.
-     *
-     * @return string
+     * After object has been created -> jump to this command
      */
-    public function showContent() {
-        $db = $this->plugin->settingsDB();
-        $settings = $db->getFor((int)$this->object->getId());
-
-        $form = new \ilPropertyFormGUI();
-        $form->setTitle($this->plugin->txt("settings_form_title"));
-        $form->setFormAction($this->ilCtrl->getFormAction($this));
-        $form->addCommandButton(self::SAVE_CMD, $this->txt("save"));
-
-        $input = new \ilTextInputGUI($this->plugin->txt("values"), self::VALUES_FIELD_NAME);
-        $input->setMulti(true);
-        $input->setMaxLength(64);
-        $input->setValue($settings->providedStrings());
-
-        $form->addItem($input);
-
-        return $form->getHTML();
+    public function getAfterCreationCmd()
+    {
+        return self::CMD_SHOW_CONTENT;
     }
 
-	/**
-	* After object has been created -> jump to this command
-	*/
-	function getAfterCreationCmd() {
-		return "showContent";
-	}
+    /**
+     * Get standard command
+     */
+    public function getStandardCmd()
+    {
+        return self::CMD_SHOW_CONTENT;
+    }
 
-	/**
-	* Get standard command
-	*/
-	function getStandardCmd() {
-		return "showContent";
-	}
+    protected function txt(string $code) :  string
+    {
+        return $this->txt($code);
+    }
+
+    protected function getObjDic() : Pimple\Container
+    {
+        global $DIC;
+        return $this->getObjectDIC($this->object, $DIC);
+    }
 }

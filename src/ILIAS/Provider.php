@@ -8,14 +8,18 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\ILIAS;
 
 use CaT\Ente\Component;
+use CaT\Ente\Entity AS IEntity;
 
 /**
  * Implementation of a provider for ILIAS.
  */
-final class Provider implements \CaT\Ente\Provider {
+final class Provider implements \CaT\Ente\Provider
+{
     /**
      * @var \ilObject
      */
@@ -36,7 +40,8 @@ final class Provider implements \CaT\Ente\Provider {
      */
     private $components;
 
-    final public function __construct(\ilObject $object, UnboundProvider $unbound_provider) {
+    final public function __construct(\ilObject $object, UnboundProvider $unbound_provider)
+    {
         $this->object = $object;
         $this->entity = new Entity($object);
         $this->unbound_provider = $unbound_provider;
@@ -46,14 +51,16 @@ final class Provider implements \CaT\Ente\Provider {
     /**
      * @inheritdocs
      */
-    final public function componentTypes() {
+    final public function componentTypes(): array
+    {
         return $this->unbound_provider->componentTypes();
     }
 
     /**
      * @inheritdocs
      */
-    final public function componentsOfType($component_type) {
+    final public function componentsOfType(string $component_type): array
+    {
         if (isset($this->components[$component_type])) {
             return $this->components[$component_type];
         }
@@ -67,16 +74,18 @@ final class Provider implements \CaT\Ente\Provider {
     /**
      * @inheritdocs
      */
-    final public function entity() {
+    final public function entity(): IEntity
+    {
         return $this->entity;
     }
 
     /**
      * Get the entity object of the component.
      *
-     * @return  \ilObject
+     * @return \ilObject
      */
-    final public function object() {
+    final public function object(): \ilObject
+    {
         return $this->object;
     }
 
@@ -85,42 +94,43 @@ final class Provider implements \CaT\Ente\Provider {
      *
      * @return  \ilObject[]
      */
-    final public function owners() {
+    final public function owners(): array
+    {
         return $this->unbound_provider->owners();
     }
 
     /**
      * Get the unbound provider underlying this.
      *
-     * @return  \UnboundProvider
+     * @return  UnboundProvider
      */
-    final public function unboundProvider() {
+    final public function unboundProvider(): UnboundProvider
+    {
         return $this->unbound_provider;
     }
 
     /**
      * Checks if the $var is a valid component array for the given type.
-     *
-     * @param   mixed   $var
-     * @param   string  $component_type
-     * @return  bool
+     * @param mixed $var
      */
-    private function checkComponentArray($var, $component_type) {
+    private function checkComponentArray($var, string $component_type)
+    {
         if (!is_array($var)) {
             throw new \UnexpectedValueException(
-                "Expected buildComponentsOf to return an array, got ".gettype($var));
+                "Expected buildComponentsOf to return an array, got " . gettype($var));
         }
 
-        foreach($var as $component) {
+        foreach ($var as $component) {
             if (!($component instanceof $component_type)) {
                 throw new \UnexpectedValueException(
-                    "Expected build components to have the type $component_type, got ".get_class($component));
+                    "Expected build components to have the type $component_type, got "
+                    . get_class($component)
+                );
             }
             if (!$component->entity() === $this->entity()) {
                 throw new \UnexpectedValueException(
                     'Expected build components to have the same entity as $this.');
             }
         }
-
     }
 }

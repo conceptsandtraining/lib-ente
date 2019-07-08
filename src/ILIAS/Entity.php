@@ -8,32 +8,37 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\ILIAS;
+
+use \CaT\Ente\Entity AS IEntity;
 
 /**
  * An entity over an ILIAS object.
  */
-class Entity implements \CaT\Ente\Entity {
+class Entity implements IEntity
+{
     /**
-     * @var \ilObject 
+     * @var \ilObject
      */
     private $object;
 
-    public function __construct(\ilObject $object) {
+    public function __construct(\ilObject $object)
+    {
         $this->object = $object;
     }
 
     /**
      * @inheritdocs
      */
-    public function id() {
-        return $this->object->getId();
+    public function id(): int
+    {
+        return (int)$this->object->getId();
     }
 
-    /**
-     * @return  \ilObject
-     */
-    public function object() {
+    public function object(): \ilObject
+    {
         return $this->object;
     }
 }

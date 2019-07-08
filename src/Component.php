@@ -8,6 +8,8 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente;
 
 /**
@@ -20,11 +22,12 @@ namespace CaT\Ente;
  * Concrete Components must be abstracted as another interface for this
  * machinery to work correctly.
  */
-interface Component {
+interface Component
+{
     /**
      * Get the entity this component is attached to.
      *
      * @return Entity
      */
-    public function entity();
+    public function entity(): Entity;
 }

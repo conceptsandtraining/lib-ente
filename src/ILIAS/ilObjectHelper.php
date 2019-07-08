@@ -8,6 +8,8 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\ILIAS;
 
 use CaT\Ente;
@@ -17,19 +19,20 @@ use CaT\Ente;
  * use this directly, use ilHandlerObjectHelper or
  * ilProviderObjectHelper.
  */
-trait ilObjectHelper {
+trait ilObjectHelper
+{
     /**
-     * @return \CaT\Ente\ILIAS\ProviderDB
+     * @return Ente\ILIAS\ProviderDB
      */
-    protected function getProviderDB() {
+    protected function getProviderDB(): Ente\ILIAS\ProviderDB
+    {
         $DIC = $this->getDIC();
         if (!isset($DIC["ente.provider_db"])) {
-            $DIC["ente.provider_db"] = new \CaT\Ente\ILIAS\ilProviderDB
-                ( $DIC["ilDB"]
-                , $DIC["tree"]
-                , $DIC["ilObjDataCache"]
-                , $DIC
-                );
+            $DIC["ente.provider_db"] = new Ente\ILIAS\ilProviderDB(
+                $DIC["ilDB"],
+                $DIC["tree"],
+                $DIC["ilObjDataCache"]
+            );
         }
         return $DIC["ente.provider_db"];
     }

@@ -8,6 +8,8 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\ILIAS;
 
 use CaT\Ente;
@@ -15,22 +17,25 @@ use CaT\Ente;
 /**
  * An repository over ILIAS objects.
  */
-class Repository implements Ente\Repository {
-	use Ente\RepositoryHelper;
+class Repository implements Ente\Repository
+{
+    use Ente\RepositoryHelper;
 
     /**
      * @var ProviderDB
      */
     private $provider_db;
 
-    public function __construct(ProviderDB $provider_db) {
+    public function __construct(ProviderDB $provider_db)
+    {
         $this->provider_db = $provider_db;
     }
 
     /**
      * @inheritdocs
      */
-    public function providersForEntity(\CaT\Ente\Entity $entity, $component_type = null) {
+    public function providersForEntity(Ente\Entity $entity, string $component_type = null): array
+    {
         // This can only return entities for ILIAS
         if (!($entity instanceof Entity)) {
             return [];

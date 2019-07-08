@@ -8,21 +8,22 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente;
 
 /**
  * Helpers to implement providers.
  */
-trait ProviderHelper {
+trait ProviderHelper
+{
     /**
      * Get the component types implemented by the given component.
-     *
      * Traverses all implemented interfaces and checks if they extend `Component`.
-     *
-     * @param   Component $component
      * @return  string[]
      */
-    public function componentTypesOf(Component $component) {
+    public function componentTypesOf(Component $component): array
+    {
         $ret = [];
         foreach (class_implements(get_class($component)) as $interface) {
             if (is_subclass_of($interface, Component::class)) {
@@ -30,5 +31,5 @@ trait ProviderHelper {
             }
         }
         return $ret;
-    } 
+    }
 }

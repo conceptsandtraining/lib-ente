@@ -8,29 +8,39 @@
  * the license along with the code.
  */
 
+use CaT\Ente\Entity;
 use CaT\Ente\Component;
 use CaT\Ente\ProviderHelper;
 
-interface SomeComponent extends Component {
+interface SomeComponent extends Component
+{
 }
 
-interface SomeOtherComponent extends Component {
+interface SomeOtherComponent extends Component
+{
 }
 
-interface Unrelated {
+interface Unrelated
+{
 }
 
-class SomeComponentImplementation implements SomeComponent, SomeOtherComponent, Unrelated {
-    public function entity() { throw new \RuntimeException(); }
+class SomeComponentImplementation implements SomeComponent, SomeOtherComponent, Unrelated
+{
+    public function entity(): Entity
+    {
+        throw new \RuntimeException();
+    }
 }
 
-class ProviderHelperTest extends PHPUnit_Framework_TestCase {
-    use ProviderHelper; 
+class ProviderHelperTest extends PHPUnit_Framework_TestCase
+{
+    use ProviderHelper;
 
-    public function test_componentTypesOf() {
+    public function test_componentTypesOf()
+    {
         $impl = new SomeComponentImplementation();
         $expected = [SomeComponent::class, SomeOtherComponent::class];
         $this->assertEquals($expected, $this->componentTypesOf($impl));
-    } 
+    }
 }
 

@@ -8,6 +8,8 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\Simple;
 
 use CaT\Ente\Entity as IEntity;
@@ -15,7 +17,8 @@ use CaT\Ente\Entity as IEntity;
 /**
  * In memory implementation of AttachString.
  */
-class AttachStringMemory implements AttachString {
+class AttachStringMemory implements AttachString
+{
     /**
      * @var IEntity
      */
@@ -26,8 +29,8 @@ class AttachStringMemory implements AttachString {
      */
     private $attached_string;
 
-    public function __construct(IEntity $entity, $attached_string) {
-        assert('is_string($attached_string)');
+    public function __construct(IEntity $entity, string $attached_string)
+    {
         $this->entity = $entity;
         $this->attached_string = $attached_string;
     }
@@ -35,14 +38,16 @@ class AttachStringMemory implements AttachString {
     /**
      * @inheritdocs
      */
-    public function entity() {
+    public function entity(): IEntity
+    {
         return $this->entity;
     }
 
     /**
      * @inheritdocs
      */
-    public function attachedString() {
+    public function attachedString(): string
+    {
         return $this->attached_string;
     }
 }

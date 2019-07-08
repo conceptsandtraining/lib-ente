@@ -8,13 +8,19 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\ILIAS;
+
+use CaT\Ente\Component;
+use CaT\Ente\Entity AS IEntity;
 
 /**
  * An unbound provider is a provider that currently is not bound to an
  * entity and can thus not produce components.
  */
-interface UnboundProvider {
+interface UnboundProvider
+{
     /**
      * @inheritdocs
      */
@@ -22,33 +28,28 @@ interface UnboundProvider {
 
     /**
      * Build the component(s) of the given type for the given object.
-     *
-     * @param   string    $component_type
-     * @param   Entity    $provider
-     * @return  Component[]
+     * @return Component[]
      */
-    public function buildComponentsOf($component_type, Entity $entity);
+    public function buildComponentsOf(string $component_type, IEntity $entity): array;
 
     /**
      * Get the id of this provider for the given owner.
      *
-     * @param   \ilObject   $owner
-     * @throws  \InvalidArgumentException if $owner is not an owner of this provider
-     * @return  int
+     * @throws \InvalidArgumentException if $owner is not an owner of this provider
      */
-    public function idFor(\ilObject $owner);
+    public function idFor(\ilObject $owner): int;
 
     /**
      * Get the owner object of the component.
      *
-     * @return  \ilObject[]
+     * @return \ilObject[]
      */
-    public function owners();
+    public function owners(): array;
 
     /**
      * Get the object type this binds to.
      *
-     * @return  string
+     * @return string
      */
-    public function objectType();
+    public function objectType(): string;
 }

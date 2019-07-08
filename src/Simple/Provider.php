@@ -8,13 +8,18 @@
  * the license along with the code.
  */
 
+declare(strict_types=1);
+
 namespace CaT\Ente\Simple;
+
+use CaT\Ente;
 
 /**
  * Simple implementation for a provider, works in memory.
  */
-class Provider implements \CaT\Ente\Provider {
-    use \CaT\Ente\ProviderHelper;
+class Provider implements \CaT\Ente\Provider
+{
+    use Ente\ProviderHelper;
 
     /**
      * @var Entity
@@ -26,7 +31,8 @@ class Provider implements \CaT\Ente\Provider {
      */
     private $components;
 
-    public function __construct(Entity $entity) {
+    public function __construct(Entity $entity)
+    {
         $this->entity = $entity;
         $this->components = [];
     }
@@ -34,7 +40,8 @@ class Provider implements \CaT\Ente\Provider {
     /**
      * @inheritdocs
      */
-    public function componentsOfType($component_type) {
+    public function componentsOfType(string $component_type): array
+    {
         if (isset($this->components[$component_type])) {
             return $this->components[$component_type];
         }
@@ -44,25 +51,28 @@ class Provider implements \CaT\Ente\Provider {
     /**
      * @inheritdocs
      */
-    public function componentTypes() {
+    public function componentTypes(): array
+    {
         return array_keys($this->components);
     }
 
     /**
      * @inheritdocs
      */
-    public function entity() {
+    public function entity(): Ente\Entity
+    {
         return $this->entity;
     }
 
     /**
      * Add a component to the provider.
      *
-     * @param   \CaT\Ente\Component   $component
-     * @throws  InvalidArgumentException if $component belongs to another entity
+     * @param \CaT\Ente\Component $component
      * @return  self
+     * @throws  InvalidArgumentException if $component belongs to another entity
      */
-    public function addComponent(\CaT\Ente\Component $component) {
+    public function addComponent(Ente\Component $component): Provider
+    {
         if ($component->entity()->id() !== $this->entity()->id()) {
             $my_id = serialize($this->entity()->id());
             $other_id = serialize($component->entity()->id());

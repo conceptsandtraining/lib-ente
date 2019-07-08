@@ -11,11 +11,13 @@
 use CaT\Ente\ILIAS\Entity;
 
 if (!class_exists("ilObject")) {
-    require_once(__DIR__."/ilObject.php");
+    require_once(__DIR__ . "/ilObject.php");
 }
 
-class ILIAS_EntityTest extends PHPUnit_Framework_TestCase {
-    public function test_callsGetObjId() {
+class ILIAS_EntityTest extends PHPUnit_Framework_TestCase
+{
+    public function test_callsGetObjId()
+    {
         $mock = $this
             ->getMockBuilder(ilObject::class)
             ->setMethods(["getId"])
@@ -26,14 +28,15 @@ class ILIAS_EntityTest extends PHPUnit_Framework_TestCase {
         $mock
             ->expects($this->once())
             ->method("getId")
-            ->willReturn($id);      
+            ->willReturn($id);
 
         $e = new Entity($mock);
 
         $this->assertEquals($id, $e->id());
     }
 
-    public function test_object() {
+    public function test_object()
+    {
         $mock = $this
             ->getMockBuilder(ilObject::class)
             ->getMock();

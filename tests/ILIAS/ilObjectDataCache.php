@@ -11,12 +11,15 @@
 /**
  * Essentials of ILIAS object data cache for this framework.
  */
-abstract class ilObjectDataCache {
-    public function preloadReferenceCache($a_ref_ids, $a_incl_obj = true) {
+abstract class ilObjectDataCache
+{
+    public function preloadReferenceCache($a_ref_ids, $a_incl_obj = true)
+    {
         assert(false);
     }
 
-    public function lookupObjId($a_ref_id) {
+    public function lookupObjId($a_ref_id)
+    {
         assert(false);
     }
 }

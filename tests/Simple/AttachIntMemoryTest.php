@@ -13,24 +13,29 @@ use CaT\Ente\Simple\Entity;
 use CaT\Ente\Simple\AttachInt;
 use CaT\Ente\Simple\AttachIntMemory;
 
-class Simple_AttachIntMemoryTest extends PHPUnit_Framework_TestCase {
-    use ProviderHelper; 
+class Simple_AttachIntMemoryTest extends PHPUnit_Framework_TestCase
+{
+    use ProviderHelper;
 
-    public function setUp() {
+    public function setUp()
+    {
         $this->id = rand();
         $this->entity = new Entity($this->id);
-        $this->component = new AttachIntMemory($this->entity, -1  * $this->id);
+        $this->component = new AttachIntMemory($this->entity, -1 * $this->id);
     }
 
-    public function test_entity() {
+    public function test_entity()
+    {
         $this->assertEquals($this->entity, $this->component->entity());
     }
 
-    public function test_attachedInt() {
+    public function test_attachedInt()
+    {
         $this->assertEquals(-1 * $this->id, $this->component->attachedInt());
     }
 
-    public function test_componentTypes() {
+    public function test_componentTypes()
+    {
         $this->assertEquals([AttachInt::class], $this->componentTypesOf($this->component));
     }
 }
